@@ -58,11 +58,14 @@ proportional to 1 million. Quite an improvement!
 To compare two texts we simply concatenate them. At the end of the first 
 text we place a marker, and at the end of the second another, DIFFERENT 
 marker. For markers we can use the NULL or ONE character. These will 
-never occur in the text. One drawback with this method is that 
-substrings starting in one text and ending in the other will be found, 
-which is NOT wanted. However, the solution is simple: we can prune the 
-tree. Any branches starting in the first version and ending in the 
-second can simply be curtailed at the marker ending the first version.
+never occur in the text. We then build the suffix tree with the 
+concatenated string.
+
+One drawback with this method is that substrings starting in one text 
+and ending in the other will be found, which is NOT wanted. However, the 
+solution is simple: we can prune the tree. Any branches starting in the 
+first version and ending in the second can simply be curtailed at the 
+marker ending the first version.
 
 A pruned suffix tree created in this way can be used to find text found 
 in both versions. We can examine the leaves of the tree in linear time. 
