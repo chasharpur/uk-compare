@@ -1,11 +1,19 @@
 # Ukkonen's suffix tree compare tool
 Esko Ukkonen created a linear time algorithm for building a suffix tree 
-in 1995[1]. This Javascript module uses it to compare two HTML files, 
-marking unshared portions as deleted or added, depending on the side of 
-the comparison: deleted = left side, added = right-side. Its 
-implementation in Javascript allows comparison between two versions to 
-be carried out in the user's browser directly, rather than relying on a 
-server to perform the calculation.
+in 1995[1]. "Linear time" means that as the length of the texts to be 
+compared increases, the time taken is directly proportional to that. So 
+comparing two texts four times as long overall takes no more than four 
+times the time. This is fast enough to do a comparison even between long 
+texts without the user noticing any significant time lag.
+
+This Javascript module uses it to compare two HTML files, marking 
+unshared portions as deleted or added, depending on the side of the 
+comparison: deleted = left side, added = right-side. Its implementation 
+in Javascript allows comparison between two versions to be carried out 
+in the user's browser directly, rather than relying on a server to 
+perform the calculation. The server can thus simply be a repository of 
+information served up to the user rather than a complex piece of 
+software needing constant maintenance.
 
 ## Rationale
 Most textual comparison tools use a collation algorithm in which, 
