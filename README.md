@@ -1,4 +1,4 @@
-# Ukkonen's suffix tree compare tool
+\# Ukkonen's suffix tree compare tool
 Esko Ukkonen created a linear time algorithm for building a suffix tree 
 in 1995[1]. This Javascript module uses it to compare two HTML files, 
 marking unshared portions as deleted or added, depending on the side of 
@@ -34,7 +34,7 @@ Sorting the suffixes from left to right yields:
     banana
     nana
 ```
-A tree can easily be constructed out of this sorted list:
+A tree can easily be constructed out of this sorted list by replacing shared text at the sart with branches:
 ```
     a-
     -na-
