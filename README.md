@@ -34,7 +34,7 @@ Sorting the suffixes from left to right yields:
     banana
     nana
 ```
-A tree can easily be constructed out of this sorted list by replacing shared text at the sart with branches:
+A tree can easily be constructed out of this sorted list by replacing shared text at the start of each line with branches:
 ```
     a-
     -na-
