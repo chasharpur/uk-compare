@@ -36,15 +36,16 @@ Sorting the suffixes from left to right yields:
 ```
 A tree can easily be constructed out of this sorted list by replacing shared text at the start of each line with branches:
 ```
-    a-
-    -na-
-    ---ana
+    a->
+    ->na->
+    --->ana
     banana
     nana
-```
-So the root of the tree has three children: a, b and n. The a-branch has 
-one child a->na, which in turn has one child a->na->ana. banana is a 
-leaf-node on its own, as is nana.
+``` 
+So the root of the tree -- here represented by the first column of 
+characters -- has three children: a, b and n. The a-branch has one child 
+a->na, which in turn has one child a->na->ana. banana is a leaf-node on 
+its own, as is nana.
 
 It may not be immediately obvious that a suffix tree can be used for 
 comparison, but it can clearly be used for searching. When looking for 
