@@ -24,17 +24,21 @@ A suffix tree stores in a tree structure all possible suffixes for a
 string. For the string "banana" the suffixes are: 
     a, na, ana, nana, anana, banana
 Sorting the suffixes from left to right yields:
+```
     a
     ana
     anana
     banana
     nana
+```
 A tree can easily be constructed out of this sorted list:
+```
     a-
     -na-
     ---ana
     banana
     nana
+```
 So the root of the tree has three children: a, b and n. The a-branch has 
 one child a->na, which in turn has one child a->na->ana. banana is a 
 leaf-node on its own, as is nana.
