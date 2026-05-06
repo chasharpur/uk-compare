@@ -79,7 +79,7 @@ version.
 
 However, this method is not infallible. 
 
-1. Although it lists all matches between two versions they may be 
+1. Although it lists all matches between two versions, some may be 
 entirely contained by other longer matches, and so must be removed.
 
 2. Even after weeding out these redundant matches it may be that two 
@@ -94,7 +94,7 @@ I will pass over problems 2 and 3 for now.
 Ukkonen's algorithm is simple enough but hard to understand in detail. I 
 made an effort to explain it fully in the C language some years ago [2]. 
 In simpler terms Ukkonen's method is to examine the suffixes starting 
-from left to right. Because this means that the "suffixes" are all 
+from left to right. This means that the "suffixes" are all 
 incomplete until the end of the text is reached. This also means that 
 the time taken ought to be proportional to N cubed. However, using a 
 couple of tricks the time is reduced to LINEAR (proportional to N) 
