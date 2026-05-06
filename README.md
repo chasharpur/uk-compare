@@ -3,7 +3,7 @@ Esko Ukkonen created a linear time algorithm for building a suffix tree
 in 1995[1]. "Linear time" means that as the length of the texts to be 
 compared increases, the time taken is directly proportional to that. So 
 comparing two texts four times as long overall takes no more than four 
-times the time. This is fast enough to do a comparison even between long 
+times longer. This is fast enough to do a comparison even between long 
 texts without the user noticing any significant time lag.
 
 This Javascript module uses it to compare two HTML files, marking 
@@ -50,8 +50,8 @@ A tree can easily be constructed out of this sorted list by replacing shared tex
     banana
     nana
 ``` 
-So the root of the tree -- here represented by the first column of 
-characters -- has three children: a, b and n. The a-branch has one child 
+So the root of the tree – here represented by the first column of 
+characters – has three children: a, b and n. The a-branch has one child 
 a->na, which in turn has one child a->na->ana. banana is a leaf-node on 
 its own, as is nana.
 
@@ -62,7 +62,7 @@ verify that it continues with at least na. Similarly for the string na we find n
 Since the suffix tree stores ALL start positions in the text we can find 
 all SUBstrings of the string in time proportional to the length of the 
 text BEING SEARCHED FOR. In a text of 1 million characters we can test 
-if a string of four letters occurs in it in time proportional to four. 
+if a string of four letters occurs within it in time proportional to four. 
 An exhaustive search, on the other hand, would find that string in time 
 proportional to 1 million. Quite an improvement!
 
@@ -73,8 +73,8 @@ marker. For markers we can use the NULL or ONE character. These will
 never occur in the text. We then build the suffix tree with the 
 concatenated string.
 
-One drawback with this method is that substrings starting in one text 
-and ending in the other will be found, which is NOT wanted. However, the 
+One drawback with this method is that substrings starting in the first text 
+and ending in the second will be found, which is NOT wanted. However, the 
 solution is simple: we can prune the tree. Any branches starting in the 
 first version and ending in the second can simply be curtailed at the 
 marker ending the first version.
@@ -119,24 +119,12 @@ the algorithm is complete, and works, there is still much to do:
 
 1. Build a html rig to load two versions of a single work.
 
-2. Run the diff 
-algorithm on both versions to produce a sorted array of alignments. Use 
-a simple left/right division using a table and a dropdown on the right. 
-Use a sync scrolling algorithm to align left and right sides based on 
-alignments. You could use a recalc_alignment routine after two versions 
-were compared. 
-
-3. Iterate through the characters of each version, skipping to the 
-contents of the body element. Skip the content of any script elements 
-and also any characters inside a tag. For each textual token test if it 
-is inside an alignment. If the previous character was not in alignment, 
-emit a close span tag and then the character, followed by an anchor tag 
-with a id. If it is not in alignment, but the previous character was, 
-emit a start delete/insert span tag (depending on the side), followed by 
-the character. If you encounter a start or end tag and you were in an 
-insert/delete span, emit the end span tag followed by '<'.
-
-4. Set the text of each side to the revised body content.
+2. Run the suffix tree algorithm on both versions to produce a sorted 
+array of alignments, and use them to display "deleted" text on the left 
+and "added" text on the right. Add sync-scrolling so that scrolling 
+through one version (left or right) scrolls the other side so that 
+matching text is aligned horizontally, even in the case of long 
+insertions/deletions.
 
 [1] Ukkonen, E. (1995). "On-line construction of suffix trees" (PDF). Algorithmica. 14 (3): 249–260
 
