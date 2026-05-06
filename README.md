@@ -1,4 +1,4 @@
-\# Ukkonen's suffix tree compare tool
+# Ukkonen's suffix tree compare tool
 Esko Ukkonen created a linear time algorithm for building a suffix tree 
 in 1995[1]. This Javascript module uses it to compare two HTML files, 
 marking unshared portions as deleted or added, depending on the side of 
