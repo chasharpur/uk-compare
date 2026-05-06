@@ -126,4 +126,5 @@ insert/delete span, emit the end span tag followed by '<'.
 4. Set the text of each side to the revised body content.
 
 [1] Ukkonen, E. (1995). "On-line construction of suffix trees" (PDF). Algorithmica. 14 (3): 249–260
+
 [2] D. Schmidt (2013). [Ukkonen's suffix tree algorithm ](https://programmerspatch.blogspot.com/2013/02/ukkonens-suffix-tree-algorithm.html)
