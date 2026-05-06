@@ -22,7 +22,9 @@ way, and that way is to use suffix trees.
 ## Suffix trees
 A suffix tree stores in a tree structure all possible suffixes for a 
 string. For the string "banana" the suffixes are: 
-```    a, na, ana, nana, anana, banana.```
+```
+    a, na, ana, nana, anana, banana.
+```
 Sorting the suffixes from left to right yields:
 ```
     a
