@@ -16,8 +16,9 @@ length of one version. Also this does not normally calculate
 transpositions. Certain versions of the collation algorithm claim faster 
 run times, but no faster than NxD, where D is the edit distance between 
 the versions, and for completely dissimilar texts the efficiency is 
-still N squared. The other drawbacks remain. There has to be a better 
-way, and that way is to use suffix trees.
+still N squared. The other drawbacks remain, and in particular the 
+slowness makes this method useless for anything but short texts. There 
+has to be a better way, and that way is to use suffix trees.
 
 ## Suffix trees
 A suffix tree stores in a tree structure all possible suffixes for a 
