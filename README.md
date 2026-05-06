@@ -46,13 +46,13 @@ A tree can easily be constructed out of this sorted list by replacing shared tex
 ```
     a->
     ->na->
-    --->ana
-    banana
-    nana
+    --->ana🙑
+    banana🙑
+    nana🙑
 ``` 
 So the root of the tree – here represented by the first column of 
 characters – has three children: a, b and n. The a-branch has one child 
-a->na, which in turn has one child a->na->ana. banana is a leaf-node on 
+a->na, which in turn has one child a->na->ana. banana is a leaf-node (🙑) on 
 its own, as is nana.
 
 It may not be immediately obvious that a suffix tree can be used for 
