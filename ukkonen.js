@@ -851,15 +851,12 @@ function walk_down( v, p ) {
     }
     return q;
 }
-function clear_links(u) {
-    if ( u.hasOwnProperty("link") )
-        u.link = null;
-    let iter = node_children( u );
-    while ( node_iterator_has_next(iter) ) {
-        let v = node_iterator_next(iter);
-        clear_links(v);
-    }
-}
+/**
+ * Are two leaf nodes split between the two versions?
+ * @param v the first leaf node
+* @param w the other leaf node with the same parent
+* @return true if they belong to two versions, false otherwise
+*/
 function leaf_is_split( v, w ) {
     return v.start <= slen && w.start > slen+1;
 }

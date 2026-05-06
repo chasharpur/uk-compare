@@ -11,8 +11,8 @@ server to perform the calculation.
 Most textual comparison tools use a collation algorithm in which, 
 potentially at least, each character position in one version is compared 
 to all character positions in the other version. Misalignments are 
-common, and the efficiency is only N squared, where N is the average 
-length of one version. Also this does not normally calculate 
+common, and the time taken is proportial to N squared, where N is the average 
+length of one version. Also this method does not normally calculate 
 transpositions. Certain versions of the collation algorithm claim faster 
 run times, but no faster than NxD, where D is the edit distance between 
 the versions, and for completely dissimilar texts the efficiency is 
