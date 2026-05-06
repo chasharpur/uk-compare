@@ -22,7 +22,7 @@ to all character positions in the other version. Misalignments are
 common, and the time taken is proportial to N squared, where N is the average 
 length of one version. Also this method does not normally calculate 
 transpositions. Certain versions of the collation algorithm claim faster 
-run times, but no faster than NxD, where D is the edit distance between 
+run times, but none is faster than NxD, where D is the edit distance between 
 the versions, and for completely dissimilar texts the efficiency is 
 still N squared[2]. The other drawbacks remain, and in particular the 
 slowness makes this method useless for anything but short texts. There 
