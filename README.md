@@ -50,7 +50,7 @@ its own, as is nana.
 It may not be immediately obvious that a suffix tree can be used for 
 comparison, but it can clearly be used for searching. When looking for 
 the string ana we travel first to the root, locate the a-child, then 
-verify that it continues with at least na. Similarly for the string na. 
+verify that it continues with at least na. Similarly for the string na we find n at the root, then follow it until it fully matches na. 
 Since the suffix tree stores ALL start positions in the text we can find 
 all SUBstrings of the string in time proportional to the length of the 
 text BEING SEARCHED FOR. In a text of 1 million characters we can test 
@@ -81,15 +81,14 @@ version.
 However, this method is not infallible. 
 
 1. Although it lists all matches between two versions, some may be 
-entirely contained by other longer matches, and so must be removed.
+entirely contained by other longer matches, and so may be eliminated. 
+This is called the greedy approach. However, the shorter matches that 
+were discarded might have combined with other matches that would have 
+provided a better alignment overall. So it is not optimal.
 
-2. Even after weeding out these redundant matches it may be that two 
-shorter overlapping matches provide a better overall alignment than one 
-long one, which overlaps both of them.
+2. We have no guarantee that any of the matches are unique.
 
-3. Finally, we have no guarantee that any of the matches are unique.
-
-I will pass over problems 2 and 3 for now.
+I will pass over these problems and just apply the greedy approach for now.
 
 ## Constructing the suffix tree
 Ukkonen's algorithm is hard to understand in detail. I made an effort to 
