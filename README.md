@@ -93,16 +93,16 @@ I will pass over problems 2 and 3 for now.
 ## Constructing the suffix tree
 Ukkonen's algorithm is hard to understand in detail. I made an effort to 
 explain it fully in the C language some years ago [2]. In simpler terms 
-his method is to examine the suffixes by moviong through the text from 
-left to right, rather than, more usually, proceding right to left. 
-Ukkonen's back-to-front approach increases the time complexity from N 
-squared to N cubed. However, by using a couple of tricks, the time is 
-reduced to LINEAR (proportional to N) especially by the use of links 
-between the branches of the unfinished tree. The algorithm essentially 
-remembers where it last was and so avoids having to go back to the root 
-as each new suffix is added. It is a bit like a monkey travelling 
-through the jungle by swinging from tree to tree instead of laboriously 
-climbing each tree in turn.
+his method is to examine the suffixes by moving through the text from 
+left to right, rather than the established right to left approach. 
+Initially this seems worse. The left to right approach increases the 
+time complexity from N squared to N cubed. However, by using a couple of 
+tricks, the time is reduced to LINEAR (proportional to N) especially by 
+the use of links between the branches of the unfinished tree. The 
+algorithm essentially remembers where it last was and so avoids having 
+to go back to the root as each new suffix is added. It is a bit like a 
+monkey travelling through the jungle by swinging from tree to tree 
+instead of laboriously climbing each tree in turn.
 
 ## To do
 At the moment all I have working is Ukkonen's algorithm extended to two 
