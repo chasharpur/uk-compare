@@ -119,14 +119,14 @@ alignments. You could use a recalc_alignment routine after two versions
 were compared. 
 
 3. Iterate through the characters of each version, skipping to the 
-contents of the body element and the script element. Skip also any 
-characters inside a tag. For each textual token test if it is inside an 
-alignment. If the previous character was not in alignment, emit a close 
-span tag and then the character, followed by an anchor tag with a id. If 
-it is not in alignment, but the previous character was, emit a start 
-delete/insert span tag (depending on the side), followed by the 
-character. If you encounter a start or end tag and you were in an 
-insert/delete span, emit the end span tag followed by '<'. 
+contents of the body element. Skip the content of any script elements 
+and also any characters inside a tag. For each textual token test if it 
+is inside an alignment. If the previous character was not in alignment, 
+emit a close span tag and then the character, followed by an anchor tag 
+with a id. If it is not in alignment, but the previous character was, 
+emit a start delete/insert span tag (depending on the side), followed by 
+the character. If you encounter a start or end tag and you were in an 
+insert/delete span, emit the end span tag followed by '<'.
 
 4. Set the text of each side to the revised body content.
 
