@@ -16,7 +16,7 @@ information served up to the user rather than a complex piece of
 software needing constant maintenance.
 
 ## Rationale
-Most textual comparison tools use a collation algorithm in which, 
+Most textual comparison tools use a collation algorithm where, 
 potentially at least, each character position in one version is compared 
 to all character positions in the other version. Misalignments are 
 common, and the time taken is proportial to N squared, where N is the average 
@@ -24,7 +24,7 @@ length of one version. Also this method does not normally calculate
 transpositions. Certain versions of the collation algorithm claim faster 
 run times, but no faster than NxD, where D is the edit distance between 
 the versions, and for completely dissimilar texts the efficiency is 
-still N squared. The other drawbacks remain, and in particular the 
+still N squared[2]. The other drawbacks remain, and in particular the 
 slowness makes this method useless for anything but short texts. There 
 has to be a better way, and that way is to use suffix trees.
 
@@ -100,7 +100,7 @@ I will pass over these problems and just apply the greedy approach for now.
 
 ## Constructing the suffix tree
 Ukkonen's algorithm is hard to understand in detail. I made an effort to 
-explain it fully in the C language some years ago [2]. In simpler terms 
+explain it fully in the C language some years ago [3]. In simpler terms 
 his method is to examine the suffixes by moving through the text from 
 left to right, rather than the established right to left approach. 
 Initially this seems worse. The left to right approach increases the 
@@ -121,11 +121,15 @@ the algorithm is complete, and works, there is still much to do:
 
 2. Run the suffix tree algorithm on both versions to produce a sorted 
 array of alignments, and use them to display "deleted" text on the left 
-and "added" text on the right. Add sync-scrolling so that scrolling 
+and "added" text on the right. 
+
+3. Add sync-scrolling so that scrolling 
 through one version (left or right) scrolls the other side so that 
 matching text is aligned horizontally, even in the case of long 
 insertions/deletions.
 
 [1] Ukkonen, E. (1995). "On-line construction of suffix trees" (PDF). Algorithmica. 14 (3): 249–260
 
-[2] D. Schmidt (2013). [Ukkonen's suffix tree algorithm ](https://programmerspatch.blogspot.com/2013/02/ukkonens-suffix-tree-algorithm.html)
+[2] Myers, E. (1986). An O(ND) Difference Algorithm and Its Variations," Algorithmica Vol. 1 No. 2, 1986, pp. 251-266.
+
+[3] D. Schmidt (2013). [Ukkonen's suffix tree algorithm ](https://programmerspatch.blogspot.com/2013/02/ukkonens-suffix-tree-algorithm.html)
