@@ -120,8 +120,8 @@ the algorithm is complete, and works, there is still much to do:
 1. Build a html rig to load two versions of a single work.
 
 2. Run the suffix tree algorithm on both versions to produce a sorted 
-array of alignments, and use them to display "deleted" text on the left 
-and "added" text on the right. 
+array of alignments, and use them to display the unaligned text as "deleted" on the left 
+and "added" on the right. 
 
 3. Add sync-scrolling so that scrolling 
 through one version (left or right) scrolls the other side so that 
