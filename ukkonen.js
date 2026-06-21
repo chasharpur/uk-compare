@@ -992,7 +992,7 @@ function compare(lhs,rhs) {
     set_e( root );
     // todo: trim all suffixes that cross over middle
     prune_tree( root );
-    print_tree(root);
+    //print_tree(root);
     find_alignments(root);
     alignments = filter_alignments();
     //find_string( " dog</p></body>", true );
