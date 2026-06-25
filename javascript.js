@@ -83,7 +83,7 @@ function set_version(select_id,key) {
 function populate_version_dropdown(select_id,keys) {
 	let version_select = document.getElementById(select_id);
 	while (version_select.firstChild)
-		version_select.removeChild(works_select.lastChild);
+		version_select.removeChild(version_select.lastChild);
 	for ( let key of keys ) {
 		let opt = document.createElement('option');
 		opt.textContent = key;
@@ -102,7 +102,7 @@ function change_work() {
 	populate_version_dropdown("rhs_files",keys);
 	set_version("lhs_files",keys[0]);
 	if ( keys.length > 1 )
-		set_version("rhs_files",keys()[1]);
+		set_version("rhs_files",keys[1]);
 	else
 		set_version("rhs_files",keys[0]);
 }
