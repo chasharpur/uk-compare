@@ -100,21 +100,17 @@ to go back to the root as each new suffix is added. It is a bit like a
 monkey travelling through the jungle by swinging from tree to tree 
 instead of laboriously climbing each tree in turn.
 
-## To do
+## What works
 At the moment all I have working is Ukkonen's algorithm extended to two 
-versions. It is just a test program with two hardwired strings. Although 
-the algorithm is complete, and works, there is still much to do: 
+versions. There is a partially written test rig with some sample files taken from the Charles Harpur archive.
+I hope soon to complete this to demonstrate comparison between two texts selected in the test rig.
 
-1. Build a html rig to load two versions of a single work.
-
-2. Run the suffix tree algorithm on both versions to produce a sorted 
-array of alignments, and use them to display the unaligned text as "deleted" on the left 
-and "added" on the right. 
-
-3. Add sync-scrolling so that scrolling 
-through one version (left or right) scrolls the other side so that 
-matching text is aligned horizontally, even in the case of long 
-insertions/deletions.
+## The future
+I hope to extend this to N versions. If we have N versions then the number of two-way comparisons that can be done is 
+N(N-1)/2. So for 30 versions this is only 435. That is a lot but once the results of all two-way comparisons are known it 
+should be possible to build an accurate MVD, or multi-version document, which is just a partial order of text fragments 
+belonging to subsets of the total number of versions. Once in the MVD format it will be possible to instantly display a 
+table of all differences between all versions or between a subset of them.
 
 [1] Ukkonen, E. (1995). "On-line construction of suffix trees" (PDF). Algorithmica. 14 (3): 249–260
 
