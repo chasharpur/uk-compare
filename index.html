@@ -1,12 +1,16 @@
+<!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="utf-8">
+ <title>Two-way compare</title>
 <link rel="stylesheet" href="style.css">
+<script src="javascript.js"></script>
 </head>
-<body>
+<body onload="reload_page()">
 <div id="toolbar">
-	<label>Base:</label> <input id="base" type="text" value="samples"></input>
-	<label>Method:</label> <select id="method"><option>Ukkonen</option><option>Myers</option></select>
+	<label>Sample:</label> <select id="sample"></select>
+	<label>Work:</label> <select id="works" onchange="change_work()"></select>
+	<label>Method:</label> <select id="method" onchange="change_method()"><option>Ukkonen</option><option>Myers</option></select>
 </div>
-<div id="container"><div id="lhs"><div class="header"><select id="lhs_files"></select></div></div>
-<div id="rhs"><div class="header"><select id="rhs_files"></select></div></div>
+<div id="container"><div id="lhs"><div class="header"><label>Version:</label><select id="lhs_files"></select></div></div>
+<div id="rhs"><div class="header"><label>Version:</label><select id="rhs_files"></select></div></div></div>
 </body></html>

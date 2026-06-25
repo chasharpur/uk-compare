@@ -1,0 +1,27 @@
+#toolbar {
+	width: 100%;
+	background-color: #FFFF99;
+	padding: 0.3em;
+}
+#toolbar label {
+	font-weight:bold;
+}
+#container {
+	width:100%;
+}
+#lhs {
+	float:left;
+	width:50%;
+	border: thin solid black;
+	box-sizing: border-box;
+}
+#lhs + #rhs {
+	float:right;
+	width:50%;
+	border: thin solid black;
+	border-left:0;
+	box-sizing: border-box;
+}
+#container label {
+	padding:0.5em;
+}
