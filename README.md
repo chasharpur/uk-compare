@@ -86,18 +86,6 @@ children begin in version 1 and the other in version 2, it follows that
 the route through the tree to this parent must be text shared by each 
 version.
 
-However, this method is not infallible. 
-
-1. Although it lists all matches between two versions, some may be 
-entirely contained by other longer matches, and so may be eliminated. 
-This is called the greedy approach. However, the shorter matches that 
-were discarded might have combined with other matches that would have 
-provided a better alignment overall. So it is not optimal.
-
-2. We have no guarantee that any of the matches are unique.
-
-I will pass over these problems and just apply the greedy approach for now.
-
 ## Constructing the suffix tree
 Ukkonen's algorithm is hard to understand in detail. I made an effort to 
 explain it fully in the C language some years ago [3]. In simpler terms 
