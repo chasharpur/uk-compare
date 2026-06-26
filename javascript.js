@@ -1,5 +1,5 @@
 var method="Ukkonen";
-async function load_user_data(file) {
+async function load_user_json(file) {
   try {
     const response = await fetch(file);
     if (!response.ok) {
@@ -9,6 +9,19 @@ async function load_user_data(file) {
     return data;
   } catch (error) {
     console.error("Could not fetch the JSON file:", error);
+    return null;
+  }
+}
+async function load_user_html(file) {
+  try {
+    const response = await fetch(file);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    let data = await response.text();
+    return data;
+  } catch (error) {
+    console.error("Could not fetch the HTML file:", error);
     return null;
   }
 }
@@ -42,7 +55,7 @@ function digest_works(raw_index) {
 }
 async function populate_sample_index(){
 	let works = null;
-	let top_level = await load_user_data('./samples/index.json');
+	let top_level = await load_user_json('./samples/index.json');
 	if ( top_level.length > 0 ) {
 		let select = document.getElementById("sample");
 		while (select.firstChild)
@@ -52,7 +65,7 @@ async function populate_sample_index(){
 			opt.textContent = name;
 			select.appendChild(opt);
 		}
-		let raw_index = await load_user_data('./samples/'+select.firstElementChild.textContent+'/index.json');
+		let raw_index = await load_user_json('./samples/'+select.firstElementChild.textContent+'/index.json');
 		if ( raw_index.length > 0 ) {
 			works = digest_works(raw_index);
 			let works_select = document.getElementById("works");
@@ -76,9 +89,67 @@ function change_method() {
 	method = select_method.value;
 	console.log("method is now "+method);
 }
-function set_version(select_id,key) {
+/**
+ * Ensure that the layers chosen on the lhs and rhs are different 
+ * IF the versions of lhs and rhs are the same
+ * @param layer_id the id of the layer select to switch
+ * @param layer_value its current value
+ * @return the new layer value (or old one)
+ */
+function switch_layer(layer_id,layer_value) {
+	let this_version_id = layer_id.replace("layers","versions");
+	let this_version_select = document.getElementById(this_version_id);
+	let this_version_value = this_version_select.value;
+	let other_version_id,other_version_select,other_version_value;
+	if ( this_version_id.includes("lhs") ) 
+		other_version_id = this_version_id.replace("lhs","rhs");
+	else
+		other_version_id = this_version_id.replace("rhs","lhs");
+	other_version_select = document.getElementById(other_version_id);
+	other_version_value = other_version_select.value;
+	if ( other_version_value == this_version_value ) {
+		let this_layer_id = this_version_id.replace("versions","layers");
+		let other_layer_id = other_version_id.replace("versions","layers");
+		let this_layer_select = document.getElementById(this_layer_id);
+		let other_layer_select = document.getElementById(other_layer_id);
+		if ( this_layer_select.value == other_layer_select.value ) {
+			if ( this_layer_select.length > 1 ) {
+				let this_select_index = (this_layer_select.selectedIndex+1)%this_layer_select.length;
+				layer_value = this_layer_select.options[this_select_index].value;
+				this_layer_select.value = layer_value;
+			}
+		}
+	}
+	return layer_value;	
+}
+async function set_version(select_id,versions,version_key) {
 	let version_select = document.getElementById(select_id);
-	version_select.value = key;
+	version_select.value = version_key;
+	// set layer
+	let layers = versions[version_key];
+	let layer_keys = Object.keys(layers);
+	if ( layer_keys.length > 0 ) {
+		let layer_id = select_id.replace("versions","layers");
+		let layer_select = document.getElementById(layer_id);
+		while (layer_select.firstChild)
+			layer_select.removeChild(layer_select.lastChild);
+		if ( layer_select ) {
+			for ( let layer_key of layer_keys ) {
+				let opt = document.createElement('option');
+				opt.setAttribute("data-path",layers[layer_key]);
+				opt.textContent = layer_key;
+				layer_select.appendChild(opt);
+			}
+			// load the layer!
+			let load_key = switch_layer(layer_id,layer_select.value);
+			let rel_url = "./samples/"+document.getElementById("sample").value+"/"+layers[load_key];
+			let html = await load_user_html( rel_url);
+			let target = document.getElementById(select_id.replace("versions","body"));
+			while (target.firstChild)
+				target.removeChild(target.lastChild);
+			target.innerHTML = html;
+		}
+	}
 }
 function populate_version_dropdown(select_id,keys) {
 	let version_select = document.getElementById(select_id);
@@ -93,21 +164,21 @@ function populate_version_dropdown(select_id,keys) {
 /** 
  * User selected a new work
  */
-function change_work() {
+async function change_work() {
 	let work_select = document.getElementById("works");
 	let work = work_select.value;
 	let versions = all_works[work];
 	let keys = Object.keys(versions);
-	populate_version_dropdown("lhs_files",keys);
-	populate_version_dropdown("rhs_files",keys);
-	set_version("lhs_files",keys[0]);
+	populate_version_dropdown("lhs_versions",keys);
+	populate_version_dropdown("rhs_versions",keys);
+	set_version("lhs_versions",versions,keys[0]);
 	if ( keys.length > 1 )
-		set_version("rhs_files",keys[1]);
+		set_version("rhs_versions",versions,keys[1]);
 	else
-		set_version("rhs_files",keys[0]);
+		set_version("rhs_versions",versions,keys[0]);
 }
 var all_works;
 async function reload_page() {
 	all_works = await populate_sample_index();
-	change_work();
+	await change_work();
 }
