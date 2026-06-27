@@ -3,7 +3,10 @@
 <meta charset="utf-8">
  <title>Two-way compare</title>
 <link rel="stylesheet" href="style.css">
-<script src="javascript.js"></script>
+<script src="test_rig.js"></script>
+<script src="html_strip.js"></script>
+<script src="myers.js"></script>
+<script src="ukkonen.js"></script>
 </head>
 <body onload="reload_page()">
 <div id="toolbar">
@@ -11,6 +14,6 @@
 	<label>Work:</label> <select id="works" onchange="change_work()"></select>
 	<label>Method:</label> <select id="method" onchange="change_method()"><option>Ukkonen</option><option>Myers</option></select>
 </div>
-<div id="container"><div id="lhs"><div class="header"><label>Version:</label><select id="lhs_versions"></select><label>Layer:</label><select id="lhs_layers"></select></div><div id="lhs_body"></div></div>
-<div id="rhs"><div class="header"><label>Version:</label><select id="rhs_versions"></select><label>Layer:</label><select id="rhs_layers"></select></div><div id="rhs_body"></div></div></div>
+<div id="container"><div id="lhs"><div class="header"><label>Version:</label><select id="lhs_versions"></select><label>Layer:</label><select id="lhs_layers" onchange="change_layer('lhs')"></select></div><div id="lhs_body"></div></div>
+<div id="rhs"><div class="header"><label>Version:</label><select id="rhs_versions"></select><label>Layer:</label><select id="rhs_layers" onchange="change_layer('rhs')"></select></div><div id="rhs_body"></div></div></div>
 </body></html>

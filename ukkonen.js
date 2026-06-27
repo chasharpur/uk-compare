@@ -978,8 +978,8 @@ function prune_tree( v ) {
         }
     }
 }
-/** main entry point */
-function compare(lhs,rhs) {
+/** Compare two versions */
+function ukkonen_compare(lhs,rhs) {
     // create I_0 manually
     slen = lhs.length;
     str = lhs+'\0'+rhs+'%';
@@ -996,7 +996,8 @@ function compare(lhs,rhs) {
     find_alignments(root);
     alignments = filter_alignments();
     //find_string( " dog</p></body>", true );
+    return alignments;
 }
-compare(left_html,right_html);
+/*compare(left_html,right_html);
 for ( const a of alignments )
-    console.log(a.start+":"+a.end+"="+a.text);
+    console.log(a.start+":"+a.end+"="+a.text);*/

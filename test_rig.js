@@ -122,6 +122,17 @@ function switch_layer(layer_id,layer_value) {
 	}
 	return layer_value;	
 }
+async function change_layer(side) {
+	let layer_select = document.getElementById(side+"_layers");
+	let layer_opt = layer_select.options[layer_select.selectedIndex];
+	let data_path = layer_opt.getAttribute("data-path");
+	let rel_url = "./samples/"+document.getElementById("sample").value+"/"+data_path;
+	let html = await load_user_html( rel_url);
+	let target = document.getElementById(side+"_body");
+	while (target.firstChild)
+		target.removeChild(target.lastChild);
+	target.innerHTML = html;
+}
 async function set_version(select_id,versions,version_key) {
 	let version_select = document.getElementById(select_id);
 	version_select.value = version_key;
@@ -171,14 +182,29 @@ async function change_work() {
 	let keys = Object.keys(versions);
 	populate_version_dropdown("lhs_versions",keys);
 	populate_version_dropdown("rhs_versions",keys);
-	set_version("lhs_versions",versions,keys[0]);
+	await set_version("lhs_versions",versions,keys[0]);
 	if ( keys.length > 1 )
-		set_version("rhs_versions",versions,keys[1]);
+		await set_version("rhs_versions",versions,keys[1]);
 	else
-		set_version("rhs_versions",versions,keys[0]);
+		await set_version("rhs_versions",versions,keys[0]);
+	// compute differences
+	let lhs_html = document.getElementById("lhs_body").innerHTML;
+	let rhs_html = document.getElementById("rhs_body").innerHTML;
+	let lhs_text = html_strip(lhs_html);
+	let rhs_text = html_strip(rhs_html);
+	(lhs_text,rhs_text);
 }
 var all_works;
+async function set_sample_css() {
+	let sample = document.getElementById("sample").value;
+	let css_url = "./samples/"+sample+"/default.css";
+	let css = await load_user_html(css_url);
+	let style = document.createElement("style");
+	style.innerHTML = css;
+	document.head.appendChild(style);
+}
 async function reload_page() {
 	all_works = await populate_sample_index();
+	await set_sample_css();
 	await change_work();
 }

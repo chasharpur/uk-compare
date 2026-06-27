@@ -112,6 +112,9 @@ should be possible to build an accurate MVD, or multi-version document, which is
 belonging to subsets of the total number of versions. Once in the MVD format it will be possible to instantly display a 
 table of all differences between all versions or between a subset of them.
 
+## Installation
+Clone the repository and place it inside a web server's documents directory. Navigate to index.html.
+
 [1] Ukkonen, E. (1995). "On-line construction of suffix trees" (PDF). Algorithmica. 14 (3): 249–260
 
 [2] Myers, E. (1986). An O(ND) Difference Algorithm and Its Variations," Algorithmica Vol. 1 No. 2, 1986, pp. 251-266.
