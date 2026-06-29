@@ -1,4 +1,4 @@
-var slen;
+var lhs_len;
 var str;
 var node_id=0;
 var alignments = [];
@@ -27,7 +27,6 @@ const MAX_LIST_CHILDREN = 6;
 // this is 2^30-1, the maximum 30 bit unsigned
 const INFINITY = 1073741823;
 const DEBUG = false;
-var slen;
 // end of current leaves
 var e = 0;
 var root;
@@ -411,7 +410,7 @@ function node_set_link( v, link ) {
  * @returns the side: 1=left, 2=right
  */
 function node_side( v ) {
-    return (v.start<=slen)?1:2;
+    return (v.start<=lhs_len)?1:2;
 }
 /**
  * Split this node's edge by creating a new node in the middle. Remember 
@@ -538,7 +537,7 @@ function find_beta( j, i ) {
     else if ( j==start_pos ) {  // entire string
         p = pos_create();
         p.loc = i;
-        p.v = (start_pos<slen)?f:g;
+        p.v = (start_pos<lhs_len)?f:g;
     }
     else { // walk across tree
         let v = last.v;
@@ -742,7 +741,7 @@ function print_label( v ) {
             debug_tree += str[i];   // ! needs to account for side
     }
     // print terminal star for unfinished leaves
-    if ( node_num_children(v)==0 && e < slen )
+    if ( node_num_children(v)==0 && e < lhs_len )
         debug_tree += "*";
     return end-start+1;
 }
@@ -854,11 +853,11 @@ function walk_down( v, p ) {
 /**
  * Are two leaf nodes split between the two versions?
  * @param v the first leaf node
-* @param w the other leaf node with the same parent
-* @return true if they belong to two versions, false otherwise
+ * @param w the other leaf node with the same parent
+ * @return true if they belong to two versions, false otherwise
 */
 function leaf_is_split( v, w ) {
-    return v.start <= slen && w.start > slen+1;
+    return v.start <= lhs_len && w.start >= lhs_len+1;
 }
 /**
  * Extract the text of a node, counting back to root
@@ -879,9 +878,19 @@ function path_extract_text( u ) {
  */
 function path_extract_align( u ) {
     let text = path_extract_text(u);
-    let end = u.start+node_len_real(u);
-    let start = end-text.length;
-    let a = {start:start,end:end,text:text};
+    let starts = [];
+    let child = u.children;
+    while ( child != null ) {
+        starts.push(child.start);
+        child = child.next;
+    }
+    let a = {text:text};
+    for ( let start of starts ) {
+        if ( start <= lhs_len )
+            a.start1 = start-text.length;
+        else if ( start > lhs_len )
+            a.start2 = (start-text.length) - (lhs_len+1);
+    }
     alignments.push(a);
 }
 function find_alignments( u ) {
@@ -891,7 +900,7 @@ function find_alignments( u ) {
         let v = node_iterator_next(iter);
         let w = node_iterator_next(iter);
         if ( node_is_leaf(v) && node_is_leaf(w) && leaf_is_split(v,w) ) {
-            if ( node_start(u) >= slen )
+            if ( node_start(u) >= lhs_len )
                 console.log("this shouldn't happen" )
             else
                 path_extract_align(u);
@@ -916,14 +925,14 @@ function find_alignments( u ) {
  */
 function shell_sort() {
     const n = alignments.length;
-    for (let gap = Math.floor(n / 2); gap > 0; gap = Math.floor(gap / 2)) {
+    for (let gap = Math.floor(n/2); gap > 0; gap = Math.floor(gap/2)) {
         for (let i = gap; i < n; i++) {
             let temp = alignments[i];
             let j = i;
-            let t_len = temp.end - temp.start;
-            let a_len = alignments[j-gap].end - alignments[j-gap].start;
+            let t_len = temp.text.length;
+            let a_len = alignments[j-gap].text.length;
             for (j=i; j >= gap && a_len < t_len; j -= gap) {
-                a_len = alignments[j-gap].end - alignments[j-gap].start;
+                a_len = alignments[j-gap].text.length;
                 alignments[j] = alignments[j-gap];
             }
             alignments[j] = temp;
@@ -938,8 +947,12 @@ function filter_alignments() {
     for ( const a of alignments ) {
         let present = false;
         for ( const f of filtered ) {
-            if ( (a.start >= f.start && a.start < f.end) 
-                || (a.end <= f.end && a.end > f.start) ) {
+            // start1 and start2 will both be present
+            // for overlap we can ignore start2
+            let f_end = f.start1+f.text.length;
+            let a_end = a.start1+a.text.length;
+            if ( (a.start1 >= f.start1 && a.start1 < f_end) 
+                || (a_end <= f_end && a_end > f.start1) ) {
                     present = true;
                     break;
             }
@@ -955,16 +968,16 @@ function filter_alignments() {
  */
 function prune_tree( v ) {
     let end = v.start+node_len_real(v);
-    if ( v.start <= slen && end > slen ) {
+    if ( v.start <= lhs_len && end > lhs_len ) {
         if ( node_is_leaf(v) )
-            v.len = slen-v.start;
+            v.len = lhs_len-v.start;
         else { // internal node with children
             if ( PARENT_HASH(v) ) {
                 v.ht = null;
-                v.len = slen-v.start;
+                v.len = lhs_len-v.start;
             }
             else {
-                v.len = slen-v.start;
+                v.len = lhs_len-v.start;
                 v.children = null;
             }
         }
@@ -981,7 +994,7 @@ function prune_tree( v ) {
 /** Compare two versions */
 function ukkonen_compare(lhs,rhs) {
     // create I_0 manually
-    slen = lhs.length;
+    lhs_len = lhs.length;
     str = lhs+'\0'+rhs+'%';
     // do the lhs first
     root = node_create( 0, 0 );
@@ -998,6 +1011,8 @@ function ukkonen_compare(lhs,rhs) {
     //find_string( " dog</p></body>", true );
     return alignments;
 }
-/*compare(left_html,right_html);
-for ( const a of alignments )
-    console.log(a.start+":"+a.end+"="+a.text);*/
+ukkonen_compare(left_html,right_html);
+for ( const a of alignments ) {
+    let a_end = a.start1+a.text.length;
+    console.log(a.start1+":"+a_end+"="+a.text);
+}

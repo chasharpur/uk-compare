@@ -72,7 +72,6 @@ async function populate_sample_index(){
 			while (works_select.firstChild)
     			works_select.removeChild(works_select.lastChild);
 			for ( let key in works ) {
-				let obj = works[key];
 				let opt = document.createElement('option');
 				opt.textContent = key;
 				works_select.appendChild(opt);
@@ -187,12 +186,25 @@ async function change_work() {
 		await set_version("rhs_versions",versions,keys[1]);
 	else
 		await set_version("rhs_versions",versions,keys[0]);
-	// compute differences
+	// compute differences and alignments
 	let lhs_html = document.getElementById("lhs_body").innerHTML;
 	let rhs_html = document.getElementById("rhs_body").innerHTML;
 	let lhs_text = html_strip(lhs_html);
 	let rhs_text = html_strip(rhs_html);
-	(lhs_text,rhs_text);
+	let method = document.getElementById("method");
+	let similarities;
+	if ( method.toLowerCase() == "ukkonen" )
+		similarities = ukkonen_compare(lhs_text,rhs_text);
+	else if ( method.toLowerCase() == "myers" )
+		similarities = myers_compare(lhs_text,rhs_text);
+	else {
+		console.log("unimplemented method" + method );
+		return;
+	}
+	lhs_html = html_add_diffs(similarities,lhs_html,1);
+	rhs_html = html_add_diffs(similarities,rhs_html,2);
+	document.getElementById("lhs_body").innerHTML = lhs_html;
+	rhs_html = document.getElementById("rhs_body").innerHTML = rhs_html;
 }
 var all_works;
 async function set_sample_css() {

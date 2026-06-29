@@ -1,8 +1,4 @@
-/**
- * Strip a html string robustly - it may not be syntactically correct
- * @param html the html to reduce to plain text
- * @return the stripped html
- */
+var alignment_id = 0;
 function html_strip(html){
     let state = 0;
     let text = "";
@@ -116,6 +112,244 @@ function html_strip(html){
     }
     return text;
 }
+/**
+ * Extract the alignment start position for the appropriate side
+ * @param a the alignment
+ * @param side 1 for left 2 for right
+ * @returns the start posistion for that side
+ */
+function alignment_start(a,side) {
+    if ( side == 1 )
+        return a.start1;
+    else
+        return a.start2;
+}
+/**
+ * Compute hte next alignment id, left or right
+ * @param side 1=left, 2=right
+ * @return a string being e.g. a123 or d123  
+ */
+function next_alignment_id(side) {
+    alignment_id++;
+    if ( side == 1 )
+        return 'd'+alignment_id;
+    else
+        return 'a'+alignment_id;
+}
+/**
+ * Sort the alignments on their start position
+ * @param similarities array of alignments
+ * @param side the side: 1 for left 2 for right
+ */
+function sort_on_start_position( similarities, side ) {
+    const n = similarities.length;
+    for (let gap = Math.floor(n/2); gap > 0; gap = Math.floor(gap/2)) {
+        for (let i = gap; i < n; i++) {
+            let temp = similarities[i];
+            let j = i;
+            let t_start = alignment_start(temp,side);
+            let a_start = alignment_start(similarities[j-gap],side);
+            for (j=i; j >= gap && a_start < t_start; j -= gap) {
+                a_start = alignment_start(similarities[j-gap],side);
+                similarities[j] = similarities[j-gap];
+            }
+            similarities[j] = temp;
+        }
+    }
+}
+/**
+ * Generate the class for the span based on the side
+ * @param side 1=left 2=right
+ * @return "deleted" or "added" 
+ */
+function mismatch_state(side) {
+    if ( side == 1 )
+        return "deleted";
+    else
+        return "added";
+}
+/**
+ * Find the end position of an alignment
+ * @param a the alignment object
+ * @param side 1=lhs, 2=rhs
+ * @return Number.MAX_SAFE_INTEGER if a is null, else the end of the alignment
+ */
+function alignment_end(a,side) {
+    if ( a == null )
+        return Number.MAX_SAFE_INTEGER;
+    else if ( side == 1 )
+        return a.start1+a.text.length;
+    else if ( side == 2 )
+        return a.start2+a.text.length;
+}
+/**
+ * Replace deleted, added or aligned text with spans. For alignments 
+ * add an alignment id: <span class="aligned" id="a123">...</span>. 
+ * For deleted add <span class="deleted">...</span>. Follow the same 
+ * algorithm as html_strip.
+ * And for added <span class="added">...</span>
+ * @param similarities an array of similarity objects
+ * @param html the original html
+ * @param side 1 = left, 2 = right
+ * @return the altered html
+ */
+function html_add_diffs(similarities,html,side) {
+	let state = 0;
+    let text = "";
+    let tag = "";
+    let text_offset = 0;
+    let last_text_token = ' ';
+    let stack = null;
+    let last_text_pos = 0;
+    let alignment_state = 0;    // initial
+    alignment_id = 0;
+    similarities = sort_on_start_position(similarities,side);
+    let current_alignment = (similarities.length>0)?similarities[0]:null;
+    let skip_tags = ["head","script"];
+    for ( let i=0;i<html.length;i++ ) {
+        let token = html[i];
+        switch ( state ) {
+            /* read content states */
+            case 0: // looking for < 
+                if ( token == '<' )
+                    state = 1;
+                else if ( /[^ \n\t]/.test(token) 
+                    || (text.length>0 
+                        && /[^ \n\t]/.test(last_text_token)) )
+                    // reading a text token: compute alignment state
+                    switch ( alignment_state ) {
+                        case 0: // initial
+                            if ( alignment_start(current_alignment,side) == 0 ) {
+                                alignment_state = 1;
+                                text += '<span class="aligned" id="'+next_alignment_id(side)+'">';
+                            }
+                            else {  // not aligned at start
+                                alignment_state = 2;
+                                text += '<span class="'+mismatch_state(side)+'">';
+                            }
+                            break;
+                        case 1: // in alignment
+                            if ( alignment_end(current_alignment,side) <= text_offset ) {
+                                similarities.shift();
+                                current_alignment = (similarities.length>0)?similarities[0]:null;
+                                text += '</span><span class="'+mismatch_state(side)+'">';
+                                alignment_state = 2;
+                            }
+                            break;
+                        case 3: // in_mismatch
+                            if ( alignment_start(current_alignment,side) == text_offset ) {
+                                alignment_state = 1;
+                                text += '</span><span class="aligned" id="'+next_alignment_id(side)+'">';
+                            }
+                            break;
+                    }
+                    text_offset++;
+                    last_text_token = token;
+                    last_text_pos = text.length;
+                break;
+            case 1: // seen left < 
+                if ( /[a-zA-Z]/.test(token) ){
+                    tag = token;
+                    state = 2;
+                }
+                else if ( token == '/' )    // rogue end-tag
+                    state = 5;
+                else if ( token == '>' )
+                    state = 0;
+                else    // it's an error
+                    state = 3;
+                break;
+            case 2: // seen first letter of tag 
+                if ( /[a-zA-Z0-9]/.test(token) )
+                    tag += token;
+                else if ( /[ \n\t]/.test(token) ) {
+                    if ( skip_tags.includes(tag.toLowerCase()) ) {
+                        stack = {tag:tag,state:0};
+                        state = 4;
+                    }
+                    else
+                        state = 3;
+                }
+                else if ( token == '/' )
+                    state = 3;
+                else if ( token == '>' ) {
+                    if ( skip_tags.includes(tag.toLowerCase()) ) {
+                        stack = {tag:tag,state:0};
+                        state = 6;
+                    }
+                    else
+                        state = 0;
+                }
+                // else wait here for >
+                break;
+            case 3: // wait for closing angle-bracket
+                if ( token == '>' )
+                    state = 0;
+                break;
+            case 4: // seen an ignore tag-name, pushed it onto the stack
+                if ( token == '>' )
+                    state = 6;
+                break;
+            case 5: // rogue end-tag
+                if (  token == '>' )
+                    state = 0;
+                break;
+            /* ignore content states */
+            case 6: // ignore content
+                if ( token == '<' )
+                    state = 7;
+                break;
+            case 7: // seen < in ignore state
+                if ( token == '/' )
+                    state = 9;
+                else if ( token == '>' )
+                    // go back to ignore
+                    state = 6;
+                else
+                    state = 8;
+                break;
+            case 8: // reading start-tag, in ignore state
+                if ( token == '>' )
+                    state = 6;
+                break;
+            case 9: // seen </ in ignore state
+                if ( /[a-zA-Z]/.test(token) ) {
+                    tag = token;
+                    state = 10;
+                }
+                else
+                    state = 11;
+                break;
+            case 10: // reading end-tag name in ignore state
+                if ( /[a-zA-Z0-9]/.test(token) )
+                    tag += token;
+                else if ( token == '>' ) {
+                    if ( stack != null && stack.tag == tag ) {
+                        state = stack.state;
+                        stack = null;
+                        break;
+                    }
+                    state = 6;
+                }
+                else
+                    state = 11;
+                break;
+            case 11:   // error - waiting for > in ignore state
+                if ( token == '>' )
+                    state = 6;
+                break;
+        }
+        text += token;
+    }
+    // close dangling span
+    if ( alignment_state == 1 || alignment_state == 2 ){
+        let left = text.slice(0,last_text_pos);
+        let right = text.slice(last_text_pos,text.length);
+        text = left+'</span>'+right;
+    }
+    return text;
+}
+// William Morris example base64 encoded
 /*test_html_b64=`PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImVuIj4KICA8aGVhZD4KICAgIDxtZXRhIGNoYXJz
 ZXQ9InV0Zi04Ij4KICAgIDxtZXRhIG5hbWU9InZpZXdwb3J0IiBjb250ZW50PSJ3aWR0aD1kZXZp
 Y2Utd2lkdGgsIG1pbmltdW0tc2NhbGU9MSwgaW5pdGlhbC1zY2FsZT0xIj4KICAgIDxtZXRhIGh0
