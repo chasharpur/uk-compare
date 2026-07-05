@@ -191,7 +191,7 @@ async function change_work() {
 	let rhs_html = document.getElementById("rhs_body").innerHTML;
 	let lhs_text = html_strip(lhs_html);
 	let rhs_text = html_strip(rhs_html);
-	let method = document.getElementById("method");
+	let method = document.getElementById("method").value;
 	let similarities;
 	if ( method.toLowerCase() == "ukkonen" )
 		similarities = ukkonen_compare(lhs_text,rhs_text);
@@ -201,8 +201,8 @@ async function change_work() {
 		console.log("unimplemented method" + method );
 		return;
 	}
-	lhs_html = html_add_diffs(similarities,lhs_html,1);
-	rhs_html = html_add_diffs(similarities,rhs_html,2);
+	lhs_html = html_add_diffs(structuredClone(similarities),lhs_html,1);
+	rhs_html = html_add_diffs(structuredClone(similarities),rhs_html,2);
 	document.getElementById("lhs_body").innerHTML = lhs_html;
 	rhs_html = document.getElementById("rhs_body").innerHTML = rhs_html;
 }

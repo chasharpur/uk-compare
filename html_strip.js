@@ -1,4 +1,13 @@
+/* 
+ * Strip HTML tags or embed tags for aligned, deleted and added text
+ */
+
 var alignment_id = 0;
+/**
+ * Remove all tags and reduce white space in HTML text
+ * @param html the raw HTML to strip 
+ * @return the stripped plain text with at most one space between tokens
+ */
 function html_strip(html){
     let state = 0;
     let text = "";
@@ -125,7 +134,7 @@ function alignment_start(a,side) {
         return a.start2;
 }
 /**
- * Compute hte next alignment id, left or right
+ * Compute the next alignment id, left or right
  * @param side 1=left, 2=right
  * @return a string being e.g. a123 or d123  
  */
@@ -135,27 +144,6 @@ function next_alignment_id(side) {
         return 'd'+alignment_id;
     else
         return 'a'+alignment_id;
-}
-/**
- * Sort the alignments on their start position
- * @param similarities array of alignments
- * @param side the side: 1 for left 2 for right
- */
-function sort_on_start_position( similarities, side ) {
-    const n = similarities.length;
-    for (let gap = Math.floor(n/2); gap > 0; gap = Math.floor(gap/2)) {
-        for (let i = gap; i < n; i++) {
-            let temp = similarities[i];
-            let j = i;
-            let t_start = alignment_start(temp,side);
-            let a_start = alignment_start(similarities[j-gap],side);
-            for (j=i; j >= gap && a_start < t_start; j -= gap) {
-                a_start = alignment_start(similarities[j-gap],side);
-                similarities[j] = similarities[j-gap];
-            }
-            similarities[j] = temp;
-        }
-    }
 }
 /**
  * Generate the class for the span based on the side
@@ -185,10 +173,10 @@ function alignment_end(a,side) {
 /**
  * Replace deleted, added or aligned text with spans. For alignments 
  * add an alignment id: <span class="aligned" id="a123">...</span>. 
- * For deleted add <span class="deleted">...</span>. Follow the same 
- * algorithm as html_strip.
- * And for added <span class="added">...</span>
- * @param similarities an array of similarity objects
+ * For deleted add <span class="deleted">...</span>. And for added 
+ * <span class="added">...</span> Follow exactly the same algorithm 
+ * as html_strip.
+ * @param similarities an array of similarity (alignment) objects
  * @param html the original html
  * @param side 1 = left, 2 = right
  * @return the altered html
@@ -199,11 +187,16 @@ function html_add_diffs(similarities,html,side) {
     let tag = "";
     let text_offset = 0;
     let last_text_token = ' ';
+    let current_alignment_id = '';
     let stack = null;
     let last_text_pos = 0;
     let alignment_state = 0;    // initial
+    // global
     alignment_id = 0;
-    similarities = sort_on_start_position(similarities,side);
+    if ( side == 1 )
+        similarities = similarities.sort((a,b)=>a.start1-b.start1);
+    else
+        similarities = similarities.sort((a,b)=>a.start2-b.start2);
     let current_alignment = (similarities.length>0)?similarities[0]:null;
     let skip_tags = ["head","script"];
     for ( let i=0;i<html.length;i++ ) {
@@ -211,39 +204,73 @@ function html_add_diffs(similarities,html,side) {
         switch ( state ) {
             /* read content states */
             case 0: // looking for < 
-                if ( token == '<' )
+                if ( token == '<' ) {
+                    if ( alignment_state == 1 ) {
+                        text += '</span>';
+                        alignment_state = 2;
+                    }
+                    else if ( alignment_state == 3 ) {
+                        text += '</span>';
+                        alignment_state = 4;
+                    }
                     state = 1;
+                }
+                // if not white space OR not successive white space
                 else if ( /[^ \n\t]/.test(token) 
                     || (text.length>0 
-                        && /[^ \n\t]/.test(last_text_token)) )
+                    && /[^ \n\t]/.test(last_text_token)) ) {
                     // reading a text token: compute alignment state
                     switch ( alignment_state ) {
-                        case 0: // initial
+                        case 0: // initial state neither aligned nor mismatched
                             if ( alignment_start(current_alignment,side) == 0 ) {
                                 alignment_state = 1;
-                                text += '<span class="aligned" id="'+next_alignment_id(side)+'">';
+                                current_alignment_id = next_alignment_id(side);
+                                text += '<span class="aligned" id="'+current_alignment_id+'">';
                             }
                             else {  // not aligned at start
-                                alignment_state = 2;
+                                alignment_state = 3;
                                 text += '<span class="'+mismatch_state(side)+'">';
                             }
                             break;
-                        case 1: // in alignment
+                        case 1: // in alignment, span open
                             if ( alignment_end(current_alignment,side) <= text_offset ) {
                                 similarities.shift();
                                 current_alignment = (similarities.length>0)?similarities[0]:null;
                                 text += '</span><span class="'+mismatch_state(side)+'">';
-                                alignment_state = 2;
+                                alignment_state = 3;
                             }
                             break;
-                        case 3: // in_mismatch
+                        case 2: // in alignment, span closed
+                            if ( /[^ \n\t]/.test(token) ) {
+                                text += '<span class="aligned" id="'+current_alignment_id+'">';
+                                alignment_state = 1;
+                            }
+                            else if ( alignment_end(current_alignment,side) <= text_offset ) 
+                                alignment_state = 4;
+                            break;
+                        case 3: // in_mismatch, span open
                             if ( alignment_start(current_alignment,side) == text_offset ) {
                                 alignment_state = 1;
                                 text += '</span><span class="aligned" id="'+next_alignment_id(side)+'">';
                             }
                             break;
+                        case 4: // in mismatch, span closed
+                            if ( alignment_start(current_alignment,side) == text_offset ) {
+                                current_alignment_id = next_alignment_id(side);
+                                text += '<span class="aligned" id="'+current_alignment_id+'">';
+                                alignment_state = 1;
+                            }
+                            else if ( /[^ \n\t]/.test(token) ) {
+                                text += '<span class="'+mismatch_state(side)+'">';
+                                alignment_state = 3;
+                            }
+                            break;
+                        }
+                        // instead of adding the token to the output
+                        // here we mimic the effect by incrementing text_offset
+                        // this gives us the offset into the alignment
+                        text_offset++;
                     }
-                    text_offset++;
                     last_text_token = token;
                     last_text_pos = text.length;
                 break;
@@ -342,7 +369,7 @@ function html_add_diffs(similarities,html,side) {
         text += token;
     }
     // close dangling span
-    if ( alignment_state == 1 || alignment_state == 2 ){
+    if ( alignment_state == 1 || alignment_state == 3 ){
         let left = text.slice(0,last_text_pos);
         let right = text.slice(last_text_pos,text.length);
         text = left+'</span>'+right;

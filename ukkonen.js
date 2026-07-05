@@ -920,27 +920,10 @@ function find_alignments( u ) {
         }
     }
 }
-/**
- * Sort alignments in situ by decreasing length
- */
-function shell_sort() {
-    const n = alignments.length;
-    for (let gap = Math.floor(n/2); gap > 0; gap = Math.floor(gap/2)) {
-        for (let i = gap; i < n; i++) {
-            let temp = alignments[i];
-            let j = i;
-            let t_len = temp.text.length;
-            let a_len = alignments[j-gap].text.length;
-            for (j=i; j >= gap && a_len < t_len; j -= gap) {
-                a_len = alignments[j-gap].text.length;
-                alignments[j] = alignments[j-gap];
-            }
-            alignments[j] = temp;
-        }
-    }
-}
 function filter_alignments() {
-    shell_sort();
+    alignments.sort((a,b)=>b.text.length-a.text.length);
+    //for ( let i=0;i<alignments.length;i++ )
+    //    console.log(alignments[i].text.length);
     // now all alignments are in decreasing order by length
     // try to add them to a select set so they don't overlap
     let filtered = [];
@@ -1011,8 +994,8 @@ function ukkonen_compare(lhs,rhs) {
     //find_string( " dog</p></body>", true );
     return alignments;
 }
-ukkonen_compare(left_html,right_html);
+/*ukkonen_compare(left_html,right_html);
 for ( const a of alignments ) {
     let a_end = a.start1+a.text.length;
     console.log(a.start1+":"+a_end+"="+a.text);
-}
+}*/
