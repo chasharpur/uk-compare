@@ -105,8 +105,10 @@ instead of laboriously climbing each tree in turn.
 ## What works
 At the moment I have a working implementation of Ukkonen's algorithm 
 extended to two versions. There is a test rig with some sample files 
-taken from the Charles Harpur archive. What remains to be done is 
-to publish this to an AWS bucket as a live demo.
+taken from the Charles Harpur archive. The test rig is deliberately 
+ugly because I don't want anyone copying the style. What it concentrates 
+on is the functionality. The rendering of it should be the responsability 
+of the eventual user.
 
 ## The future
 I hope to extend this to N versions. If we have N versions then the 
