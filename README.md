@@ -42,7 +42,8 @@ Sorting the suffixes from left to right yields:
     banana
     nana
 ```
-A tree can easily be constructed out of this sorted list by replacing shared text at the start of each line with branches:
+A tree can easily be constructed out of this sorted list by replacing 
+shared text at the start of each line with branches:
 ```
     a->
     ->na->
@@ -58,7 +59,8 @@ its own, as is nana.
 It may not be immediately obvious that a suffix tree can be used for 
 comparison, but it can clearly be used for searching. When looking for 
 the string ana we travel first to the root, locate the a-child, then 
-verify that it continues with at least na. Similarly for the string na we find n at the root, then follow it until it fully matches na. 
+verify that it continues with at least na. Similarly for the string na 
+we find n at the root, then follow it until it fully matches na. 
 Since the suffix tree stores ALL start positions in the text we can find 
 all SUBstrings of the string in time proportional to the length of the 
 text BEING SEARCHED FOR. In a text of 1 million characters we can test 
@@ -102,21 +104,29 @@ instead of laboriously climbing each tree in turn.
 
 ## What works
 At the moment all I have working is Ukkonen's algorithm extended to two 
-versions. There is a partially written test rig with some sample files taken from the Charles Harpur archive.
-I hope soon to complete this to demonstrate comparison between two texts selected in the test rig.
+versions. There is a partially written test rig with some sample files 
+taken from the Charles Harpur archive. I hope soon to complete this to 
+demonstrate comparison between two texts selected in the test rig.
 
 ## The future
-I hope to extend this to N versions. If we have N versions then the number of two-way comparisons that can be done is 
-N(N-1)/2. So for 30 versions this is only 435. That is a lot but once the results of all two-way comparisons are known it 
-should be possible to build an accurate MVD, or multi-version document, which is just a partial order of text fragments 
-belonging to subsets of the total number of versions. Once in the MVD format it will be possible to instantly display a 
-table of all differences between all versions or between a subset of them.
+I hope to extend this to N versions. If we have N versions then the 
+number of two-way comparisons that can be done is N(N-1)/2. So for 30 
+versions this is only 435. That is a lot, but once the results of all 
+two-way comparisons are known it should be possible to build an accurate 
+MVD, or multi-version document, which is just a partial order of text 
+fragments belonging to subsets of the total number of versions. Once in 
+the MVD format it will be possible to instantly display a table of all 
+differences between all versions or between a selection of them.
 
 ## Installation
-Clone the repository and place it inside a web server's documents directory. Navigate to index.html.
+Clone the repository and place it inside a web server's documents 
+directory. Navigate to index.html. I will soon add a demo site with this 
+content in an AWS bucket, addressable from the Web.
 
-[1] Ukkonen, E. (1995). "On-line construction of suffix trees" (PDF). Algorithmica. 14 (3): 249–260
+[1] Ukkonen, E. (1995). "On-line construction of suffix trees" (PDF). 
+Algorithmica. 14 (3): 249–260
 
-[2] Myers, E. (1986). An O(ND) Difference Algorithm and Its Variations," Algorithmica Vol. 1 No. 2, 1986, pp. 251-266.
+[2] Myers, E. (1986). An O(ND) Difference Algorithm and Its Variations," 
+Algorithmica Vol. 1 No. 2, 1986, pp. 251-266.
 
 [3] D. Schmidt (2013). [Ukkonen's suffix tree algorithm ](https://programmerspatch.blogspot.com/2013/02/ukkonens-suffix-tree-algorithm.html)

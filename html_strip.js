@@ -1,3 +1,20 @@
+/*
+Copyright (C) [2026]  [Desmond Mackie]
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://gnu.org>.
+*/
+
 /* 
  * Strip HTML tags or embed tags for aligned, deleted and added text
  */
@@ -136,14 +153,44 @@ function alignment_start(a,side) {
 /**
  * Compute the next alignment id, left or right
  * @param side 1=left, 2=right
- * @return a string being e.g. a123 or d123  
+ * @return a string being e.g. a123a or d123a 
  */
 function next_alignment_id(side) {
     alignment_id++;
     if ( side == 1 )
-        return 'd'+alignment_id;
+        return 'd'+alignment_id+'a';
     else
-        return 'a'+alignment_id;
+        return 'a'+alignment_id+'a';
+}
+/**
+ * Increment the suffix of an alignment id for reuse
+ * @param suffix the alignment id suffix
+ * @returns the new suffix
+ */
+function increment_id_suffix( suffix ) {
+    const alphabet = "abcdefghijklmnopqrstuvwxyz";
+    let index = alphabet.indexOf(suffix[suffix.length-1]);
+    let new_suffix = "";
+    if ( index+1 >= alphabet.length )
+        new_suffix = suffix + alphabet[0];
+    else
+        new_suffix = suffix.slice(0,suffix.length-1)+alphabet[index+1];
+    return new_suffix;
+}
+/**
+ * Increment the suffix of an alignment ID
+ * @param a_id an id of the form (a|d)[0-9]+[a-z]+
+ */
+function inc_alignment_id(a_id) {
+    const regex = /(a|d)(\d+)([a-z]+)/;
+    let match = a_id.match(regex);
+    if ( match ) {
+        return match[1]+match[2]+increment_id_suffix(match[3]);
+    }
+    else {
+        console.log("bad alignment id: "+a_id);
+        return a_id;
+    }
 }
 /**
  * Generate the class for the span based on the side
@@ -242,6 +289,7 @@ function html_add_diffs(similarities,html,side) {
                             break;
                         case 2: // in alignment, span closed
                             if ( /[^ \n\t]/.test(token) ) {
+                                current_alignment_id = inc_alignment_id(current_alignment_id);
                                 text += '<span class="aligned" id="'+current_alignment_id+'">';
                                 alignment_state = 1;
                             }
@@ -251,7 +299,8 @@ function html_add_diffs(similarities,html,side) {
                         case 3: // in_mismatch, span open
                             if ( alignment_start(current_alignment,side) == text_offset ) {
                                 alignment_state = 1;
-                                text += '</span><span class="aligned" id="'+next_alignment_id(side)+'">';
+                                current_alignment_id = next_alignment_id(side);
+                                text += '</span><span class="aligned" id="'+current_alignment_id+'">';
                             }
                             break;
                         case 4: // in mismatch, span closed
