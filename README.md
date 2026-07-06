@@ -103,10 +103,10 @@ monkey travelling through the jungle by swinging from tree to tree
 instead of laboriously climbing each tree in turn.
 
 ## What works
-At the moment all I have working is Ukkonen's algorithm extended to two 
-versions. There is a partially written test rig with some sample files 
-taken from the Charles Harpur archive. I hope soon to complete this to 
-demonstrate comparison between two texts selected in the test rig.
+At the moment I have a working implementation of Ukkonen's algorithm 
+extended to two versions. There is a test rig with some sample files 
+taken from the Charles Harpur archive. What remains to be done is 
+to publish this to an AWS bucket as a live demo.
 
 ## The future
 I hope to extend this to N versions. If we have N versions then the 
