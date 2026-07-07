@@ -16,6 +16,8 @@ along with this program.  If not, see <http://gnu.org>.
 */
 var lhs_len;
 var str;
+// switch to turn on debug logs
+var debug_code = false;
 var node_id=0;
 var alignments = [];
 // the last created internal node
@@ -65,7 +67,7 @@ function fail( message ) {
     console.log(message);
 }
 function hash( key, nbuckets ) {
-    if ( !key )
+    if ( debug_code && !key )
         console.log("oops!");
     return key.charCodeAt(0) % nbuckets;
 }
@@ -135,7 +137,7 @@ function hashtable_get( ht, c ) {
  * @param first_char the first char of the entry to remove
  * @return 1 if it was removed
  */
-function hashtable_remove( ht, v, first_char ) {
+function hashtable_remove( ht, first_char ) {
     let index = hash( first_char, ht.nbuckets);
     let b = ht.items[index];
     if ( b != null ) {
@@ -158,11 +160,12 @@ function hashtable_remove( ht, v, first_char ) {
 /**
  * Replace one node with another
  * @param ht the hashtable to do it in
+ * @param v the child to replace
  * @param u the node to replace it with
  * @return 1 if it worked
  */
 function hashtable_replace( ht, v, u ) {
-    if ( hashtable_remove(ht,v,node_first_char(u)) )
+    if ( hashtable_remove(ht,node_first_char(v)) )
         return hashtable_add(ht,u);
     else
         return 0;
@@ -173,7 +176,7 @@ function hashtable_replace( ht, v, u ) {
  * @return the number of current nodes stored
  */
 function hashtable_size( ht ) {
-    if ( ht == undefined )
+    if ( debug_code && ht == undefined )
         console.log("undefined");
     return ht.nitems;
 }
@@ -271,6 +274,8 @@ function node_clear_next( v ) {
 function node_create( start, len ) {
     let n = {};
     n.start = start;
+    if (debug_code && n.start > str.length)
+        console.log("node_create: error");
     n.len = len;
     n.id = ++node_id;
     n.next = null;
@@ -292,6 +297,8 @@ function node_create_leaf( i ) {
     let leaf = {};
     leaf.id = ++node_id;
     leaf.start = i;
+    if ( debug_code && leaf.start > str.length)
+        console.log("node_create_leaf: error");
     leaf.len = INFINITY;
     leaf.children = null;
     leaf.parent = null;
@@ -301,10 +308,8 @@ function node_create_leaf( i ) {
 function node_end( v, max ) {
     if ( node_len(v) == INFINITY )
         return max;
-    else {
-        let temp = v.start+node_len(v)-1;
+    else
         return v.start+node_len(v)-1;
-    }
 }
 function node_first_char( v ) {
     return str[node_start(v)];
@@ -441,13 +446,15 @@ function node_split( v, loc ) {
     let u = node_create( v.start, u_len );
     // now shorten the following node v
     if ( !node_is_leaf(v) ) {
-        if ( v.id == 1 )
+        if ( debug_code && v.id == 1 )
             console.log("root!");
         v.len -= u_len;
     }
     // replace v with u in the children of v.parent
     node_replace_child( v, u );
     v.start = loc+1;
+    if ( debug_code && v.start > str.length )
+        console.log("node_split: error");
     // reset parents
     u.parent = v.parent;
     v.parent = u;
@@ -470,6 +477,8 @@ function node_start( v ) {
 function path_create( start, len ) {
     let p = {};
     p.start = start;
+    if ( debug_code && p.start > str.length )
+        console.log("path_create: error");
     p.len = len;
     return p;
 }
@@ -488,6 +497,8 @@ function path_len( p ) {
  */
 function path_prepend( p, len ) {
     p.start -= len;
+    if ( debug_code && p.start > str.length )
+        console.log("error");
     p.len += len;
 }
 /**
@@ -541,19 +552,27 @@ function verify_beta(j,i){
 function find_beta( j, i ) {
     let p;
     if ( old_j > start_pos && old_j == j ) {
+        if ( debug_code && old_beta.v.start > str.length )
+            console.log("error");
         p = pos_create();
         p.loc = old_beta.loc;
         p.v = old_beta.v;
+        if ( debug_code && p.v.start > str.length )
+            console.log("find_beta_1: error");
     }
     else if ( j>i ) { // empty string
         p = pos_create();
         p.loc = start_pos;
         p.v = root;
+        if ( debug_code && p.v.start > str.length )
+            console.log("find_beta_2: error");
     }
     else if ( j==start_pos ) {  // entire string
         p = pos_create();
         p.loc = i;
         p.v = (start_pos<lhs_len)?f:g;
+        if ( debug_code && p.v.start > str.length )
+            console.log("find_beta_3: error");
     }
     else { // walk across tree
         let v = last.v;
@@ -570,9 +589,14 @@ function find_beta( j, i ) {
         }
         else
             p = walk_down( root, path_create(j,i-j+1) );
+        if ( debug_code && p.v.start > str.length )
+            console.log("find_beta_4: error");
     }
     last = p;
-    verify_beta(j,i);
+    if ( debug_code )
+        verify_beta(j,i);
+    if ( debug_code && p.v.start > str.length )
+        console.log("find_beta_4: error");
     return p;
 }
 /**
@@ -668,8 +692,6 @@ function find_string( txt, debug ) {
  */
 function phase( i ) {
     let j;
-    //if ( i==129 )
-    //    console.log("last suffix="+str.slice(old_j,i));
     current = null;
     for ( j=old_j;j<=i;j++ )            
         if ( !extension(j,i) )
@@ -832,11 +854,19 @@ function update_old_beta( p, i ) {
     if ( node_end(p.v,e) > p.loc ) {
         old_beta.v = p.v;
         old_beta.loc = p.loc+1;
+        if ( debug_code ) {
+            if (old_beta.loc > str.length || old_beta.v.start > str.length )
+                console.log("update_old_beta: error");
+        }
     }
     else {
         let u = find_child( p.v, str[i] );
         old_beta.v = u;
         old_beta.loc = node_start( u );
+        if ( debug_code ) {
+            if (old_beta.loc > str.length || old_beta.v.start > str.length )
+                console.log("update_old_beta: error");
+        }
     }
 }
 /**
@@ -849,7 +879,6 @@ function walk_down( v, p ) {
     let q = null;
     let start = path_start( p );
     let len = path_len( p );
-    let u = v;
     v = find_child( v, str[start] );
     while ( len > 0 ) {
         if ( len <= node_len(v) ) {
@@ -864,6 +893,8 @@ function walk_down( v, p ) {
             v = find_child( v, str[start] );
         }
     }
+    if ( debug_code && q.v.start > str.length )
+        console.log("error");
     return q;
 }
 /**
@@ -916,8 +947,8 @@ function find_alignments( u ) {
         let v = node_iterator_next(iter);
         let w = node_iterator_next(iter);
         if ( node_is_leaf(v) && node_is_leaf(w) && leaf_is_split(v,w) ) {
-            if ( node_start(u) >= lhs_len )
-                console.log("this shouldn't happen" )
+            if ( debug_code && node_start(u) >= lhs_len )
+                console.log("find_alignments: this shouldn't happen" )
             else
                 path_extract_align(u);
         }
@@ -992,9 +1023,21 @@ function prune_tree( v ) {
 }
 /** Compare two versions */
 function ukkonen_compare(lhs,rhs) {
+    node_id=0;
+    alignments = [];
+    current = null;
+    start_pos = 0;
+    debug_code = false;
+    last;
+    old_j = 0;
+    old_beta = {};
+    debug_tree = "";
+    e = 0;
+    links = null;
     // create I_0 manually
     lhs_len = lhs.length;
     str = lhs+'\0'+rhs+'%';
+    //console.log("str.length="+str.length);
     // do the lhs first
     root = node_create( 0, 0 );
     f = node_create_leaf( 0 );

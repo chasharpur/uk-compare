@@ -145,10 +145,16 @@ function html_strip(html){
  * @returns the start posistion for that side
  */
 function alignment_start(a,side) {
-    if ( side == 1 )
+    if ( side == 1 ){
+        if ( !a.hasOwnProperty("start1") )
+            console.log("error");
         return a.start1;
-    else
+    }
+    else {
+        if ( !a.hasOwnProperty("start2") )
+            console.log("error");
         return a.start2;
+    }
 }
 /**
  * Compute the next alignment id, left or right
