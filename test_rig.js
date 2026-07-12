@@ -149,6 +149,7 @@ async function change_layer(side) {
 	while (target.firstChild)
 		target.removeChild(target.lastChild);
 	target.innerHTML = html;
+	await change_version();
 }
 async function set_version(select_id,versions,version_key) {
 	let version_select = document.getElementById(select_id);
@@ -159,9 +160,11 @@ async function set_version(select_id,versions,version_key) {
 	if ( layer_keys.length > 0 ) {
 		let layer_id = select_id.replace("versions","layers");
 		let layer_select = document.getElementById(layer_id);
+		// clear menu out
 		while (layer_select.firstChild)
 			layer_select.removeChild(layer_select.lastChild);
 		if ( layer_select ) {
+			// rebuild menu
 			for ( let layer_key of layer_keys ) {
 				let opt = document.createElement('option');
 				opt.setAttribute("data-path",layers[layer_key]);
@@ -189,21 +192,14 @@ function populate_version_dropdown(select_id,keys) {
 		version_select.appendChild(opt);
 	}
 }
-/** 
- * User selected a new work
- */
-async function change_work() {
+async function change_version() {
+	let lhs_version_select = document.getElementById("lhs_versions");
+	let rhs_version_select = document.getElementById("rhs_versions");
 	let work_select = document.getElementById("works");
 	let work = work_select.value;
 	let versions = all_works[work];
-	let keys = Object.keys(versions);
-	populate_version_dropdown("lhs_versions",keys);
-	populate_version_dropdown("rhs_versions",keys);
-	await set_version("lhs_versions",versions,keys[0]);
-	if ( keys.length > 1 )
-		await set_version("rhs_versions",versions,keys[1]);
-	else
-		await set_version("rhs_versions",versions,keys[0]);
+	await set_version("lhs_versions",versions,lhs_version_select.value);
+	await set_version("rhs_versions",versions,rhs_version_select.value);
 	// compute differences and alignments
 	let lhs_html = document.getElementById("lhs_body").innerHTML;
 	let rhs_html = document.getElementById("rhs_body").innerHTML;
@@ -222,7 +218,24 @@ async function change_work() {
 	lhs_html = html_add_diffs(structuredClone(similarities),lhs_html,1);
 	rhs_html = html_add_diffs(structuredClone(similarities),rhs_html,2);
 	document.getElementById("lhs_body").innerHTML = lhs_html;
-	rhs_html = document.getElementById("rhs_body").innerHTML = rhs_html;
+	document.getElementById("rhs_body").innerHTML = rhs_html;
+}
+/** 
+ * User selected a new work
+ */
+async function change_work() {
+	let work_select = document.getElementById("works");
+	let work = work_select.value;
+	let versions = all_works[work];
+	let keys = Object.keys(versions);
+	populate_version_dropdown("lhs_versions",keys);
+	populate_version_dropdown("rhs_versions",keys);
+	await set_version("lhs_versions",versions,keys[0]);
+	if ( keys.length > 1 )
+		await set_version("rhs_versions",versions,keys[1]);
+	else
+		await set_version("rhs_versions",versions,keys[0]);
+	await change_version();
 }
 var all_works;
 async function set_sample_css() {
