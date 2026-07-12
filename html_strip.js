@@ -145,7 +145,9 @@ function html_strip(html){
  * @returns the start posistion for that side
  */
 function alignment_start(a,side) {
-    if ( side == 1 ){
+    if ( a == null )
+        console.log("null");
+    else if ( side == 1 ){
         if ( !a.hasOwnProperty("start1") )
             console.log("error");
         return a.start1;
@@ -239,7 +241,6 @@ function html_add_diffs(similarities,html,side) {
     let text = "";
     let tag = "";
     let text_offset = 0;
-    let last_text_token = ' ';
     let current_alignment_id = '';
     let stack = null;
     let last_text_pos = 0;
@@ -271,7 +272,7 @@ function html_add_diffs(similarities,html,side) {
                 // if not white space OR not successive white space
                 else if ( /[^ \n\t]/.test(token) 
                     || (text.length>0 
-                    && /[^ \n\t]/.test(last_text_token)) ) {
+                    && /[^ \n\t]/.test(text[text.length-1])) ) {
                     // reading a text token: compute alignment state
                     switch ( alignment_state ) {
                         case 0: // initial state neither aligned nor mismatched
@@ -286,48 +287,72 @@ function html_add_diffs(similarities,html,side) {
                             }
                             break;
                         case 1: // in alignment, span open
-                            if ( alignment_end(current_alignment,side) <= text_offset ) {
+                            if ( alignment_end(current_alignment,side) == text_offset ) {
                                 similarities.shift();
                                 current_alignment = (similarities.length>0)?similarities[0]:null;
-                                text += '</span><span class="'+mismatch_state(side)+'">';
-                                alignment_state = 3;
+                                text += '</span>';
+                                // check whether the next alignment already starts here ...
+                                if ( current_alignment != null && alignment_start(current_alignment,side) == text_offset ) {
+                                    alignment_state = 1;
+                                    current_alignment_id = next_alignment_id(side);
+                                    text += '<span class="aligned" id="'+current_alignment_id+'">';
+                                }
+                                // nah, mismatch
+                                else {
+                                    text += '<span class="'+mismatch_state(side)+'">';
+                                    alignment_state = 3;
+                                }
                             }
                             break;
                         case 2: // in alignment, span closed
-                            if ( /[^ \n\t]/.test(token) ) {
+                            if ( alignment_end(current_alignment,side) == text_offset ) {
+                                similarities.shift();
+                                current_alignment = (similarities.length>0)?similarities[0]:null;
+                                // check whether the next alignment already starts here ...
+                                if ( current_alignment != null && alignment_start(current_alignment,side) == text_offset ) {
+                                    alignment_state = 1;
+                                    current_alignment_id = next_alignment_id(side);
+                                    text += '<span class="aligned" id="'+current_alignment_id+'">';
+                                }
+                                // nah, mismatch
+                                else {
+                                    text += '<span class="'+mismatch_state(side)+'">'
+                                    alignment_state = 3;
+                                }
+                            }
+                            else {
                                 current_alignment_id = inc_alignment_id(current_alignment_id);
                                 text += '<span class="aligned" id="'+current_alignment_id+'">';
                                 alignment_state = 1;
                             }
-                            else if ( alignment_end(current_alignment,side) <= text_offset ) 
-                                alignment_state = 4;
                             break;
                         case 3: // in_mismatch, span open
-                            if ( alignment_start(current_alignment,side) == text_offset ) {
+                            if ( current_alignment != null && alignment_start(current_alignment,side) == text_offset ) {
                                 alignment_state = 1;
                                 current_alignment_id = next_alignment_id(side);
                                 text += '</span><span class="aligned" id="'+current_alignment_id+'">';
                             }
                             break;
                         case 4: // in mismatch, span closed
-                            if ( alignment_start(current_alignment,side) == text_offset ) {
+                            if ( current_alignment != null && alignment_start(current_alignment,side) == text_offset ) {
                                 current_alignment_id = next_alignment_id(side);
                                 text += '<span class="aligned" id="'+current_alignment_id+'">';
                                 alignment_state = 1;
                             }
-                            else if ( /[^ \n\t]/.test(token) ) {
+                            else {
                                 text += '<span class="'+mismatch_state(side)+'">';
                                 alignment_state = 3;
                             }
                             break;
-                        }
-                        // instead of adding the token to the output
-                        // here we mimic the effect by incrementing text_offset
-                        // this gives us the offset into the alignment
-                        text_offset++;
                     }
-                    last_text_token = token;
+                    // instead of adding the token to the output
+                    // here we mimic the effect by incrementing text_offset
+                    // this gives us the offset into the alignment
+                    text_offset++;
+                    // This tells us the position of the last stripped token in the HTML, 
+                    // so we can insert the closing tag in the correct position at the end
                     last_text_pos = text.length;
+                }
                 break;
             case 1: // seen left < 
                 if ( /[a-zA-Z]/.test(token) ){
