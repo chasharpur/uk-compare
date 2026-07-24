@@ -31,7 +31,7 @@ var old_j = 0;
 // location of last suffix str[j..i] inserted by an extension
 var old_beta = {};
 var root={},f={};
-var left_html= "<body><p>The quick brown fox jumps over the lazy dog</p></body>";//63 chars
+var left_html= "<body><p>The quick brown fox jumps over the lazy fox</p></body>";//63 chars
 var right_html="<body><p>The slow old fox jumps over the energetic dog</p></body>";//65 extra chars
 var debug_tree = "";
 // Javascript uses signed 32 bit integers
@@ -693,6 +693,8 @@ function find_string( txt, debug ) {
 function phase( i ) {
     let j;
     current = null;
+    if ( str.substr(i,3)=="fox" )
+        console.log("fox");
     for ( j=old_j;j<=i;j++ )            
         if ( !extension(j,i) )
             break;
@@ -967,30 +969,63 @@ function find_alignments( u ) {
         }
     }
 }
-function filter_alignments() {
-    alignments.sort((a,b)=>b.text.length-a.text.length);
-    //for ( let i=0;i<alignments.length;i++ )
-    //    console.log(alignments[i].text.length);
-    // now all alignments are in decreasing order by length
-    // try to add them to a select set so they don't overlap
-    let filtered = [];
-    for ( const a of alignments ) {
-        let present = false;
-        for ( const f of filtered ) {
-            // start1 and start2 will both be present
-            // for overlap we can ignore start2
-            let f_end = f.start1+f.text.length;
-            let a_end = a.start1+a.text.length;
-            if ( (a.start1 >= f.start1 && a.start1 < f_end) 
-                || (a_end <= f_end && a_end > f.start1) ) {
-                    present = true;
-                    break;
-            }
-        }
-        if ( !present )
-            filtered.push(a);
+function alignment_end(a, side ) {
+    if ( side == 1 )
+        return a.start1+a.text.length;
+    else
+        return a.start2+a.text.length;
+}
+function alignment_start(a, side ) {
+    if ( side == 1 )
+        return a.start1;
+    else
+        return a.start2;
+}
+/**
+ * Pick alignments using the longest increasing subsequence heuristic
+ * @param a a non-empty alignment set sorted on start position
+ * @param selected output: the selected set of alignments
+ * @param side left (1) or right (2)
+ */
+function lis_align(a,selected,side) {
+    // find longest alignment in a
+    let longest = 0;
+    for ( let i=1;i<a.length;i++ ) {
+        if ( a[i].text.length > a[longest].text.length )
+            longest = i;
     }
-    return filtered;
+    // find element to insert before (or null)
+    let before = null;
+    for ( let i=0;i<selected.length;i++ ) {
+        if ( alignment_end(a[longest],side) < alignment_start(selected[i],side) )
+            before = i;
+    }
+    if ( before == null )
+        selected.push(a[longest]);
+    else
+        selected.splice(before,0,a[longest]);
+    // recurse into the left and right sets of aligments
+    let left = a.slice(0,longest);
+    let right = a.slice(longest+1);
+    // remove overlapping alignments
+    while ( left.length>0 && alignment_end(left[left.length-1],side) >= alignment_start(a[longest],side) )
+        left.pop();
+    while ( right.length>0 && alignment_start(right[0],side) < alignment_end(a[longest],side) )
+        right.shift();
+    // recurse
+    if ( left.length > 0 )
+        lis_align(left,selected,side);
+    if ( right.length > 0 )
+        lis_align(right,selected,side);
+}
+function filter_alignments() {
+    let filtered = [];
+    let final_filtered = [];
+    alignments.sort((a,b)=>a.start1-b.start1);
+    lis_align(alignments,filtered,1);
+    filtered.sort((a,b)=>a.start2-b.start2);
+    lis_align(filtered,final_filtered,2);
+    return final_filtered;
 }
 /**
  * Remove all interior or leaf nodes whose text runs over the middle 
@@ -1045,7 +1080,6 @@ function ukkonen_compare(lhs,rhs) {
     for ( let i=1; i<str.length; i++ )
         phase(i);
     set_e( root );
-    // todo: trim all suffixes that cross over middle
     prune_tree( root );
     //print_tree(root);
     find_alignments(root);

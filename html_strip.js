@@ -227,10 +227,11 @@ function alignment_end(a,side) {
 }
 /**
  * Replace deleted, added or aligned text with spans. For alignments 
- * add an alignment id: <span class="aligned" id="a123">...</span>. 
+ * add an alignment id: <span class="aligned" id="a123a">...</span>. 
  * For deleted add <span class="deleted">...</span>. And for added 
  * <span class="added">...</span> Follow exactly the same algorithm 
- * as html_strip.
+ * as html_strip. alignment ids get incremented within the same 
+ * alignment: a123a, a123b etc
  * @param similarities an array of similarity (alignment) objects
  * @param html the original html
  * @param side 1 = left, 2 = right
