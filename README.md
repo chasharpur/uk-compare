@@ -103,7 +103,7 @@ monkey travelling through the jungle by swinging from tree to tree
 instead of laboriously climbing each tree in turn.
 
 ## What works
-At the moment I have [a working implementation of Ukkonen's algorithm 
+At the moment I have a working implementation of Ukkonen's algorithm 
 extended to two versions. There is [a test rig with some sample files 
 taken from the Charles Harpur archive](http://uk-compare.ecdosis.org). 
 The test rig is deliberately ugly because I don't want anyone copying 
