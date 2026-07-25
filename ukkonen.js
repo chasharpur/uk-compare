@@ -44,7 +44,6 @@ const LEN_MASK = 0x3FFFFFFF;
 const MAX_LIST_CHILDREN = 6;
 // this is 2^30-1, the maximum 30 bit unsigned
 const INFINITY = 1073741823;
-const DEBUG = false;
 // end of current leaves
 var e = 0;
 var root;
