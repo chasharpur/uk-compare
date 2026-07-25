@@ -87,7 +87,10 @@ async function populate_sample_index(){
 			let works_select = document.getElementById("works");
 			while (works_select.firstChild)
     			works_select.removeChild(works_select.lastChild);
-			for ( let key in works ) {
+			// sort index
+			let works_keys = Object.keys(works);
+			works_keys.sort();
+			for ( let key of works_keys ) {
 				let opt = document.createElement('option');
 				opt.textContent = key;
 				if ( key == "h275" )

@@ -22,6 +22,9 @@
 	border-left:0;
 	box-sizing: border-box;
 }
+#lhs,#rhs {
+    padding-left:1em;
+}
 #container label {
 	padding:0.5em;
 }
