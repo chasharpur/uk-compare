@@ -693,8 +693,6 @@ function find_string( txt, debug ) {
 function phase( i ) {
     let j;
     current = null;
-    if ( str.substr(i,3)=="fox" )
-        console.log("fox");
     for ( j=old_j;j<=i;j++ )            
         if ( !extension(j,i) )
             break;
