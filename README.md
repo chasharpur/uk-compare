@@ -62,8 +62,8 @@ the string ana we travel first to the root, locate the a-child, then
 verify that it continues with at least na. Similarly for the string na 
 we find n at the root, then follow it until it fully matches na. 
 Since the suffix tree stores ALL start positions in the text we can find 
-all SUBstrings of the string in time proportional to the length of the 
-text BEING SEARCHED FOR. In a text of 1 million characters we can test 
+all SUBstrings of the text in time proportional to the length of the 
+SEARCH STRING. In a text of 1 million characters we can test 
 if a string of four letters occurs within it in time proportional to four. 
 An exhaustive search, on the other hand, would find that string in time 
 proportional to 1 million. Quite an improvement!
@@ -105,10 +105,25 @@ instead of laboriously climbing each tree in turn.
 ## What works
 At the moment I have a working implementation of Ukkonen's algorithm 
 extended to two versions. There is a test rig with some sample files 
-taken from the Charles Harpur archive. The test rig is deliberately 
-ugly because I don't want anyone copying the style. What it concentrates 
-on is the functionality. The rendering of it should be the responsability 
-of the eventual user.
+taken from the Charles Harpur archive. The test rig is deliberately ugly 
+because I don't want anyone copying the style. What it concentrates on 
+is the functionality. The rendering of it should be the responsability 
+of the eventual user. There are some current drawbacks that will need to 
+be fixed:
+
+1. transpositions are shown even if they are far apart or short. This 
+will be fixed by requiring them to be unique.
+
+2. Alignment descends only to one level. Later I will add recursive 
+alignment so that unaligned segments of text shown currently as deleted 
+or inserted get their own private alignments.
+
+3. It is http only, not https. I'll try to fix that presently.
+
+4. The Myers algorithm currently does nothing. I will add this purely to 
+demonstrate the comparative speed and accuracy of Myers vs Ukkonen. 
+
+5. We could add some more samples, though I have added all 700 Harpur poems.
 
 ## The future
 I hope to extend this to N versions. If we have N versions then the 
