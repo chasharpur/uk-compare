@@ -102,28 +102,16 @@ to go back to the root as each new suffix is added. It is a bit like a
 monkey travelling through the jungle by swinging from tree to tree 
 instead of laboriously climbing each tree in turn.
 
-## What works
-At the moment I have a working implementation of Ukkonen's algorithm 
-extended to two versions. There is [a test rig with some sample files 
-taken from the Charles Harpur archive](http://uk-compare.ecdosis.org). 
-The test rig is deliberately ugly because I don't want anyone copying 
-the style. What it concentrates on is the functionality. The rendering 
-of it should be the responsability of the eventual user. There are some 
-current drawbacks that will need to be fixed:
+## Work plan for version 1.0
+Version 1.0 will implement the following extra features:
 
-1. transpositions are shown even if they are far apart or short. This 
-will be fixed by requiring them to be unique.
+0.8: transpositions will only be adopted if they are unique (the Maximal 
+Unique Match property or MUM).
 
-2. Alignment descends only to one level. Later I will add recursive 
-alignment so that unaligned segments of text shown currently as deleted 
-or inserted get their own private alignments.
+0.9: Alignment of unaligned sections will be recomputed recursively.
 
-3. It is http only, not https. I'll try to fix that presently.
-
-4. The Myers algorithm currently does nothing. I will add this purely to 
-demonstrate the comparative speed and accuracy of Myers vs Ukkonen. 
-
-5. We could add some more samples, though I have added all 700 Harpur poems.
+1.0: The Myers algorithm will be added to demonstrate the comparative 
+speed and accuracy of Myers vs Ukkonen. 
 
 ## The future
 I hope to extend this to N versions. If we have N versions then the 
