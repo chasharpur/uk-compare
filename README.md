@@ -128,8 +128,9 @@ differences between all versions or between a selection of them.
 
 ## Installation
 Download the release or clone the repository, then move it inside a web 
-server's documents root. Navigate to index.html. The demo site mentioned 
-above has the most recent version of the code.
+server's documents root. Navigate to index.html. There is a 
+[demo site](https://uk-compare.ecdosis.org) 
+that already implements the most recent version of the code.
 
 [1] Ukkonen, E. (1995). "On-line construction of suffix trees" (PDF). 
 Algorithmica. 14 (3): 249–260
