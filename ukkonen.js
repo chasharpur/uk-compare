@@ -966,12 +966,24 @@ function find_alignments( u ) {
         }
     }
 }
+/**
+ * Return the end of the alignment (one char AFTER the end)
+ * @param a the alignment
+ * @param side the side (1 or 2)
+ * @return the alignment start position+text length
+ */
 function alignment_end(a, side ) {
     if ( side == 1 )
         return a.start1+a.text.length;
     else
         return a.start2+a.text.length;
 }
+/**
+ * Get the start offset of an alignment, based on the side
+ * @param a the alignment
+ * @param side the side (1 or 2) 
+ * @return the start index into the relevant version 
+ */
 function alignment_start(a, side ) {
     if ( side == 1 )
         return a.start1;
@@ -994,7 +1006,8 @@ function lis_align(a,selected,side) {
     // find element to insert before (or null)
     let before = null;
     for ( let i=0;i<selected.length;i++ ) {
-        if ( alignment_end(a[longest],side) < alignment_start(selected[i],side) )
+        // yes, less than or equal - see alignment_end above
+        if ( alignment_end(a[longest],side) <= alignment_start(selected[i],side) )
             before = i;
     }
     if ( before == null )
@@ -1007,7 +1020,7 @@ function lis_align(a,selected,side) {
     // remove overlapping alignments
     while ( left.length>0 && alignment_end(left[left.length-1],side) >= alignment_start(a[longest],side) )
         left.pop();
-    while ( right.length>0 && alignment_start(right[0],side) < alignment_end(a[longest],side) )
+    while ( right.length>0 && alignment_start(right[0],side) <= alignment_end(a[longest],side) )
         right.shift();
     // recurse
     if ( left.length > 0 )

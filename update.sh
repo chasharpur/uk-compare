@@ -15,14 +15,17 @@ for f in ${a_files[@]}; do
     files_to_add="$files_to_add $f"
 done
 files_to_commit=""
-for f in ${m_iles[@]}; do
+for f in ${m_files[@]}; do
     files_to_commit="$files_to_commit $f"
 done
 if [ ! -z "$files_to_add" ]; then
     git add "$files_to_add"
 fi
-if [ ! -z "$files_to_add" ] && [ ! -z "$files_to_commit" ]; then
-    scp "$files_to_commit $files_to_add" charles-harpur.org:/var/www/uk-compare/
+if [ ! -z "$files_to_add" ] || [ ! -z "$files_to_commit" ]; then
+    scp $files_to_commit $files_to_add charles-harpur.org:/var/www/uk-compare/
+    read -p "git message: " message
+    git commit -a -m "$message"
+    git push
+else
+    echo "no changes"
 fi
-read -p "git message: " message
-git commit -a -m "$message"
