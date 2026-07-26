@@ -1015,19 +1015,15 @@ function lis_align(a,selected,side) {
     else
         selected.splice(before,0,a[longest]);
     // recurse into the left and right sets of aligments
-    let popped;
+    //let popped;
     let left = a.slice(0,longest);
     let right = a.slice(longest+1);
     // remove overlapping alignments
     while ( left.length>0 && alignment_end(left[left.length-1],side) > alignment_start(a[longest],side) ){
-        popped = left.pop();
-        if ( popped.text == "an under" )
-            console.log("an under");
+        /*popped = */left.pop();
     }
     while ( right.length>0 && alignment_start(right[0],side) < alignment_end(a[longest],side) ){
-        popped = right.shift();
-        if ( popped.text == "an under" )
-            console.log("an under");
+        /*popped = */right.shift();
     }
     // recurse
     if ( left.length > 0 )
