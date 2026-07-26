@@ -127,9 +127,9 @@ the MVD format it will be possible to instantly display a table of all
 differences between all versions or between a selection of them.
 
 ## Installation
-Clone the repository and place it inside a web server's documents 
-directory. Navigate to index.html. I will soon add a demo site with this 
-content in an AWS bucket, addressable from the Web.
+Download the release or clone the repository, then move it inside a web 
+server's documents root. Navigate to index.html. The demo site mentioned 
+above has the most recent version of the code.
 
 [1] Ukkonen, E. (1995). "On-line construction of suffix trees" (PDF). 
 Algorithmica. 14 (3): 249–260
