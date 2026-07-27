@@ -991,6 +991,25 @@ function alignment_start(a, side ) {
         return a.start2;
 }
 /**
+ * calculate overlap between two alignments
+ * @param a first alignment
+ * @param b second alignment
+ * @param side the side to test
+ * @return the AMOUNT of overlap. >0 menas overlap, <= 0 means none 
+ */
+function alignment_overlap(a,b,side) {
+    return alignment_end(a,side)-alignment_start(b,side);
+}
+function flip_side(side){
+    return (side==1)?2:1;
+}
+function alignment_last_char(a) {
+    return (a.text.length>0)?a.text[a.text.length-1]:'\0';
+}
+function alignment_first_char(a) {
+    return (a.text.length >0)?a.text[0]:'\0';
+}
+/**
  * Pick alignments using the longest increasing subsequence heuristic
  * @param a a non-empty alignment set sorted on start position
  * @param selected output: the selected set of alignments
@@ -1015,15 +1034,45 @@ function lis_align(a,selected,side) {
     else
         selected.splice(before,0,a[longest]);
     // recurse into the left and right sets of aligments
-    //let popped;
+    // NB sort left set by their increasing ENDS
     let left = a.slice(0,longest);
+    left.sort((a,b)=>alignment_end(a,side)-alignment_end(b,side));
+    // sort right set by their increasing starts
     let right = a.slice(longest+1);
+    right.sort((a,b)=>alignment_start(a,side)-alignment_start(b,side));
     // remove overlapping alignments
-    while ( left.length>0 && alignment_end(left[left.length-1],side) > alignment_start(a[longest],side) ){
-        /*popped = */left.pop();
+    // left side complicated by possibility of fake overlap
+    let i = left.length-1;
+    // dangerous loop - must exercise caution
+    while ( i >= 0 ){
+        let overlap = alignment_overlap(left[i],a[longest],side);
+        // 1. no overlap
+        if ( overlap <= 0 )
+            break;
+        // 2. lots of overlap
+        else if ( overlap > 1 ) {
+            left.splice(i,1);
+        }
+        // 3. overlap == 1
+        else {  
+            let other_side = flip_side(side);
+            let other_overlap = alignment_overlap(left[i],a[longest],other_side);
+            // if v1: foo\nbar v2: foo\n92\nbar left align=foo\n right align=\nbar: fake "overlap" is \n
+            // only in this case we curtail the left alignment by 1 and keep it
+            if ( other_overlap <= 0 && alignment_last_char(left[i])==alignment_first_char(a[longest]) ) {
+                left[i].text = left[i].text.slice(0,left[i].text.length-1);
+            }
+            // in all other overlap cases we drop the alignment
+            else {
+                left.splice(i,1);
+            }
+        }
+        // ALWAYS decrement index
+        i--;
     }
+    // no special treatment for right facing overlap yet, and maybe not needed
     while ( right.length>0 && alignment_start(right[0],side) < alignment_end(a[longest],side) ){
-        /*popped = */right.shift();
+        right.shift();
     }
     // recurse
     if ( left.length > 0 )
