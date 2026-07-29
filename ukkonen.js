@@ -1051,6 +1051,8 @@ function lis_align(a,selected,side) {
             break;
         // 2. lots of overlap
         else if ( overlap > 1 ) {
+            if ( left[i].text == "ast" )
+                console.log("ast");
             left.splice(i,1);
         }
         // 3. overlap == 1
@@ -1064,6 +1066,8 @@ function lis_align(a,selected,side) {
             }
             // in all other overlap cases we drop the alignment
             else {
+                if ( left[i].text == "ast" )
+                    console.log("ast");
                 left.splice(i,1);
             }
         }
@@ -1072,6 +1076,8 @@ function lis_align(a,selected,side) {
     }
     // no special treatment for right facing overlap yet, and maybe not needed
     while ( right.length>0 && alignment_start(right[0],side) < alignment_end(a[longest],side) ){
+        if ( right[right.length-1].text == "ast" )
+            console.log("ast");
         right.shift();
     }
     // recurse
