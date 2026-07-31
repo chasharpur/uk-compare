@@ -93,7 +93,7 @@ async function populate_sample_index(){
 			for ( let key of works_keys ) {
 				let opt = document.createElement('option');
 				opt.textContent = key;
-				if ( key == "h212" )
+				if ( key == "h181" )
 					opt.selected="selected";
 				works_select.appendChild(opt);
 			}

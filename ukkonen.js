@@ -1070,9 +1070,36 @@ function lis_align(a,selected,side) {
         // ALWAYS decrement index
         i--;
     }
-    // no special treatment for right facing overlap yet, and maybe not needed
-    while ( right.length>0 && alignment_start(right[0],side) < alignment_end(a[longest],side) ){
-        right.shift();
+    i = 0;
+    while ( i < right.length ){
+        let overlap = alignment_overlap(a[longest],right[i],side);
+        // 1. no overlap
+        if ( overlap <= 0 ) {
+            // sorted on start: we are done
+            break;
+        }
+        else if ( overlap > 1 ) {
+            // this will automatically move on to the next item
+            right.splice(i,1);
+        }
+        // 3. overlap == 1
+        else { 
+            let other_side = flip_side(side);
+            let other_overlap = alignment_overlap(a[longest],right[i],other_side);
+            // if on the other side ther is NO overlap but one equal character of overlap here ...
+            if ( other_overlap <= 0 && alignment_first_char(right[i])==alignment_last_char(a[longest]) ) {
+                right[i].text = right[i].text.slice(1); // remove overlapping first char 
+                right[i].start1++;
+                right[i].start2++;
+                // retain, and move to the next item
+                i++;
+            }
+            // in all other overlap cases we drop the alignment
+            else {
+                // and move to the next item
+                right.splice(i,1);
+            }
+        }
     }
     // recurse
     if ( left.length > 0 )
