@@ -28,3 +28,7 @@
 #container label {
 	padding:0.5em;
 }
+#lhs_body,#rhs_body {
+	overflow-y: auto;
+  	overflow-x: hidden;
+}

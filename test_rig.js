@@ -93,7 +93,7 @@ async function populate_sample_index(){
 			for ( let key of works_keys ) {
 				let opt = document.createElement('option');
 				opt.textContent = key;
-				if ( key == "h181" )
+				if ( key == "h101" )
 					opt.selected="selected";
 				works_select.appendChild(opt);
 			}
@@ -195,6 +195,42 @@ function populate_version_dropdown(select_id,keys) {
 		version_select.appendChild(opt);
 	}
 }
+/**
+ * Get the numeric value of a css dimension
+ * @param dimen a dimension like "30px"
+ * @return its numeric value
+ */
+function value_of(dimen) {
+	let value = 0;
+	for ( let i=0;i<dimen.length;i++ ) {
+		let token = dimen[i];
+		if ( token >= '0' && token <= '9' ) {
+			value *= 10;
+			value += token - '0';
+		}
+		else
+			break;
+	}
+	return value;
+}
+/**
+ * Scale a div to its parent's size
+ */
+function fit_within_parent( id ) {
+	let elem = document.getElementById(id);
+	let top_offset = synchro_scroller.get_top_offset(elem);
+	let window_height = window.innerHeight;
+	// compute the height, set it
+	const elem_styles = window.getComputedStyle(elem);
+	let v_padding = value_of(elem_styles.getPropertyValue("padding-top"))
+		+value_of(elem_styles.getPropertyValue("padding-bottom"));
+	let v_border = value_of(elem_styles.getPropertyValue("border-top-width"))
+		+value_of(elem_styles.getPropertyValue("border-bottom-width"));
+	let temp_height = window_height-(top_offset+v_padding+v_border);
+	if ( temp_height > 0 )
+		elem.style.height = temp_height+"px";
+}
+    
 async function change_version() {
 	let lhs_version_select = document.getElementById("lhs_versions");
 	let rhs_version_select = document.getElementById("rhs_versions");
@@ -222,6 +258,8 @@ async function change_version() {
 	rhs_html = html_add_diffs(structuredClone(similarities),rhs_html,2);
 	document.getElementById("lhs_body").innerHTML = lhs_html;
 	document.getElementById("rhs_body").innerHTML = rhs_html;
+	fit_within_parent("lhs_body");
+	fit_within_parent("rhs_body");
 }
 /** 
  * User selected a new work
@@ -253,4 +291,5 @@ async function reload_page() {
 	all_works = await populate_sample_index();
 	await set_sample_css();
 	await change_work();
+	synchro_scroller.build_scroll_tables("lhs_body","rhs_body");
 }

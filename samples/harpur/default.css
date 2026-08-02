@@ -21,7 +21,7 @@ span.firstword {display:table;float:right;transform:translateX(100%);}
 .firstword::before { content: '[' }
 h1,h2,h3,h4,h5,h6 {text-align:center }
 h1,h2,h3 { font-weight: normal }
-p.dedication { text-align:center;margin 1em 0 1em 1em; margin-top: 20px; white-space:pre}
+p.dedication { text-align:center;margin: 1em 0 1em 1em; margin-top: 20px; white-space:pre}
 p.colophon { margin-top: 10px; margin-bottom: 10px}
 p.hnote { margin:10px auto 10px auto;}
 .hnote p {width:100%;margin:0;text-indent:1em;}
