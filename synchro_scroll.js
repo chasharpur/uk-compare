@@ -108,13 +108,13 @@ class synchro_scroller {
         return mid;
     }
 	/**
-     * Set a timeout for when we reset the this.scroller field
+     * Set a timeout for when we reset the .scroller field
      */
     static set_scroll_timeout() {
         if ( synchro_scroller.timeout_id == 0 ) {
             synchro_scroller.timeout_id = window.setTimeout(function(){
                 synchro_scroller.scroller=undefined;
-                synchro_scroller.timeoutId = 0;
+                synchro_scroller.timeout_id = 0;
                 synchro_scroller.left_scroll_top = synchro_scroller.left_div.scrollTop;
                 synchro_scroller.right_scroll_top = synchro_scroller.right_div.scrollTop;
             // this should be fairly coarse-grained
@@ -135,10 +135,19 @@ class synchro_scroller {
 		}
 		return value;
 	}
+	/**
+	 * Call this routine every 70 milliseconds
+	 * We keep scrolling one side until the timeout every 300 milliseconds
+	 * Then we MAY switch. If synchro_scroller.scroller is undefined we set 
+	 * it to left or right depending on which side changed.
+	 * Then we re-launch the timeout
+	 */
 	static scroll() {
 		let left_top = synchro_scroller.left_div.scrollTop;
 		let right_top = synchro_scroller.right_div.scrollTop;
+		// did right side scroll value change?
 		if ( right_top != synchro_scroller.right_scroll_top ) {
+			// are we still scrolling right or is the side temporarily unset?
 			if ( synchro_scroller.scroller==undefined || synchro_scroller.scroller=="right" ) {
 				let left_offset = 0;
 				synchro_scroller.scroller = "right";
@@ -240,6 +249,7 @@ class synchro_scroller {
 				|| right_styles.getPropertyValue("overflow-y") != "auto" ) {
 					throw new Error("overflow-y property not set for scrolling div");
 			}
+			synchro_scroller.timeout_id = 0
 			synchro_scroller.banned = {};
 			synchro_scroller.build_left_scroll_tables();
 			synchro_scroller.build_right_scroll_tables();

@@ -619,6 +619,7 @@ function extension( j, i ) {
     let p = find_beta( j, i-1 );
     // rule 1 (once a leaf always a leaf)
     if ( node_is_leaf(p.v) && pos_at_edge_end(p) ){
+        // NB visited existing node
         res = 1;
     }
     // rule 2
