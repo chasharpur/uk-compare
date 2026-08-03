@@ -1,7 +1,7 @@
 #toolbar {
 	width: 100%;
-	background-color: #FFFF99;
-	padding: 0.3em;
+	background-color: #DDDDDD;
+	padding: 0.5em;
 }
 #toolbar label {
 	font-weight:bold;
@@ -31,4 +31,9 @@
 #lhs_body,#rhs_body {
 	overflow-y: auto;
   	overflow-x: hidden;
+}
+.header {
+    padding: 0.3em;
+    border-bottom: solid black thin;
+    border-left: solid black thin;
 }
