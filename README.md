@@ -102,6 +102,20 @@ to go back to the root as each new suffix is added. It is a bit like a
 monkey travelling through the jungle by swinging from tree to tree 
 instead of laboriously climbing each tree in turn.
 
+## Synchro-scroll
+The test rig contains a synchro-scroller module, which vertically aligns 
+the left and right versions as the user scrolls in either version. The 
+module is separate from the main code and can be re-used elsewhere. 
+However, it does require that all aligned segments on the left and right 
+are labelled with corresponding IDs: e.g. d123a on the left and a123a on 
+the right. The number indicates which run of aligned plain text 
+corresponds on each side. d123 would contain exactly the same text as 
+a123. Since formatting on each side may differ, each aligned section is 
+broken up into sub-sections, hence d123a is followed by d123b etc. The 
+segmentation on left and right may not precisely correspond, and so the 
+synchro-scrolling may not be smooth or precise. Some improvement here 
+may yet be made.
+
 ## Work plan for version 1.0
 Version 1.0 will implement the following extra features:
 
