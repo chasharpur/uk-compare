@@ -161,10 +161,16 @@ function alignment_start(a,side) {
 /**
  * Compute the next alignment id, left or right
  * @param side 1=left, 2=right
+ * @param alignment the current alignment
  * @return a string being e.g. a123a or d123a 
  */
-function next_alignment_id(side) {
-    alignment_id++;
+function next_alignment_id(side,alignment) {
+    if ( Object.hasOwn(alignment,"id") ) 
+        alignment_id = alignment.id;
+    else {
+        alignment_id++;
+        alignment.id = alignment_id;
+    }
     if ( side == 1 )
         return 'd'+alignment_id+'a';
     else
@@ -246,6 +252,7 @@ function html_add_diffs(similarities,html,side) {
     let stack = null;
     let last_text_pos = 0;
     let alignment_state = 0;    // initial
+    let s_index = 0;
     // global
     alignment_id = 0;
     if ( side == 1 )
@@ -279,7 +286,7 @@ function html_add_diffs(similarities,html,side) {
                         case 0: // initial state neither aligned nor mismatched
                             if ( alignment_start(current_alignment,side) == 0 ) {
                                 alignment_state = 1;
-                                current_alignment_id = next_alignment_id(side);
+                                current_alignment_id = next_alignment_id(side,current_alignment);
                                 text += '<span class="aligned" id="'+current_alignment_id+'">';
                             }
                             else {  // not aligned at start
@@ -289,13 +296,13 @@ function html_add_diffs(similarities,html,side) {
                             break;
                         case 1: // in alignment, span open
                             if ( alignment_end(current_alignment,side) == text_offset ) {
-                                similarities.shift();
-                                current_alignment = (similarities.length>0)?similarities[0]:null;
+                                s_index++;
+                                current_alignment = (s_index<similarities.length)?similarities[s_index]:null;
                                 text += '</span>';
                                 // check whether the next alignment already starts here ...
                                 if ( current_alignment != null && alignment_start(current_alignment,side) == text_offset ) {
                                     alignment_state = 1;
-                                    current_alignment_id = next_alignment_id(side);
+                                    current_alignment_id = next_alignment_id(side,current_alignment);
                                     text += '<span class="aligned" id="'+current_alignment_id+'">';
                                 }
                                 // nah, mismatch
@@ -307,12 +314,12 @@ function html_add_diffs(similarities,html,side) {
                             break;
                         case 2: // in alignment, span closed
                             if ( alignment_end(current_alignment,side) == text_offset ) {
-                                similarities.shift();
-                                current_alignment = (similarities.length>0)?similarities[0]:null;
+                                s_index++;
+                                current_alignment = (s_index<similarities.length)?similarities[s_index]:null;
                                 // check whether the next alignment already starts here ...
                                 if ( current_alignment != null && alignment_start(current_alignment,side) == text_offset ) {
                                     alignment_state = 1;
-                                    current_alignment_id = next_alignment_id(side);
+                                    current_alignment_id = next_alignment_id(side,current_alignment);
                                     text += '<span class="aligned" id="'+current_alignment_id+'">';
                                 }
                                 // nah, mismatch
@@ -330,13 +337,13 @@ function html_add_diffs(similarities,html,side) {
                         case 3: // in_mismatch, span open
                             if ( current_alignment != null && alignment_start(current_alignment,side) == text_offset ) {
                                 alignment_state = 1;
-                                current_alignment_id = next_alignment_id(side);
+                                current_alignment_id = next_alignment_id(side,current_alignment);
                                 text += '</span><span class="aligned" id="'+current_alignment_id+'">';
                             }
                             break;
                         case 4: // in mismatch, span closed
                             if ( current_alignment != null && alignment_start(current_alignment,side) == text_offset ) {
-                                current_alignment_id = next_alignment_id(side);
+                                current_alignment_id = next_alignment_id(side,current_alignment);
                                 text += '<span class="aligned" id="'+current_alignment_id+'">';
                                 alignment_state = 1;
                             }

@@ -254,8 +254,8 @@ async function change_version() {
 		console.log("unimplemented method" + method );
 		return;
 	}
-	lhs_html = html_add_diffs(structuredClone(similarities),lhs_html,1);
-	rhs_html = html_add_diffs(structuredClone(similarities),rhs_html,2);
+	lhs_html = html_add_diffs(similarities,lhs_html,1);
+	rhs_html = html_add_diffs(similarities,rhs_html,2);
 	document.getElementById("lhs_body").innerHTML = lhs_html;
 	document.getElementById("rhs_body").innerHTML = rhs_html;
 	fit_within_parent("lhs_body");

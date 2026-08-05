@@ -973,7 +973,7 @@ function find_alignments( u ) {
  * @param side the side (1 or 2)
  * @return the alignment start position+text length
  */
-function alignment_end(a, side ) {
+function alignment_end( a, side ) {
     if ( side == 1 )
         return a.start1+a.text.length;
     else
@@ -986,6 +986,8 @@ function alignment_end(a, side ) {
  * @return the start index into the relevant version 
  */
 function alignment_start(a, side ) {
+    if ( a == null )
+        console.log("null");
     if ( side == 1 )
         return a.start1;
     else

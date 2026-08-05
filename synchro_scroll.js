@@ -159,8 +159,9 @@ class synchro_scroller {
 					let right_id = synchro_scroller.right_offsets_to_ids[r_index].id;
 					let left_id = "d"+right_id.slice(1);
 					// find offset of left id
-					let left_entry = synchro_scroller.left_ids_to_offsets[left_id];
-					if ( left_entry != undefined ) {
+					if ( Object.hasOwn(synchro_scroller.left_ids_to_offsets,left_id) ) {
+						let left_entry = synchro_scroller.left_ids_to_offsets[left_id];
+						console.log("id="+left_id+" left_entry="+left_entry+" right_entry="+synchro_scroller.right_ids_to_offsets[right_id]);
 						left_offset = Math.round( left_entry
 						-synchro_scroller.value_of(synchro_scroller.left_div.style.height)/2);
 						if ( left_offset < 0 )
@@ -168,14 +169,16 @@ class synchro_scroller {
 						synchro_scroller.left_scroll_top = left_offset;
 						synchro_scroller.left_div.scrollTop = left_offset;  
 					}
+					// else we can do nothing
 				}
 				synchro_scroller.right_scroll_top = right_top;
 				synchro_scroller.set_scroll_timeout();  
 			}
-			else
-				console.log("ignoring left scroll")
+			//else
+			//	console.log("ignoring left scroll")
 		}
-		if ( left_top != synchro_scroller.left_scroll_top ) {
+		// ok, then did the left scroll position change?
+		else if ( left_top != synchro_scroller.left_scroll_top ) {
 			if (synchro_scroller.scroller==undefined||synchro_scroller.scroller=="left") {
 				let right_offset = 0;
 				synchro_scroller.scroller = "left";
@@ -187,8 +190,8 @@ class synchro_scroller {
 					let left_id = synchro_scroller.left_offsets_to_ids[l_index].id;
 					let right_id = "a"+left_id.slice(1);
 					// find offset of right id
-					let right_value = synchro_scroller.right_ids_to_offsets[right_id];
-					if ( right_value != undefined ) {
+					if ( Object.hasOwn(synchro_scroller.right_ids_to_offsets,right_id) ) {
+						let right_value = synchro_scroller.right_ids_to_offsets[right_id];
 						right_offset = Math.round(right_value
 							-synchro_scroller.value_of(synchro_scroller.right_div.style.height)/2);
 						if ( right_offset < 0 )
@@ -196,13 +199,13 @@ class synchro_scroller {
 						synchro_scroller.right_scroll_top = right_offset;
 						synchro_scroller.right_div.scrollTop = right_offset; 
 					}
-					// else maybe no corresponding right entry
+					// else no corresponding right entry
 				}
 				synchro_scroller.left_scroll_top = left_top;
 				synchro_scroller.set_scroll_timeout(); 
 			}
-			else
-				console.log("ignoring right scroll");
+			//else
+			//	console.log("ignoring right scroll");
 		}
 		// wait until one side stabilises
 	}
