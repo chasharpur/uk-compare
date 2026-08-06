@@ -273,8 +273,6 @@ function node_clear_next( v ) {
 function node_create( start, len ) {
     let n = {};
     n.start = start;
-    if (debug_code && n.start > str.length)
-        console.log("node_create: error");
     n.len = len;
     n.id = ++node_id;
     n.next = null;
@@ -296,8 +294,6 @@ function node_create_leaf( i ) {
     let leaf = {};
     leaf.id = ++node_id;
     leaf.start = i;
-    if ( debug_code && leaf.start > str.length)
-        console.log("node_create_leaf: error");
     leaf.len = INFINITY;
     leaf.children = null;
     leaf.parent = null;
@@ -452,8 +448,6 @@ function node_split( v, loc ) {
     // replace v with u in the children of v.parent
     node_replace_child( v, u );
     v.start = loc+1;
-    if ( debug_code && v.start > str.length )
-        console.log("node_split: error");
     // reset parents
     u.parent = v.parent;
     v.parent = u;
@@ -476,8 +470,6 @@ function node_start( v ) {
 function path_create( start, len ) {
     let p = {};
     p.start = start;
-    if ( debug_code && p.start > str.length )
-        console.log("path_create: error");
     p.len = len;
     return p;
 }
@@ -496,8 +488,6 @@ function path_len( p ) {
  */
 function path_prepend( p, len ) {
     p.start -= len;
-    if ( debug_code && p.start > str.length )
-        console.log("error");
     p.len += len;
 }
 /**
@@ -551,27 +541,19 @@ function verify_beta(j,i){
 function find_beta( j, i ) {
     let p;
     if ( old_j > start_pos && old_j == j ) {
-        if ( debug_code && old_beta.v.start > str.length )
-            console.log("error");
         p = pos_create();
         p.loc = old_beta.loc;
         p.v = old_beta.v;
-        if ( debug_code && p.v.start > str.length )
-            console.log("find_beta_1: error");
     }
     else if ( j>i ) { // empty string
         p = pos_create();
         p.loc = start_pos;
         p.v = root;
-        if ( debug_code && p.v.start > str.length )
-            console.log("find_beta_2: error");
     }
     else if ( j==start_pos ) {  // entire string
         p = pos_create();
         p.loc = i;
         p.v = (start_pos<lhs_len)?f:g;
-        if ( debug_code && p.v.start > str.length )
-            console.log("find_beta_3: error");
     }
     else { // walk across tree
         let v = last.v;
@@ -588,14 +570,10 @@ function find_beta( j, i ) {
         }
         else
             p = walk_down( root, path_create(j,i-j+1) );
-        if ( debug_code && p.v.start > str.length )
-            console.log("find_beta_4: error");
     }
     last = p;
     if ( debug_code )
         verify_beta(j,i);
-    if ( debug_code && p.v.start > str.length )
-        console.log("find_beta_4: error");
     return p;
 }
 /**
@@ -854,19 +832,11 @@ function update_old_beta( p, i ) {
     if ( node_end(p.v,e) > p.loc ) {
         old_beta.v = p.v;
         old_beta.loc = p.loc+1;
-        if ( debug_code ) {
-            if (old_beta.loc > str.length || old_beta.v.start > str.length )
-                console.log("update_old_beta: error");
-        }
     }
     else {
         let u = find_child( p.v, str[i] );
         old_beta.v = u;
         old_beta.loc = node_start( u );
-        if ( debug_code ) {
-            if (old_beta.loc > str.length || old_beta.v.start > str.length )
-                console.log("update_old_beta: error");
-        }
     }
 }
 /**
@@ -893,8 +863,6 @@ function walk_down( v, p ) {
             v = find_child( v, str[start] );
         }
     }
-    if ( debug_code && q.v.start > str.length )
-        console.log("error");
     return q;
 }
 /**
@@ -947,10 +915,7 @@ function find_alignments( u ) {
         let v = node_iterator_next(iter);
         let w = node_iterator_next(iter);
         if ( node_is_leaf(v) && node_is_leaf(w) && leaf_is_split(v,w) ) {
-            if ( debug_code && node_start(u) >= lhs_len )
-                console.log("find_alignments: this shouldn't happen" )
-            else
-                path_extract_align(u);
+            path_extract_align(u);
         }
         else {
             if ( !node_is_leaf(v) )
@@ -1056,7 +1021,7 @@ function lis_align(a,selected,side) {
         else if ( overlap > 1 ) {
             left.splice(i,1);
         }
-        // 3. overlap == 1
+        // 3. overlap == 1, maybe fake
         else {  
             let other_side = flip_side(side);
             let other_overlap = alignment_overlap(left[i],a[longest],other_side);
@@ -1085,11 +1050,11 @@ function lis_align(a,selected,side) {
             // this will automatically move on to the next item
             right.splice(i,1);
         }
-        // 3. overlap == 1
+        // 3. overlap == 1, maybe fake
         else { 
             let other_side = flip_side(side);
             let other_overlap = alignment_overlap(a[longest],right[i],other_side);
-            // if on the other side ther is NO overlap but one equal character of overlap here ...
+            // if on the other side there is NO overlap but one equal character of overlap here ...
             if ( other_overlap <= 0 && alignment_first_char(right[i])==alignment_last_char(a[longest]) ) {
                 right[i].text = right[i].text.slice(1); // remove overlapping first char 
                 right[i].start1++;

@@ -119,9 +119,6 @@ may yet be made.
 ## Work plan for version 1.0
 Version 1.0 will implement the following extra features:
 
-0.7: implement sync-scrolling of the compared versions to vertically 
-align matched sections in both versions as the user scrolls.
-
 0.8: transpositions will only be adopted if they are unique (the Maximal 
 Unique Match property or MUM).
 
