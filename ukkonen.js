@@ -969,15 +969,6 @@ function alignment_start(a, side ) {
 function alignment_overlap(a,b,side) {
     return alignment_end(a,side)-alignment_start(b,side);
 }
-function flip_side(side){
-    return (side==1)?2:1;
-}
-function alignment_last_char(a) {
-    return (a.text.length>0)?a.text[a.text.length-1]:'\0';
-}
-function alignment_first_char(a) {
-    return (a.text.length >0)?a.text[0]:'\0';
-}
 /**
  * Pick alignments using the longest increasing subsequence heuristic
  * @param a a non-empty alignment set sorted on start position
