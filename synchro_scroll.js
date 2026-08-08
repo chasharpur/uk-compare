@@ -161,7 +161,7 @@ class synchro_scroller {
 					// find offset of left id
 					if ( Object.hasOwn(synchro_scroller.left_ids_to_offsets,left_id) ) {
 						let left_entry = synchro_scroller.left_ids_to_offsets[left_id];
-						console.log("id="+left_id+" left_entry="+left_entry+" right_entry="+synchro_scroller.right_ids_to_offsets[right_id]);
+						//console.log("id="+left_id+" left_entry="+left_entry+" right_entry="+synchro_scroller.right_ids_to_offsets[right_id]);
 						left_offset = Math.round( left_entry
 						-synchro_scroller.value_of(synchro_scroller.left_div.style.height)/2);
 						if ( left_offset < 0 )

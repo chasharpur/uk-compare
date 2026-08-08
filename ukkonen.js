@@ -597,7 +597,7 @@ function extension( j, i ) {
     let p = find_beta( j, i-1 );
     // rule 1 (once a leaf always a leaf)
     if ( node_is_leaf(p.v) && pos_at_edge_end(p) ){
-        // NB visited existing node
+        // extension is already implicitly in the tree
         res = 1;
     }
     // rule 2
@@ -622,6 +622,7 @@ function extension( j, i ) {
     // rule 3
     else {
         //printf("applying rule 3 at j=%d for phase %d\n",j,i);
+        p.v.visited = true;
         update_current_link( p.v );
         update_old_beta( p, i );
         res = 0;
@@ -1016,25 +1017,14 @@ function lis_align(a,selected,side) {
         let overlap = alignment_overlap(left[i],a[longest],side);
         // 1. no overlap
         if ( overlap <= 0 )
+            // sorted on end: we are done
             break;
-        // 2. lots of overlap
-        else if ( overlap > 1 ) {
+        // 2. within
+        else if ( overlap >= left[i].text.length )
             left.splice(i,1);
-        }
-        // 3. overlap == 1, maybe fake
-        else {  
-            let other_side = flip_side(side);
-            let other_overlap = alignment_overlap(left[i],a[longest],other_side);
-            // if v1: foo\nbar v2: foo\n92\nbar left align=foo\n right align=\nbar: fake "overlap" is \n
-            // only in this case we curtail the left alignment by 1 and keep it
-            if ( other_overlap <= 0 && alignment_last_char(left[i])==alignment_first_char(a[longest]) ) {
-                left[i].text = left[i].text.slice(0,left[i].text.length-1);
-            }
-            // in all other overlap cases we drop the alignment
-            else {
-                left.splice(i,1);
-            }
-        }
+        // 3. genuine overlap: curtail by overlap amount
+        else  
+            left[i].text = left[i].text.slice(0,left[i].text.length-overlap);
         // ALWAYS decrement index
         i--;
     }
@@ -1046,27 +1036,18 @@ function lis_align(a,selected,side) {
             // sorted on start: we are done
             break;
         }
-        else if ( overlap > 1 ) {
+        // 2. within
+        else if ( overlap >= right[i].text.length ) {
             // this will automatically move on to the next item
             right.splice(i,1);
         }
-        // 3. overlap == 1, maybe fake
+        // 3. genuine overlap: curtail by overlap amount
         else { 
-            let other_side = flip_side(side);
-            let other_overlap = alignment_overlap(a[longest],right[i],other_side);
-            // if on the other side there is NO overlap but one equal character of overlap here ...
-            if ( other_overlap <= 0 && alignment_first_char(right[i])==alignment_last_char(a[longest]) ) {
-                right[i].text = right[i].text.slice(1); // remove overlapping first char 
-                right[i].start1++;
-                right[i].start2++;
-                // retain, and move to the next item
-                i++;
-            }
-            // in all other overlap cases we drop the alignment
-            else {
-                // and move to the next item
-                right.splice(i,1);
-            }
+            right[i].text = right[i].text.slice(overlap); // remove overlapping chars 
+            right[i].start1 += overlap;
+            right[i].start2 += overlap;
+            // retain; move to the next item
+            i++;
         }
     }
     // recurse
