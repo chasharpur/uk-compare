@@ -1024,9 +1024,14 @@ function lis_align(a,selected,side) {
         if ( overlap <= 0 )
             // sorted on end: we are done
             break;
-        // 2. within
-        else if (overlap>= 1 )//if ( overlap >= left[i].text.length || is_transposed(left[i],a[longest]) )
+        // 2. within or transposed on the other side of selected
+        else if ( overlap >= left[i].text.length || is_transposed(left[i],a[longest]) ) {
             left.splice(i,1);
+        }
+        else {
+            //console.log("overlap:"+overlap+" left:"+left[i].text+" longest:"+a[longest].text);
+            left[i].text = left[i].text.slice(0,left[i].text.length-overlap);
+        }
         // 3. genuine overlap: curtail by overlap amount
         //else  
         //    left[i].text = left[i].text.slice(0,left[i].text.length-overlap);
@@ -1041,18 +1046,19 @@ function lis_align(a,selected,side) {
             // sorted on start: we are done
             break;
         }
-        // 2. within
-        else if (overlap >= 1 )//if ( overlap >= right[i].text.length || is_transposed(right[i],a[longest]) ) 
+        // 2. within or transposed on other side of selected
+        else if ( overlap >= right[i].text.length || is_transposed(right[i],a[longest]) ) {
             // this will automatically move on to the next item
             right.splice(i,1);
-        // 3. genuine overlap: curtail by overlap amount
-        //else { 
-        //    right[i].text = right[i].text.slice(overlap); // remove overlapping chars 
-        //    right[i].start1 += overlap;
-        //    right[i].start2 += overlap;
+        }
+        else {
+            //console.log("overlap:"+overlap+" right:"+right[i].text+" longest:"+a[longest].text);
+            right[i].text = right[i].text.slice(overlap); // remove overlapping chars 
+            right[i].start1 += overlap;
+            right[i].start2 += overlap;
             // retain; move to the next item
-        //    i++;
-        //}
+            i++;
+        }
     }
     // recurse
     if ( left.length > 0 )
