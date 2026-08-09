@@ -964,10 +964,24 @@ function alignment_start(a, side ) {
  * @param a first alignment
  * @param b second alignment
  * @param side the side to test
- * @return the AMOUNT of overlap. >0 menas overlap, <= 0 means none 
+ * @return the AMOUNT of overlap. >0 means overlap, <= 0 means none 
  */
 function alignment_overlap(a,b,side) {
     return alignment_end(a,side)-alignment_start(b,side);
+}
+/**
+ * Is one alignment transposed with respect to another?
+ * @param a the first alignment
+ * @param b another alignment
+ * @return true if a and b are transposed WRT each other
+ */
+function is_transposed( a, b ) {
+    if ( a.start1 > b.start1 && a.start2 < b.start2 )
+        return true;
+    else if ( a.start1 < b.start1 && a.start2 > b.start2 )
+        return true;
+    else
+        return false;
 }
 /**
  * Pick alignments using the longest increasing subsequence heuristic
@@ -1011,11 +1025,11 @@ function lis_align(a,selected,side) {
             // sorted on end: we are done
             break;
         // 2. within
-        else if ( overlap >= left[i].text.length )
+        else if (overlap>= 1 )//if ( overlap >= left[i].text.length || is_transposed(left[i],a[longest]) )
             left.splice(i,1);
         // 3. genuine overlap: curtail by overlap amount
-        else  
-            left[i].text = left[i].text.slice(0,left[i].text.length-overlap);
+        //else  
+        //    left[i].text = left[i].text.slice(0,left[i].text.length-overlap);
         // ALWAYS decrement index
         i--;
     }
@@ -1028,18 +1042,17 @@ function lis_align(a,selected,side) {
             break;
         }
         // 2. within
-        else if ( overlap >= right[i].text.length ) {
+        else if (overlap >= 1 )//if ( overlap >= right[i].text.length || is_transposed(right[i],a[longest]) ) 
             // this will automatically move on to the next item
             right.splice(i,1);
-        }
         // 3. genuine overlap: curtail by overlap amount
-        else { 
-            right[i].text = right[i].text.slice(overlap); // remove overlapping chars 
-            right[i].start1 += overlap;
-            right[i].start2 += overlap;
+        //else { 
+        //    right[i].text = right[i].text.slice(overlap); // remove overlapping chars 
+        //    right[i].start1 += overlap;
+        //    right[i].start2 += overlap;
             // retain; move to the next item
-            i++;
-        }
+        //    i++;
+        //}
     }
     // recurse
     if ( left.length > 0 )

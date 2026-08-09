@@ -20,6 +20,8 @@ along with this program.  If not, see <http://gnu.org>.
  */
 
 var alignment_id = 0;
+var left_stripped = null;
+var right_stripped = null;
 /**
  * Remove all tags and reduce white space in HTML text
  * @param html the raw HTML to strip 
@@ -136,6 +138,10 @@ function html_strip(html){
                 break;
         }
     }
+    if ( left_stripped == null )
+        left_stripped = text;
+    else
+        right_stripped = text;
     return text;
 }
 /**
@@ -245,12 +251,13 @@ function alignment_end(a,side) {
  */
 function html_add_diffs(similarities,html,side) {
 	let state = 0;
-    let text = "";
+    let text = "";  // stripped text
+    let new_html = "";  // newly built html with add, del, align markers
     let tag = "";
-    let text_offset = 0;
+    let text_offset = 0;    // current offset into stripped text
     let current_alignment_id = '';
     let stack = null;
-    let last_text_pos = 0;
+    let last_html_pos = 0;  // last position in new_html
     let alignment_state = 0;    // initial
     let s_index = 0;
     // global
@@ -268,11 +275,11 @@ function html_add_diffs(similarities,html,side) {
             case 0: // looking for < 
                 if ( token == '<' ) {
                     if ( alignment_state == 1 ) {
-                        text += '</span>';
+                        new_html += '</span>';
                         alignment_state = 2;
                     }
                     else if ( alignment_state == 3 ) {
-                        text += '</span>';
+                        new_html += '</span>';
                         alignment_state = 4;
                     }
                     state = 1;
@@ -287,27 +294,27 @@ function html_add_diffs(similarities,html,side) {
                             if ( alignment_start(current_alignment,side) == 0 ) {
                                 alignment_state = 1;
                                 current_alignment_id = next_alignment_id(side,current_alignment);
-                                text += '<span class="aligned" id="'+current_alignment_id+'">';
+                                new_html += '<span class="aligned" id="'+current_alignment_id+'">';
                             }
                             else {  // not aligned at start
                                 alignment_state = 3;
-                                text += '<span class="'+mismatch_state(side)+'">';
+                                new_html += '<span class="'+mismatch_state(side)+'">';
                             }
                             break;
                         case 1: // in alignment, span open
                             if ( alignment_end(current_alignment,side) == text_offset ) {
                                 s_index++;
                                 current_alignment = (s_index<similarities.length)?similarities[s_index]:null;
-                                text += '</span>';
+                                new_html += '</span>';
                                 // check whether the next alignment already starts here ...
                                 if ( current_alignment != null && alignment_start(current_alignment,side) == text_offset ) {
                                     alignment_state = 1;
                                     current_alignment_id = next_alignment_id(side,current_alignment);
-                                    text += '<span class="aligned" id="'+current_alignment_id+'">';
+                                    new_html += '<span class="aligned" id="'+current_alignment_id+'">';
                                 }
                                 // nah, mismatch
                                 else {
-                                    text += '<span class="'+mismatch_state(side)+'">';
+                                    new_html += '<span class="'+mismatch_state(side)+'">';
                                     alignment_state = 3;
                                 }
                             }
@@ -320,17 +327,17 @@ function html_add_diffs(similarities,html,side) {
                                 if ( current_alignment != null && alignment_start(current_alignment,side) == text_offset ) {
                                     alignment_state = 1;
                                     current_alignment_id = next_alignment_id(side,current_alignment);
-                                    text += '<span class="aligned" id="'+current_alignment_id+'">';
+                                    new_html += '<span class="aligned" id="'+current_alignment_id+'">';
                                 }
                                 // nah, mismatch
                                 else {
-                                    text += '<span class="'+mismatch_state(side)+'">'
+                                    new_html += '<span class="'+mismatch_state(side)+'">'
                                     alignment_state = 3;
                                 }
                             }
                             else {
                                 current_alignment_id = inc_alignment_id(current_alignment_id);
-                                text += '<span class="aligned" id="'+current_alignment_id+'">';
+                                new_html += '<span class="aligned" id="'+current_alignment_id+'">';
                                 alignment_state = 1;
                             }
                             break;
@@ -338,17 +345,17 @@ function html_add_diffs(similarities,html,side) {
                             if ( current_alignment != null && alignment_start(current_alignment,side) == text_offset ) {
                                 alignment_state = 1;
                                 current_alignment_id = next_alignment_id(side,current_alignment);
-                                text += '</span><span class="aligned" id="'+current_alignment_id+'">';
+                                new_html += '</span><span class="aligned" id="'+current_alignment_id+'">';
                             }
                             break;
                         case 4: // in mismatch, span closed
                             if ( current_alignment != null && alignment_start(current_alignment,side) == text_offset ) {
                                 current_alignment_id = next_alignment_id(side,current_alignment);
-                                text += '<span class="aligned" id="'+current_alignment_id+'">';
+                                new_html += '<span class="aligned" id="'+current_alignment_id+'">';
                                 alignment_state = 1;
                             }
                             else {
-                                text += '<span class="'+mismatch_state(side)+'">';
+                                new_html += '<span class="'+mismatch_state(side)+'">';
                                 alignment_state = 3;
                             }
                             break;
@@ -357,9 +364,10 @@ function html_add_diffs(similarities,html,side) {
                     // here we mimic the effect by incrementing text_offset
                     // this gives us the offset into the alignment
                     text_offset++;
+                    text += token;
                     // This tells us the position of the last stripped token in the HTML, 
                     // so we can insert the closing tag in the correct position at the end
-                    last_text_pos = text.length;
+                    last_html_pos = new_html.length;
                 }
                 break;
             case 1: // seen left < 
@@ -454,15 +462,15 @@ function html_add_diffs(similarities,html,side) {
                     state = 6;
                 break;
         }
-        text += token;
+        new_html += token;
     }
     // close dangling span
     if ( alignment_state == 1 || alignment_state == 3 ){
-        let left = text.slice(0,last_text_pos);
-        let right = text.slice(last_text_pos,text.length);
-        text = left+'</span>'+right;
+        let left = new_html.slice(0,last_html_pos);
+        let right = new_html.slice(last_html_pos,new_html.length);
+        new_suffixhtml = left+'</span>'+right;
     }
-    return text;
+    return new_html;
 }
 // William Morris example base64 encoded
 /*test_html_b64=`PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImVuIj4KICA8aGVhZD4KICAgIDxtZXRhIGNoYXJz
