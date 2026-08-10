@@ -1028,14 +1028,16 @@ function lis_align(a,selected,side) {
         else if ( overlap >= left[i].text.length || is_transposed(left[i],a[longest]) ) {
             left.splice(i,1);
         }
+        // if there is a selected alignment to the left of a[longest] 
+        // and left[i] is left of that then it is NOT direct aligned
+        else if ( before != null && before-2 >= 0 && alignment_start(left[i],side) < alignment_end(selected[before-2],side) ) {
+            //console.log("removing "+left[i].text);
+            left.splice(i,1);
+        }
         else {
             //console.log("overlap:"+overlap+" left:"+left[i].text+" longest:"+a[longest].text);
             left[i].text = left[i].text.slice(0,left[i].text.length-overlap);
         }
-        // 3. genuine overlap: curtail by overlap amount
-        //else  
-        //    left[i].text = left[i].text.slice(0,left[i].text.length-overlap);
-        // ALWAYS decrement index
         i--;
     }
     i = 0;
@@ -1049,6 +1051,12 @@ function lis_align(a,selected,side) {
         // 2. within or transposed on other side of selected
         else if ( overlap >= right[i].text.length || is_transposed(right[i],a[longest]) ) {
             // this will automatically move on to the next item
+            right.splice(i,1);
+        }
+        // if there is a selected alignment to the right of a[longest] 
+        // and right[i] is right of that then it is NOT direct aligned
+        else if ( before != null && alignment_start(right[i],side) > alignment_start(selected[before],side) ) {
+            //console.log("removing "+right[i].text);
             right.splice(i,1);
         }
         else {
