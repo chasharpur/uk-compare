@@ -163,7 +163,7 @@ class synchro_scroller {
 						let left_entry = synchro_scroller.left_ids_to_offsets[left_id];
 						//console.log("id="+left_id+" left_entry="+left_entry+" right_entry="+synchro_scroller.right_ids_to_offsets[right_id]);
 						left_offset = Math.round( left_entry
-						-synchro_scroller.value_of(synchro_scroller.left_div.style.height)/2);
+							-synchro_scroller.value_of(synchro_scroller.left_div.style.height)/2);
 						if ( left_offset < 0 )
 							left_offset = 0;
 						synchro_scroller.left_scroll_top = left_offset;
