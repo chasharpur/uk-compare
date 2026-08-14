@@ -152,7 +152,7 @@ async function change_layer(side) {
 	while (target.firstChild)
 		target.removeChild(target.lastChild);
 	target.innerHTML = html;
-	await change_version();
+	await change_version(false);
 }
 async function set_version(select_id,versions,version_key) {
 	let version_select = document.getElementById(select_id);
@@ -186,6 +186,7 @@ async function set_version(select_id,versions,version_key) {
 	}
 }
 function populate_version_dropdown(select_id,keys) {
+	keys.sort();
 	let version_select = document.getElementById(select_id);
 	while (version_select.firstChild)
 		version_select.removeChild(version_select.lastChild);
@@ -231,14 +232,16 @@ function fit_within_parent( id ) {
 		elem.style.height = temp_height+"px";
 }
     
-async function change_version() {
-	let lhs_version_select = document.getElementById("lhs_versions");
-	let rhs_version_select = document.getElementById("rhs_versions");
-	let work_select = document.getElementById("works");
-	let work = work_select.value;
-	let versions = all_works[work];
-	await set_version("lhs_versions",versions,lhs_version_select.value);
-	await set_version("rhs_versions",versions,rhs_version_select.value);
+async function change_version(reload) {
+	if ( reload ){
+		let lhs_version_select = document.getElementById("lhs_versions");
+		let rhs_version_select = document.getElementById("rhs_versions");
+		let work_select = document.getElementById("works");
+		let work = work_select.value;
+		let versions = all_works[work];
+		await set_version("lhs_versions",versions,lhs_version_select.value);
+		await set_version("rhs_versions",versions,rhs_version_select.value);
+	}
 	// compute differences and alignments
 	let lhs_html = document.getElementById("lhs_body").innerHTML;
 	let rhs_html = document.getElementById("rhs_body").innerHTML;
@@ -276,7 +279,7 @@ async function change_work() {
 		await set_version("rhs_versions",versions,keys[1]);
 	else
 		await set_version("rhs_versions",versions,keys[0]);
-	await change_version();
+	await change_version(true);
 }
 var all_works;
 async function set_sample_css() {
