@@ -597,11 +597,12 @@ function extension( j, i ) {
     let p = find_beta( j, i-1 );
     // rule 1 (once a leaf always a leaf)
     if ( node_is_leaf(p.v) && pos_at_edge_end(p) ){
-        // extension is already implicitly in the tree
+        // p.v is a leaf node
         res = 1;
     }
     // rule 2
     else if ( !continues(p,str[i]) ) {
+        // not already in the tree - adding
         //printf("applying rule 2 at j=%d for phase %d\n",j,i);
         let leaf = node_create_leaf( i );
         if ( p.v==root || pos_at_edge_end(p) ) {
@@ -621,8 +622,9 @@ function extension( j, i ) {
     }
     // rule 3
     else {
-        //printf("applying rule 3 at j=%d for phase %d\n",j,i);
-        p.v.visited = true;
+        // already in the tree but p.v is NOT a leaf
+        // console.log("applying rule 3 at j="+j+" for phase "+i+"\n");
+        // p.v.visited = true;
         update_current_link( p.v );
         update_old_beta( p, i );
         res = 0;
@@ -907,6 +909,7 @@ function path_extract_align( u ) {
         else if ( start > lhs_len )
             a.start2 = (start-text.length) - (lhs_len+1);
     }
+    a.mum = !Object.hasOwn(u,"visited");
     alignments.push(a);
 }
 function find_alignments( u ) {
@@ -1146,5 +1149,5 @@ function ukkonen_compare(lhs,rhs) {
 /*ukkonen_compare(left_html,right_html);
 for ( const a of alignments ) {
     let a_end = a.start1+a.text.length;
-    console.log(a.start1+":"+a_end+"="+a.text);
+    console.log(a.start1+":"+a_end+"="+a.text+";/* mum="+a.mum);
 }*/

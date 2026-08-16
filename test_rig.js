@@ -89,12 +89,13 @@ async function populate_sample_index(){
     			works_select.removeChild(works_select.lastChild);
 			// sort index
 			let works_keys = Object.keys(works);
+			let docid = localStorage.getItem('docid');
 			works_keys.sort();
 			for ( let key of works_keys ) {
 				let opt = document.createElement('option');
 				opt.textContent = key;
-				if ( key == "h101" )
-					opt.selected="selected";
+				if ( docid != null && docid == key )
+					opt.selected = "selected";
 				works_select.appendChild(opt);
 			}
 		}
@@ -270,6 +271,8 @@ async function change_version(reload) {
 async function change_work() {
 	let work_select = document.getElementById("works");
 	let work = work_select.value;
+	// remember chosen work on refresh
+	localStorage.setItem('docid', work);
 	let versions = all_works[work];
 	let keys = Object.keys(versions);
 	populate_version_dropdown("lhs_versions",keys);
