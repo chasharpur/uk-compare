@@ -103,7 +103,7 @@ monkey travelling through the jungle by swinging from tree to tree
 instead of laboriously climbing each tree in turn.
 
 ## Transpositions
-Unlike Myer's algorithm, Ukkonen's works equally fast no matter how simmilar or dissimilar two versions are. This is a great feature, but it has a dark side. Transpositions, where the left and right parts of an alignment are on opposite sides of an already aligned piece of text in the middle, are not distinguished from direct alignments.
+Unlike Myer's algorithm, Ukkonen's works equally fast no matter how dissimilar two versions are. This is a great feature, but it has a dark side. Transpositions, where the left and right parts of an alignment are on opposite sides of an already aligned piece of text in the middle, are not distinguished from direct alignments.
 For example, in Harpur's poem Eva Gray he writes in the c-version:
 
     Through Memory’s echoes Passion’s wrong
@@ -112,24 +112,22 @@ which he then revises to:
 
     Through Passion’s wrong Memory’s echoes
 
-Here "Memory's echoes" and "Passion's wrong" swap places. Often though 
-some text may be left in the middle, as in:
+Here "Memory's echoes" and "Passion's wrong" swap places. Here the text in the middle is empty, though normally something is left, as in:
 
-In the ranks of war
+    In the ranks of war
 
-In the war-like ranks
+    In the war-like ranks
 
-Here "war" is transposed around "-like" or "of".
+Here "war" is transposed around "-like" or "of" depending on which version you read.
 
 In real world texts transpositions like this are pretty rare. A manual 
 survey of the first 151 poems of Harpur revealed just 47 cases, around 
-one per three poems. Typically, the suffix tree will detect doxens of 
+one per three poems. Typically, the suffix tree will detect dozens of 
 small transpositions between the start and end of the text that a human 
-would not consider invalid. In practice transpositions are mostly 
-short-range affairs. Apply the statistics of these real-world examples 
+would consider invalid. In practice transpositions are mostly 
+short-range affairs. Applying the statistics of these real-world examples 
 to the myriad of transpositions detected by the suffix tree, and 
-discarding most of them, will result in a better alignment that makes 
-sense to the human reader.
+discarding most of them, results in a much more accurate alignment.
 
 ## Synchro-scroll
 The test rig contains a synchro-scroller module, which vertically aligns 
