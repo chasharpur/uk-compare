@@ -112,7 +112,8 @@ which he then revises to:
 
     Through Passion’s wrong Memory’s echoes
 
-Here "Memory's echoes" and "Passion's wrong" swap places. Here the text in the middle is empty, though normally something is left, as in:
+Here "Memory's echoes" and "Passion's wrong" swap places, while the text 
+in the middle is empty, though normally something is left, as in:
 
     In the ranks of war
 
