@@ -113,9 +113,12 @@ which he then revises to:
     Through Passion’s wrong Memory’s echoes
 
 Here "Memory's echoes" and "Passion's wrong" swap places, while the text 
-in the middle is empty, though normally something is left, as in:
+in the middle is empty. In most cases, however, something divides the 
+two halves of the transposition, as in:
 
     In the ranks of war
+
+which he revised to:
 
     In the war-like ranks
 
