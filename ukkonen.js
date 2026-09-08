@@ -44,6 +44,7 @@ const LEN_MASK = 0x3FFFFFFF;
 const MAX_LIST_CHILDREN = 6;
 // this is 2^30-1, the maximum 30 bit unsigned
 const INFINITY = 1073741823;
+const MAX_TRANSPOSE = 8.0;
 // end of current leaves
 var e = 0;
 var root;
@@ -909,7 +910,7 @@ function path_extract_align( u ) {
         else if ( start > lhs_len )
             a.start2 = (start-text.length) - (lhs_len+1);
     }
-    a.mum = !Object.hasOwn(u,"visited");
+    //a.mum = !Object.hasOwn(u,"visited");
     alignments.push(a);
 }
 function find_alignments( u ) {
@@ -970,29 +971,43 @@ function alignment_start(a, side ) {
  * @return the AMOUNT of overlap. >0 means overlap, <= 0 means none 
  */
 function alignment_overlap(a,b,side) {
-    return alignment_end(a,side)-alignment_start(b,side);
+    let a_start = alignment_end(a,side);
+    let a_end = alignment_end(a,side);
+    let b_start = alignment_start(b,side);
+    let b_end = alignment_end(b,side);
+    if ( a_end < b_start )
+        return a_end - b_start;
+    else if ( b_end < a_start )
+        return b_end - a_start;
+    else if ( a_end > b_start )
+        return a_end - b_start;
+    else
+        return a_start - b_end;                                                       
 }
 /**
- * Is one alignment transposed with respect to another?
- * @param a the first alignment
- * @param b another alignment
- * @return true if a and b are transposed WRT each other
+ * Shorten an alignment
+ * @param item the alignment to shorten
+ * @param against trim to fit against this alignment
+ * @param side the side: 1 (left) or 2 (right)
  */
-function is_transposed( a, b ) {
-    if ( a.start1 > b.start1 && a.start2 < b.start2 )
-        return true;
-    else if ( a.start1 < b.start1 && a.start2 > b.start2 )
-        return true;
-    else
-        return false;
+function curtail(item,against,side) {
+    let against_start = alignment_start(against,side);
+    let item_start = alignment_start(item,side);
+    let item_end = alignment_end(item,side);
+    let against_end = alignment_end(against,side);
+    if ( item_start < against_start && item_end > against_start )
+        alignment_set_end( item, against_start, side );
+    else if ( item_start < against_end && item_end > against_end )
+        alignment_set_start(item,against_end,side);
+    return item;
 }
 /**
  * Pick alignments using the longest increasing subsequence heuristic
- * @param a a non-empty alignment set sorted on start position
- * @param selected output: the selected set of alignments
- * @param side left (1) or right (2)
+ * @param a a non-empty unsorted alignment set
+ * @param selected the selected set of alignments (non-overlapping)
+ * @param transposed the set of accepted transpose alignments
  */
-function lis_align(a,selected,side) {
+function lis_align(a,selected,transposed) {
     // find longest alignment in a
     let longest = 0;
     for ( let i=1;i<a.length;i++ ) {
@@ -1003,88 +1018,101 @@ function lis_align(a,selected,side) {
     let before = null;
     for ( let i=0;i<selected.length;i++ ) {
         // yes, less than or equal - see alignment_end above
-        if ( alignment_end(a[longest],side) <= alignment_start(selected[i],side) )
+        if ( alignment_end(a[longest],1) <= alignment_start(selected[i],1) )
             before = i;
     }
     if ( before == null )
         selected.push(a[longest]);
     else
         selected.splice(before,0,a[longest]);
-    // recurse into the left and right sets of aligments
-    // NB sort left set by their increasing ENDS
-    let left = a.slice(0,longest);
-    left.sort((a,b)=>alignment_end(a,side)-alignment_end(b,side));
-    // sort right set by their increasing starts
-    let right = a.slice(longest+1);
-    right.sort((a,b)=>alignment_start(a,side)-alignment_start(b,side));
-    // remove overlapping alignments
-    // left side complicated by possibility of fake overlap
-    let i = left.length-1;
-    // dangerous loop - must exercise caution
-    while ( i >= 0 ){
-        let overlap = alignment_overlap(left[i],a[longest],side);
-        // 1. no overlap
-        if ( overlap <= 0 )
-            // sorted on end: we are done
-            break;
-        // 2. within or transposed on the other side of selected
-        else if ( overlap >= left[i].text.length || is_transposed(left[i],a[longest]) ) {
-            left.splice(i,1);
-        }
-        // if there is a selected alignment to the left of a[longest] 
-        // and left[i] is left of that then it is NOT direct aligned
-        else if ( before != null && before-2 >= 0 && alignment_start(left[i],side) < alignment_end(selected[before-2],side) ) {
-            //console.log("removing "+left[i].text);
-            left.splice(i,1);
-        }
+    // remove selected alignment from a
+    let selected_item = a[longest];
+    a.splice(longest,1);
+    // partition remaining aligments into left, right and transposed sets
+    let left = [];
+    let right = [];
+    for ( let i=0;i<a.length;i++ ) {
+        // 1. a[i] is completely contained within selected_item - discard
+        if ( alignment_start(a[i],1) >= alignment_start(selected_item,1) 
+            && alignment_end(a[i],1) <= alignment_end(selected_item,1) )
+            continue;
+        else if ( alignment_start(a[i],2) >= alignment_start(selected_item,2)
+            && alignment_end(a[i],2) <= alignment_end(selected_item,2) )
+            continue;
         else {
-            //console.log("overlap:"+overlap+" left:"+left[i].text+" longest:"+a[longest].text);
-            left[i].text = left[i].text.slice(0,left[i].text.length-overlap);
-        }
-        i--;
-    }
-    i = 0;
-    while ( i < right.length ){
-        let overlap = alignment_overlap(a[longest],right[i],side);
-        // 1. no overlap
-        if ( overlap <= 0 ) {
-            // sorted on start: we are done
-            break;
-        }
-        // 2. within or transposed on other side of selected
-        else if ( overlap >= right[i].text.length || is_transposed(right[i],a[longest]) ) {
-            // this will automatically move on to the next item
-            right.splice(i,1);
-        }
-        // if there is a selected alignment to the right of a[longest] 
-        // and right[i] is right of that then it is NOT direct aligned
-        else if ( before != null && alignment_start(right[i],side) > alignment_start(selected[before],side) ) {
-            //console.log("removing "+right[i].text);
-            right.splice(i,1);
-        }
-        else {
-            //console.log("overlap:"+overlap+" right:"+right[i].text+" longest:"+a[longest].text);
-            right[i].text = right[i].text.slice(overlap); // remove overlapping chars 
-            right[i].start1 += overlap;
-            right[i].start2 += overlap;
-            // retain; move to the next item
-            i++;
+            // for next step first curtail
+            let overlap_1 = alignment_overlap(a[i],selected_item,1);
+            if ( overlap_1 > 0 )
+                a[i] = curtail(a[i],selected_item,1);   // NB rewrite curtail
+            let overlap_2 = alignment_overlap(a[i],selected_item,2);
+            if ( overlap_2 > 0 )
+                a[i] = curtail(a[i],selected_item,2);
+            // 2. a[i] is completely to the left of selected_item - add to left set
+            if ( alignment_end(a[i],1) <= alignment_start(selected_item,1) 
+                && alignment_end(a[i],2) <= alignment_start(selected_item,2) )
+                left.push(a[i]);
+            // 3. a[i] is completely to the right of selected_item - add to right set
+            else if (alignment_start(a[i],1) >= alignment_end(selected_item,1) 
+                && alignment_start(a[i],2) >= alignment_end(selected_item,2) )
+                right.push(a[i]);
+            // 4. a[i] is transposed around selected_item
+            else {
+                let dist_1 = Math.abs(alignment_end(a[i],1)-alignment_start(a[i],2));
+                let dist_2 = Math.abs(alignment_start(a[i],1)-alignment_end(a[i],2));
+                let dist = Math.max(dist_1,dist_2);
+                if ( dist/a[i].text.length < MAX_TRANSPOSE )
+                    transposed.push(a[i]);
+            }
         }
     }
     // recurse
     if ( left.length > 0 )
-        lis_align(left,selected,side);
+        lis_align(left,selected,transposed);
     if ( right.length > 0 )
-        lis_align(right,selected,side);
+        lis_align(right,selected,transposed);
 }
-function filter_alignments() {
-    let filtered = [];
-    let final_filtered = [];
-    alignments.sort((a,b)=>a.start1-b.start1);
-    lis_align(alignments,filtered,1);
-    filtered.sort((a,b)=>a.start2-b.start2);
-    lis_align(filtered,final_filtered,2);
-    return final_filtered;
+function insert_before(list,item,side) {
+    let index = -1;
+    for ( let i=0;i<list.length;i++ ) {
+        if ( alignment_start(list[i],side) >= alignment_end(item,side) ){
+            index = i;
+            break;
+        }
+    }
+    return index;
+}
+function alignment_set_start( item, start, side ) {
+    let old_start = alignment_start(item,side);
+    item.text = item.text.slice(start-old_start);
+    if ( side == 1 ) {
+        item.start1 = start;
+        item.start2 += start - old_start;
+    }
+    else {
+        item.start2 = start;
+        item.start1 += start - old_start;
+    }
+}
+function alignment_set_end( item, end, side ){
+    let text_len = 0;
+    if ( side == 1 )
+        text_len = end - item.start1;
+    else
+        text_len = end - item.start2;
+    if ( text_len < 0 )
+        text_len = 0;
+    item.text = item.text.slice(0,text_len);
+}
+/**
+ * See if we can accept an alignment
+ * @param item a non-overlapping alignment
+ * @param list_1 copy of the version 1 already accepted alignments
+ * @param list_2 copy of the version 2 already accepted alignments
+ */
+function conditional_accept(item,list_1,list_2) {
+    let t_res = is_transposed(item,list_1,list_2);
+    if ( t_res <= 0 )
+        accept(item,list_1,list_2);
 }
 /**
  * Remove all interior or leaf nodes whose text runs over the middle 
@@ -1119,6 +1147,8 @@ function prune_tree( v ) {
 function ukkonen_compare(lhs,rhs) {
     node_id=0;
     alignments = [];
+    filtered = [];
+    transposed = [];
     current = null;
     start_pos = 0;
     debug_code = false;
@@ -1142,9 +1172,9 @@ function ukkonen_compare(lhs,rhs) {
     prune_tree( root );
     //print_tree(root);
     find_alignments(root);
-    alignments = filter_alignments();
-    //find_string( " dog</p></body>", true );
-    return alignments;
+    lis_align(alignments,filtered,transposed);
+    // add transposed ...
+    return filtered;
 }
 /*ukkonen_compare(left_html,right_html);
 for ( const a of alignments ) {
