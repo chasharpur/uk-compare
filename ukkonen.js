@@ -1104,17 +1104,6 @@ function alignment_set_end( item, end, side ){
     item.text = item.text.slice(0,text_len);
 }
 /**
- * See if we can accept an alignment
- * @param item a non-overlapping alignment
- * @param list_1 copy of the version 1 already accepted alignments
- * @param list_2 copy of the version 2 already accepted alignments
- */
-function conditional_accept(item,list_1,list_2) {
-    let t_res = is_transposed(item,list_1,list_2);
-    if ( t_res <= 0 )
-        accept(item,list_1,list_2);
-}
-/**
  * Remove all interior or leaf nodes whose text runs over the middle 
  * @param v the node to start from (initially root)
  */

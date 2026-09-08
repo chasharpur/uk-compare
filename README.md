@@ -116,6 +116,15 @@ segmentation on left and right may not precisely correspond, and so the
 synchro-scrolling may not be smooth or precise. Some improvement here 
 may yet be made.
 
+# Recursion
+When the same text is repeated multiple times in a document, for 
+example, the refrain of a song or poem, the suffix tree only records the 
+first such alignment between left and right. Susbsequent instances of 
+the same text will be flagged as deleted/added. The only way around this 
+limitation is to re-apply the suffix tree calculation to all unaligned 
+parts of the text. Such repetitions, now isolated from the other 
+instances, can be aligned because they are locally unique.
+
 ## Work plan for version 1.0
 Version 1.0 will implement the following extra features:
 
