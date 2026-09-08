@@ -119,7 +119,7 @@ may yet be made.
 ## Recursion
 When the same text is repeated multiple times in a document, for 
 example, the refrain of a song or poem, the suffix tree only records the 
-first such alignment between left and right. Susbsequent instances of 
+first such alignment between left and right. Subsequent instances of 
 the same text will be flagged as deleted/added. The only way around this 
 limitation is to re-apply the suffix tree calculation to all unaligned 
 parts of the text. Such repetitions, now isolated from the other 
