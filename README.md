@@ -119,8 +119,8 @@ may yet be made.
 ## Work plan for version 1.0
 Version 1.0 will implement the following extra features:
 
-0.8: transpositions will only be adopted if they are unique (the Maximal 
-Unique Match property or MUM).
+0.8: transpositions will only be adopted if they meet certain statistical 
+critera as observed in actual cases.  
 
 0.9: Alignment of unaligned sections will be recomputed recursively.
 
