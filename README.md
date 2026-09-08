@@ -129,9 +129,11 @@ survey of the first 151 poems of Harpur revealed just 47 cases, around
 one per three poems. Typically, the suffix tree will detect dozens of 
 small transpositions between the start and end of the text that a human 
 would consider invalid. In practice transpositions are mostly 
-short-range affairs. Applying the statistics of these real-world examples 
-to the myriad of transpositions detected by the suffix tree, and 
-discarding most of them, results in a much more accurate alignment.
+short-range affairs. Applying the statistics of these real-world 
+examples, based on the length of the transposition and the distance 
+between the two halves, to the myriad of transpositions detected by the 
+suffix tree, and discarding most of them, results in a much more 
+accurate alignment.
 
 ## Synchro-scroll
 The test rig contains a synchro-scroller module, which vertically aligns 
