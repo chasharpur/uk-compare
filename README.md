@@ -131,7 +131,7 @@ small transpositions between the start and end of the text that a human
 would consider invalid. In practice transpositions are mostly 
 short-range affairs. Applying the statistics of these real-world 
 examples, based on the length of the transposition and the distance 
-between the two halves, to the myriad of transpositions detected by the 
+between the two halves, to the myriad of cases detected by the 
 suffix tree, and discarding most of them, results in a much more 
 accurate alignment.
 

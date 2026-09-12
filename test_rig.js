@@ -251,7 +251,7 @@ async function change_version(reload) {
 	let method = document.getElementById("method").value;
 	let similarities;
 	if ( method.toLowerCase() == "ukkonen" )
-		similarities = ukkonen_compare(lhs_text,rhs_text);
+		similarities = calc_alignments(lhs_text,rhs_text);
 	else if ( method.toLowerCase() == "myers" )
 		similarities = myers_compare(lhs_text,rhs_text);
 	else {

@@ -45,6 +45,7 @@ const MAX_LIST_CHILDREN = 6;
 // this is 2^30-1, the maximum 30 bit unsigned
 const INFINITY = 1073741823;
 const MAX_TRANSPOSE = 8.0;
+const MIN_REALIGN = 5;
 // end of current leaves
 var e = 0;
 var root;
@@ -938,172 +939,6 @@ function find_alignments( u ) {
     }
 }
 /**
- * Return the end of the alignment (one char AFTER the end)
- * @param a the alignment
- * @param side the side (1 or 2)
- * @return the alignment start position+text length
- */
-function alignment_end( a, side ) {
-    if ( side == 1 )
-        return a.start1+a.text.length;
-    else
-        return a.start2+a.text.length;
-}
-/**
- * Get the start offset of an alignment, based on the side
- * @param a the alignment
- * @param side the side (1 or 2) 
- * @return the start index into the relevant version 
- */
-function alignment_start(a, side ) {
-    if ( a == null )
-        console.log("null");
-    if ( side == 1 )
-        return a.start1;
-    else
-        return a.start2;
-}
-/**
- * calculate overlap between two alignments
- * @param a first alignment
- * @param b second alignment
- * @param side the side to test
- * @return the AMOUNT of overlap. >0 means overlap, <= 0 means none 
- */
-function alignment_overlap(a,b,side) {
-    let a_start = alignment_end(a,side);
-    let a_end = alignment_end(a,side);
-    let b_start = alignment_start(b,side);
-    let b_end = alignment_end(b,side);
-    if ( a_end < b_start )
-        return a_end - b_start;
-    else if ( b_end < a_start )
-        return b_end - a_start;
-    else if ( a_end > b_start )
-        return a_end - b_start;
-    else
-        return a_start - b_end;                                                       
-}
-/**
- * Shorten an alignment
- * @param item the alignment to shorten
- * @param against trim to fit against this alignment
- * @param side the side: 1 (left) or 2 (right)
- */
-function curtail(item,against,side) {
-    let against_start = alignment_start(against,side);
-    let item_start = alignment_start(item,side);
-    let item_end = alignment_end(item,side);
-    let against_end = alignment_end(against,side);
-    if ( item_start < against_start && item_end > against_start )
-        alignment_set_end( item, against_start, side );
-    else if ( item_start < against_end && item_end > against_end )
-        alignment_set_start(item,against_end,side);
-    return item;
-}
-/**
- * Pick alignments using the longest increasing subsequence heuristic
- * @param a a non-empty unsorted alignment set
- * @param selected the selected set of alignments (non-overlapping)
- * @param transposed the set of accepted transpose alignments
- */
-function lis_align(a,selected,transposed) {
-    // find longest alignment in a
-    let longest = 0;
-    for ( let i=1;i<a.length;i++ ) {
-        if ( a[i].text.length > a[longest].text.length )
-            longest = i;
-    }
-    // find element to insert before (or null)
-    let before = null;
-    for ( let i=0;i<selected.length;i++ ) {
-        // yes, less than or equal - see alignment_end above
-        if ( alignment_end(a[longest],1) <= alignment_start(selected[i],1) )
-            before = i;
-    }
-    if ( before == null )
-        selected.push(a[longest]);
-    else
-        selected.splice(before,0,a[longest]);
-    // remove selected alignment from a
-    let selected_item = a[longest];
-    a.splice(longest,1);
-    // partition remaining aligments into left, right and transposed sets
-    let left = [];
-    let right = [];
-    for ( let i=0;i<a.length;i++ ) {
-        // 1. a[i] is completely contained within selected_item - discard
-        if ( alignment_start(a[i],1) >= alignment_start(selected_item,1) 
-            && alignment_end(a[i],1) <= alignment_end(selected_item,1) )
-            continue;
-        else if ( alignment_start(a[i],2) >= alignment_start(selected_item,2)
-            && alignment_end(a[i],2) <= alignment_end(selected_item,2) )
-            continue;
-        else {
-            // for next step first curtail
-            let overlap_1 = alignment_overlap(a[i],selected_item,1);
-            if ( overlap_1 > 0 )
-                a[i] = curtail(a[i],selected_item,1);   // NB rewrite curtail
-            let overlap_2 = alignment_overlap(a[i],selected_item,2);
-            if ( overlap_2 > 0 )
-                a[i] = curtail(a[i],selected_item,2);
-            // 2. a[i] is completely to the left of selected_item - add to left set
-            if ( alignment_end(a[i],1) <= alignment_start(selected_item,1) 
-                && alignment_end(a[i],2) <= alignment_start(selected_item,2) )
-                left.push(a[i]);
-            // 3. a[i] is completely to the right of selected_item - add to right set
-            else if (alignment_start(a[i],1) >= alignment_end(selected_item,1) 
-                && alignment_start(a[i],2) >= alignment_end(selected_item,2) )
-                right.push(a[i]);
-            // 4. a[i] is transposed around selected_item
-            else {
-                let dist_1 = Math.abs(alignment_end(a[i],1)-alignment_start(a[i],2));
-                let dist_2 = Math.abs(alignment_start(a[i],1)-alignment_end(a[i],2));
-                let dist = Math.max(dist_1,dist_2);
-                if ( dist/a[i].text.length < MAX_TRANSPOSE )
-                    transposed.push(a[i]);
-            }
-        }
-    }
-    // recurse
-    if ( left.length > 0 )
-        lis_align(left,selected,transposed);
-    if ( right.length > 0 )
-        lis_align(right,selected,transposed);
-}
-function insert_before(list,item,side) {
-    let index = -1;
-    for ( let i=0;i<list.length;i++ ) {
-        if ( alignment_start(list[i],side) >= alignment_end(item,side) ){
-            index = i;
-            break;
-        }
-    }
-    return index;
-}
-function alignment_set_start( item, start, side ) {
-    let old_start = alignment_start(item,side);
-    item.text = item.text.slice(start-old_start);
-    if ( side == 1 ) {
-        item.start1 = start;
-        item.start2 += start - old_start;
-    }
-    else {
-        item.start2 = start;
-        item.start1 += start - old_start;
-    }
-}
-function alignment_set_end( item, end, side ){
-    let text_len = 0;
-    if ( side == 1 )
-        text_len = end - item.start1;
-    else
-        text_len = end - item.start2;
-    if ( text_len < 0 )
-        text_len = 0;
-    item.text = item.text.slice(0,text_len);
-}
-/**
  * Remove all interior or leaf nodes whose text runs over the middle 
  * @param v the node to start from (initially root)
  */
@@ -1136,22 +971,16 @@ function prune_tree( v ) {
 function ukkonen_compare(lhs,rhs) {
     node_id=0;
     alignments = [];
-    filtered = [];
-    transposed = [];
     current = null;
     start_pos = 0;
     debug_code = false;
-    last;
     old_j = 0;
     old_beta = {};
     debug_tree = "";
     e = 0;
     links = null;
-    // create I_0 manually
     lhs_len = lhs.length;
     str = lhs+'\0'+rhs+'%';
-    //console.log("str.length="+str.length);
-    // do the lhs first
     root = node_create( 0, 0 );
     f = node_create_leaf( 0 );
     node_add_child( root, f );
@@ -1161,12 +990,11 @@ function ukkonen_compare(lhs,rhs) {
     prune_tree( root );
     //print_tree(root);
     find_alignments(root);
-    lis_align(alignments,filtered,transposed);
-    // add transposed ...
-    return filtered;
+    return alignments;
 }
 /*ukkonen_compare(left_html,right_html);
 for ( const a of alignments ) {
     let a_end = a.start1+a.text.length;
     console.log(a.start1+":"+a_end+"="+a.text+";/* mum="+a.mum);
 }*/
+
