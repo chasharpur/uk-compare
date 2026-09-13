@@ -43,6 +43,13 @@ function alignment_overlap(a,b,side) {
     else
         return a_start - b_end;                                                       
 }
+/**
+ * Check that an item to be inserted doesn't overlap
+ * @param list the list sorted on side
+ * @param item the item to insert later
+ * @param side 1 for left, 2 for right
+ * @return -2: append -1 overlaps, >=0 index to insert before
+ */
 function check_overlap(list,item,side) {
     if ( list.length == 0 || alignment_end(list[list.length-1],side) <= alignment_start(item,side) )
         return -2;
@@ -60,6 +67,13 @@ function check_overlap(list,item,side) {
         return index;
     }
 }
+/**
+ * Find the item in a sorted list before which to insert
+ * @param list the list sorted on side
+ * @param item the item to insert later
+ * @param side 1 for left 2 for right
+ * @return -1: append >=0 the index to insert before
+ */
 function insert_before(list,item,side) {
     let index = -1;
     if ( list.length == 0 )
@@ -72,6 +86,12 @@ function insert_before(list,item,side) {
     }
     return index;
 }
+/**
+ * During curtailment we set the start of alignment
+ * @param item the item to curtail
+ * @param start the new start
+ * @param side 1 for left 2 for right
+ */
 function alignment_set_start( item, start, side ) {
     let old_start = alignment_start(item,side);
     item.text = item.text.slice(start-old_start);
@@ -84,6 +104,12 @@ function alignment_set_start( item, start, side ) {
         item.start1 += start - old_start;
     }
 }
+/**
+ * During curtailment we set the end of alignment
+ * @param item the item to curtail
+ * @param end the new end offset (start+text.length)
+ * @param side 1 for left 2 for right
+ */
 function alignment_set_end( item, end, side ){
     let text_len = 0;
     if ( side == 1 )
