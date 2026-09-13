@@ -206,8 +206,8 @@ function recursive_align( a, transposed, lhs, rhs ) {
         start_2 = a[i].start2+a[i].text.length;
     }
     // coda
-    if ( start_1 > lhs.length
-        && start_2 > rhs.length
+    if ( start_1 < lhs.length
+        && start_2 < rhs.length
         && Math.min(lhs.length-start_1,rhs.length-start_2) > MIN_REALIGN ) {
         insets.push({text1:lhs.slice(start_1),text2:rhs.slice(start_2),start1:start_1,start2:start_2});
     }
