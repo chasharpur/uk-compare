@@ -161,13 +161,8 @@ instances, can be aligned because they are locally unique.
 ## Work plan for version 1.0
 Version 1.0 will implement the following extra features:
 
-0.8: transpositions will only be adopted if they meet certain statistical 
-critera as observed in actual cases.  
-
-0.9: Alignment of unaligned sections will be recomputed recursively.
-
-1.0: The Myers algorithm will be added to demonstrate the comparative 
-speed and accuracy of Myers vs Ukkonen. 
+1.0: The Myers algorithm and perhaps others will be added to demonstrate 
+their comparative speed and accuracy vs Ukkonen.
 
 ## The future
 I hope to extend this to N versions. If we have N versions then the 
