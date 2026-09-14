@@ -178,7 +178,7 @@ async function set_version(select_id,versions,version_key) {
 			// load the layer!
 			let load_key = switch_layer(layer_id,layer_select.value);
 			let rel_url = "./samples/"+document.getElementById("sample").value+"/"+layers[load_key];
-			let html = await load_user_html( rel_url);
+			let html = await load_user_html( rel_url );
 			let target = document.getElementById(select_id.replace("versions","body"));
 			while (target.firstChild)
 				target.removeChild(target.lastChild);
