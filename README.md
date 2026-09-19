@@ -164,7 +164,7 @@ widely considered as the most efficient diff algorithm, although it does
 not compute transpositions. The user can compare the speed of the two. 
 For short poems there is not much visible difference but for longer 
 works with more variation such as h080, The Creek of the Four Graves, 
-it several seconds to finish, whereas Ukkonen's algorithm is about 100 
+it took several seconds to finish, whereas Ukkonen's algorithm is about 100 
 times faster.
 
 ## The future
