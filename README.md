@@ -103,7 +103,7 @@ monkey travelling through the jungle by swinging from tree to tree
 instead of laboriously climbing each tree in turn.
 
 ## Transpositions
-Unlike Myer's algorithm, Ukkonen's works equally fast no matter how dissimilar two versions are. This is a great feature, but it has a dark side. Transpositions, where the left and right parts of an alignment are on opposite sides of an already aligned piece of text in the middle, are not distinguished from direct alignments.
+Unlike Myers' algorithm, Ukkonen's works equally fast no matter how dissimilar two versions are. This is a great feature, but it has a dark side. Transpositions, where the left and right parts of an alignment are on opposite sides of an already aligned piece of text in the middle, are not distinguished from direct alignments.
 For example, in Harpur's poem Eva Gray he writes in the c-version:
 
     Through Memory’s echoes Passion’s wrong
@@ -159,13 +159,13 @@ parts of the text. Such repetitions, now isolated from the other
 instances, can be aligned because they are locally unique.
 
 ## Myers' algorithm
-I have added Myers algorithm as an alternative to Ukkonen's. It is
+I have added Myers' algorithm as an alternative to Ukkonen's. It is
 widely considered as the most efficient diff algorithm, although it does 
 not compute transpositions. The user can compare the speed of the two. 
 For short poems there is not much visible difference but for longer 
 works with more variation such as h080, The Creek of the Four Graves, 
-it several seconds to finish, whereas Ukkonen's algorithm is still 
-sub-second.
+it several seconds to finish, whereas Ukkonen's algorithm is about 100 
+times faster.
 
 ## The future
 I hope to extend this to N versions. If we have N versions then the 

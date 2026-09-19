@@ -250,6 +250,7 @@ async function change_version(reload) {
 	let rhs_text = html_strip(rhs_html);
 	let method = document.getElementById("method").value;
 	let similarities;
+	const start = performance.now();
 	if ( method.toLowerCase() == "ukkonen" )
 		similarities = calc_alignments(lhs_text,rhs_text);
 	else if ( method.toLowerCase() == "myers" )
@@ -258,6 +259,8 @@ async function change_version(reload) {
 		console.log("unimplemented method" + method );
 		return;
 	}
+	const end = performance.now();
+	console.log("Method: "+method+": execution time: "+(end-start)+" ms");
 	lhs_html = html_add_diffs(similarities,lhs_html,1);
 	rhs_html = html_add_diffs(similarities,rhs_html,2);
 	document.getElementById("lhs_body").innerHTML = lhs_html;
