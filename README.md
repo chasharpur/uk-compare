@@ -165,7 +165,9 @@ not compute transpositions. The user can compare the speed of the two.
 For short poems there is not much visible difference but for longer 
 works with more variation such as h080, The Creek of the Four Graves, 
 it took several seconds to finish, whereas Ukkonen's algorithm is about 100 
-times faster.
+times faster. When comparing versions h080f to h080h Myers' algorithm took 
+4636 milliseconds -- 4.6 seconds to complete the comparison -- and Ukkonen's 
+algorithm took only 34 milliseconds -- less than the blink of an eye.
 
 ## The future
 I hope to extend this to N versions. If we have N versions then the 
