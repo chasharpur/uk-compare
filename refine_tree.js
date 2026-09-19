@@ -274,10 +274,12 @@ function add_transpositions(selected_1,transposed) {
         if ( index_2 == -1 )
             continue;
         if ( index_1 == -2 && index_2 == -2 ) {
+            transposed[i].transposed = true;
             selected_1.push(transposed[i])
             selected_2.push(transposed[i]);
         }
         else { // both >= 0
+            transposed[i].transposed = true;
             selected_1.splice(index_1,0,transposed[i]);
             selected_2.splice(index_2,0,transposed[i]);
         }
