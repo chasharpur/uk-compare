@@ -158,11 +158,14 @@ limitation is to re-apply the suffix tree calculation to all unaligned
 parts of the text. Such repetitions, now isolated from the other 
 instances, can be aligned because they are locally unique.
 
-## Work plan for version 1.0
-Version 1.0 will implement the following extra features:
-
-1.0: The Myers algorithm and perhaps others will be added to demonstrate 
-their comparative speed and accuracy vs Ukkonen.
+## Myers' algorithm
+I have added Myers algorithm as an alternative to Ukkonen's. It is
+widely considered as the most efficient diff algorithm, although it does 
+not compute transpositions. The user can compare the speed of the two. 
+For short poems there is not much visible difference but for longer 
+works with more variation such as h080, The Creek of the Four Graves, 
+it several seconds to finish, whereas Ukkonen's algorithm is still 
+sub-second.
 
 ## The future
 I hope to extend this to N versions. If we have N versions then the 
