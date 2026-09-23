@@ -1,4 +1,46 @@
-# Ukkonen's suffix tree compare tool
+
+## Rationale
+Why write a comparison tool for HTML? Although there is little agreement 
+on how texts may be represented on a server, whether in databases, as XML, 
+or whatever, there IS agreement on the general format for presenting 
+them to the reader, and that is in HTML. The method of 
+comparison used here is thus the following:
+
+1. Strip all the tags from the HTML of both versions being compared, 
+including the head elements, leaving only plain text behind.
+
+2. Compare the two resulting plain texts. 
+
+3. Restore the removed markup, adding to it the tags used to describe 
+the newly-computed deletions, insertions and alignments. 
+
+The result is a side by side display, with deletions marked on the left
+in red, and additions on the right in blue.
+
+The uk-compare tool in written in Javascript in an effort to move the 
+most complex part of the Digital Scholarly Edition from the server to 
+the client. The server can thus become a read-only dispenser of plain 
+information, rather than a complex piece of software needing constant 
+maintenance with every change in the underlying software or in its 
+operating system, and also prone to denial of server or penetration 
+attacks. It is a complete myth that servers are more powerful than the 
+modern laptop. Indeed, the opposite is true. Servers are usually 
+under-provisioned to save costs. This creates a weakness that can only 
+be addressed by moving the most computationally intensive operations 
+into the user's own browser.
+
+So far most textual comparison tools use a collation algorithm in which, 
+potentially at least, each character position in one version is compared 
+to all character positions in the other version. Misalignments are 
+common, and the time taken is proportial to N squared, where N is the 
+average length of one version. Also this method does not normally 
+calculate transpositions. Certain versions of the collation algorithm 
+claim faster run times, but none is faster than NxD, where D is the edit 
+distance between the versions, and for completely dissimilar texts the 
+efficiency is still N squared[2]. There has to be a faster way, and that 
+method is to use suffix trees.
+
+## Suffix trees
 Esko Ukkonen created a linear time algorithm for building a suffix tree 
 in 1995[1]. "Linear time" means that as the length of the texts to be 
 compared increases, the time taken is directly proportional to that. So 
@@ -6,29 +48,6 @@ comparing two texts four times as long overall takes no more than four
 times longer. This is fast enough to do a comparison even between long 
 texts without the user noticing any significant time lag.
 
-This Javascript module uses it to compare two HTML files, marking 
-unshared portions as deleted or added, depending on the side of the 
-comparison: deleted = left side, added = right-side. Its implementation 
-in Javascript allows comparison between two versions to be carried out 
-in the user's browser directly, rather than relying on a server to 
-perform the calculation. The server can thus simply be a repository of 
-information served up to the user rather than a complex piece of 
-software needing constant maintenance.
-
-## Rationale
-Most textual comparison tools use a collation algorithm where, 
-potentially at least, each character position in one version is compared 
-to all character positions in the other version. Misalignments are 
-common, and the time taken is proportial to N squared, where N is the average 
-length of one version. Also this method does not normally calculate 
-transpositions. Certain versions of the collation algorithm claim faster 
-run times, but none is faster than NxD, where D is the edit distance between 
-the versions, and for completely dissimilar texts the efficiency is 
-still N squared[2]. The other drawbacks remain, and in particular the 
-slowness makes this method useless for anything but short texts. There 
-has to be a better way, and that way is to use suffix trees.
-
-## Suffix trees
 A suffix tree stores in a tree structure all possible suffixes for a 
 string. For the string "banana" the suffixes are: 
 ```
