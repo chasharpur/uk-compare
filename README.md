@@ -17,7 +17,7 @@ the newly-computed deletions, insertions and alignments.
 The result is a side by side display, with deletions marked on the left
 in red, and additions on the right in blue.
 
-The uk-compare tool in written in Javascript in an effort to move the 
+The uk-compare tool is written in Javascript with a view to moving the 
 most complex part of the Digital Scholarly Edition from the server to 
 the client. The server can thus become a read-only dispenser of plain 
 information, rather than a complex piece of software needing constant 
