@@ -17,6 +17,7 @@ along with this program.  If not, see <http://gnu.org>.
 var method="Ukkonen";
 // global hash of all works indexed by docid
 var all_works;
+// NB the change_* functions are ONLY invoked by the user in the GUI
 /**
  * Low-level method to load json from site
  * @param file the relative file path to load
@@ -175,14 +176,21 @@ async function load_layer(side,data_path) {
  * The user changed the layer
  */
 async function change_layer(side) {
+	let other_side = (side=='lhs')?'rhs':'lhs';
 	let layer_select = document.getElementById(side+"_layers");
+	let other_layer_select = document.getElementById(other_side+"_layers");
 	let layer_opt = layer_select.options[layer_select.selectedIndex];
+	let other_layer_opt = layer_select.options[other_layer_select.selectedIndex];
 	let layer_storage_key = side+'_layer';
 	localStorage.setItem(layer_storage_key,layer_select.value);
 	let data_path = layer_opt.getAttribute("data-path");
+	let other_data_path = other_layer_opt.getAttribute("data-path");
 	await load_layer(side,data_path);
-	// need to recompute diffs
+	await load_layer(other_side,other_data_path);
+	// recompute diffs
 	compute_diffs();
+	// and scroll tables
+	synchro_scroller.build_scroll_tables("lhs_body","rhs_body");
 }
 /**
  * Set the text of a side to its chosen version
@@ -256,7 +264,10 @@ async function change_version(side) {
 	let side_versions_key = side+'_versions';
 	let side_version_key = side+'_version';
 	let side_layer_key = side+'_layer';
+	let other_side = (side == 'lhs')?'rhs':'lhs';
+	let other_side_versions_key = other_side+'_versions';
 	let version_select = document.getElementById(side_versions_key);
+	let other_version_select = document.getElementById(other_side_versions_key);
 	// remember chosen version on refresh
 	localStorage.setItem(side_version_key,version_select.value);
 	// invalidate stored layer value because version changed
@@ -268,6 +279,7 @@ async function change_version(side) {
 	let version_storage_key = side_versions_key.slice(0,side_versions_key.length-1);
 	localStorage.setItem(version_storage_key, version_select.value);
 	await set_version(side_versions_key,versions,version_select.value);
+	await set_version(other_side_versions_key,versions,other_version_select.value);
 	// compute diffs here because BOTH sides need recomputing
 	compute_diffs();
 	// also need to rebuild scroll tables
