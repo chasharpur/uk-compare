@@ -21,14 +21,12 @@ The uk-compare tool is written in Javascript with a view to moving the
 most complex part of the Digital Scholarly Edition from the server to 
 the client. The server can thus become a read-only dispenser of plain 
 information, rather than a complex piece of software needing constant 
-maintenance with every change in the underlying software or in its 
-operating system, and also insulate it to denial of server or 
-penetration attacks. Contrary to popular belief, servers are not more 
-powerful than the client computers, typically laptops, which access 
-them. In fact, servers are often deliberately under-provisioned to 
-save costs. This creates a weakness that can only be addressed by 
-moving the most computationally intensive operations into the user's 
-own browser.
+maintenance, and also insulate it from denial of server or penetration 
+attacks. Contrary to popular belief, servers are not more powerful 
+than the client computers, typically laptops, which access them. In 
+fact, servers are often deliberately under-provisioned to save costs. 
+This creates a weakness that can only be addressed by moving the most 
+computationally intensive operations into the user's own browser.
 
 To achieve this, we must re-examine the algorithms used to compute 
 differences between texts, to see if a faster and more accurate method 
