@@ -237,6 +237,12 @@ function alignment_end(a,side) {
     else if ( side == 2 )
         return a.start2+a.text.length;
 }
+function start_alignment_tag(joined,id) {
+    if ( Object.hasOwn(joined,"transposed")&& joined.transposed )
+        return '<span class="transposed" id="'+id+'">';
+    else
+        return '<span class="aligned" id="'+id+'">';
+}
 /**
  * Replace deleted, added or aligned text with spans. For alignments 
  * add an alignment id: <span class="aligned" id="a123a">...</span>. 
@@ -267,6 +273,8 @@ function html_add_diffs(similarities,html,side) {
     else
         similarities = similarities.sort((a,b)=>a.start2-b.start2);
     let current_alignment = (similarities.length>0)?similarities[0]:null;
+//    if ( Object.hasOwn(current_alignment,"transposed") )
+//        console.log("transposed="+current_alignment.transposed);
     let skip_tags = ["head","script"];
     for ( let i=0;i<html.length;i++ ) {
         let token = html[i];
@@ -294,7 +302,7 @@ function html_add_diffs(similarities,html,side) {
                             if ( alignment_start(current_alignment,side) == 0 ) {
                                 alignment_state = 1;
                                 current_alignment_id = next_alignment_id(side,current_alignment);
-                                new_html += '<span class="aligned" id="'+current_alignment_id+'">';
+                                new_html += start_alignment_tag(current_alignment,current_alignment_id);
                             }
                             else {  // not aligned at start
                                 alignment_state = 3;
@@ -310,7 +318,7 @@ function html_add_diffs(similarities,html,side) {
                                 if ( current_alignment != null && alignment_start(current_alignment,side) == text_offset ) {
                                     alignment_state = 1;
                                     current_alignment_id = next_alignment_id(side,current_alignment);
-                                    new_html += '<span class="aligned" id="'+current_alignment_id+'">';
+                                    new_html += start_alignment_tag(current_alignment,current_alignment_id);
                                 }
                                 // nah, mismatch
                                 else {
@@ -327,7 +335,7 @@ function html_add_diffs(similarities,html,side) {
                                 if ( current_alignment != null && alignment_start(current_alignment,side) == text_offset ) {
                                     alignment_state = 1;
                                     current_alignment_id = next_alignment_id(side,current_alignment);
-                                    new_html += '<span class="aligned" id="'+current_alignment_id+'">';
+                                    new_html += start_alignment_tag(current_alignment,current_alignment_id);
                                 }
                                 // nah, mismatch
                                 else {
@@ -337,7 +345,7 @@ function html_add_diffs(similarities,html,side) {
                             }
                             else {
                                 current_alignment_id = inc_alignment_id(current_alignment_id);
-                                new_html += '<span class="aligned" id="'+current_alignment_id+'">';
+                                new_html += start_alignment_tag(current_alignment,current_alignment_id);
                                 alignment_state = 1;
                             }
                             break;
@@ -345,13 +353,14 @@ function html_add_diffs(similarities,html,side) {
                             if ( current_alignment != null && alignment_start(current_alignment,side) == text_offset ) {
                                 alignment_state = 1;
                                 current_alignment_id = next_alignment_id(side,current_alignment);
-                                new_html += '</span><span class="aligned" id="'+current_alignment_id+'">';
+                                new_html += '</span>';
+                                new_html += start_alignment_tag(current_alignment,current_alignment_id);
                             }
                             break;
                         case 4: // in mismatch, span closed
                             if ( current_alignment != null && alignment_start(current_alignment,side) == text_offset ) {
                                 current_alignment_id = next_alignment_id(side,current_alignment);
-                                new_html += '<span class="aligned" id="'+current_alignment_id+'">';
+                                new_html += start_alignment_tag(current_alignment,current_alignment_id);
                                 alignment_state = 1;
                             }
                             else {

@@ -38,7 +38,7 @@ class synchro_scroller {
 		return rect.top + window.scrollY;
 	}
 	/**
-     * Look for spans with an id attribute set
+     * Look for spans with an id attribute set that are NOT transposed
      * @param elem the element to search from
      * @param hash the hashtable to store the id->offset key-value
      * @param index the sorted offset array giving us the id
@@ -49,9 +49,10 @@ class synchro_scroller {
 			let id_attr = elem.getAttribute('id');
 			const elem_styles = window.getComputedStyle(elem);
 			let elem_display = elem_styles.getPropertyValue("display");
+			let elem_class = elem.getAttribute("class");
 			const parent_styles = window.getComputedStyle(elem.parentElement);
 			let parent_display = parent_styles.getPropertyValue("display")
-			if ( elem_display =="none" || parent_display =="none" ) {
+			if ( elem_display =="none" || parent_display =="none" || elem_class == "transposed" ) {
 				let top_off = synchro_scroller.get_top_offset(elem);
 				synchro_scroller.banned[id_attr] = top_off;
 				if ( id_attr.charAt(0)=='a' )
