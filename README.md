@@ -58,7 +58,7 @@ used to also identify deletions, and additions. Deletions are simply
 the unaligned parts in the first version and additions are the 
 unaligned parts in the second version. By aligning on the longest 
 match between the versions and repeating this recursively on the 
-remaining unaligned parts, a global alignment that is not based on a 
+remaining unaligned parts, a global alignment not based on a 
 left-to-right approach, as in Myers' algorithm, can produce a more 
 accurate alignment and also can discover transpositions for the first 
 time. 
@@ -125,15 +125,17 @@ parts of the text. Such repetitions, now isolated from the other
 instances, can be aligned because they are locally unique.
 
 ## Myers' algorithm
-I have added Myers' algorithm as an alternative to Ukkonen's. It is
-widely considered as the most efficient diff algorithm, although it does 
-not compute transpositions. The user can compare the speed of the two. 
-For short poems there is not much visible difference but for longer 
-works with more variation such as h080, The Creek of the Four Graves, 
-it took several seconds to finish, whereas Ukkonen's algorithm is about 100 
-times faster. When comparing versions h080f to h080h Myers' algorithm took 
-4636 milliseconds -- 4.6 seconds to complete the comparison -- and Ukkonen's 
-algorithm took only 34 milliseconds -- less than the blink of an eye.
+I have added Myers' algorithm as an alternative to Ukkonen's. It is 
+widely considered as the most efficient diff algorithm, although it 
+does not compute transpositions. The user can compare the speed of the 
+two. For short poems there is not much visible difference but for 
+longer works with more variation such as h080, The Creek of the Four 
+Graves, it took several seconds to finish, whereas Ukkonen's algorithm 
+is about 100 times faster. The time taken to do the comparison is 
+printed in the Javascript console, if you turn it on. When comparing 
+versions h080f to h080h Myers' algorithm took 4636 milliseconds – 4.6 
+seconds to complete the comparison – and Ukkonen's algorithm took only 
+34 milliseconds – less than the blink of an eye.
 
 ## The future
 I hope to extend this to N versions. If we have N versions then the 
