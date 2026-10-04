@@ -2,7 +2,7 @@ body {margin: 0px 0px 0px 0px;}
 blockquote.quote {margin-top:0.5em;margin-bottom:.5em}
 p.p {margin:0 auto 0.5em auto;white-space:normal;}
 pre { font-family: initial; background-color: white; padding: 0px !important }
-span.line {margin:0;;padding-left:2em;text-indent:-2em;display:inline-block;}
+span.line {margin:0;padding-left:2em;text-indent:-2em;display:inline-block;}
 span.line-indent1 {margin:0;padding-left:3em;text-indent:-2em;display:inline-block;}
 span.line-indent2 {margin:0;padding-left:4em;text-indent:-2em;display:inline-block;}
 span.line-indent3 {margin:0;padding-left:5em;text-indent:-2em;display:inline-block;}

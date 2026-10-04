@@ -317,9 +317,14 @@ async function change_work() {
 async function set_sample_css() {
 	// sample menu already set to saved value
 	let sample = document.getElementById("sample").value;
+	let sample_css = document.getElementById("sample_css");
+	// clear out the existing sample css, if any
+	if ( sample_css != null )
+		sample_css.remove();
 	let css_url = "./samples/"+sample+"/default.css";
 	let css = await load_user_html(css_url);
 	let style = document.createElement("style");
+	style.setAttribute("id","sample_css");
 	style.innerHTML = css;
 	document.head.appendChild(style);
 }
@@ -353,6 +358,40 @@ function digest_works(raw_index) {
 	}
 	return index;
 }
+async function load_sample_index(){
+	let works = null;
+	let select = document.getElementById("sample");
+	localStorage.setItem('sample_set',select.value);
+	// load the index for the first sample set
+	let raw_index = await load_user_json('./samples/'+select.options[select.selectedIndex].textContent+'/index.json');
+	// raw index is a JSON array of objects describing layers
+	if ( raw_index.length > 0 ) {
+		// deduce the works and create a hierarchical index of them
+		works = digest_works(raw_index);
+		let works_select = document.getElementById("works");
+		// clear out works menu
+		while (works_select.firstChild)
+			works_select.removeChild(works_select.lastChild);
+		// sort works index
+		let works_keys = Object.keys(works);
+		// fetch selected document id
+		let docid = localStorage.getItem('docid');
+		works_keys.sort();
+		let present = false;
+		for ( let key of works_keys ) {
+			let opt = document.createElement('option');
+			opt.textContent = key;
+			if ( docid != null && docid == key ) {
+				opt.selected = "selected";
+				present = true;
+			}
+			works_select.appendChild(opt);
+		}
+		if ( !present )
+			localStorage.setItem('docid',works_keys[0]);
+	}
+	return works;
+}
 /**
  * Populate the top level sample index
  */
@@ -378,34 +417,15 @@ async function populate_sample_index(){
 		// set default
 		if ( sample_set == null )
 			localStorage.setItem('sample_set',top_level[0]);
-		// load the index for the first sample set
-		let raw_index = await load_user_json('./samples/'+select.firstElementChild.textContent+'/index.json');
-		// raw index is a JSON array of objects describing layers
-		if ( raw_index.length > 0 ) {
-			// deduce the works and create a hierarchical index of them
-			works = digest_works(raw_index);
-			let works_select = document.getElementById("works");
-			// clear out works menu
-			while (works_select.firstChild)
-    			works_select.removeChild(works_select.lastChild);
-			// sort works index
-			let works_keys = Object.keys(works);
-			// fetch selected document id
-			let docid = localStorage.getItem('docid');
-			works_keys.sort();
-			for ( let key of works_keys ) {
-				let opt = document.createElement('option');
-				opt.textContent = key;
-				if ( docid != null && docid == key )
-					opt.selected = "selected";
-				works_select.appendChild(opt);
-			}
-			// set default
-			if ( docid == null )
-				localStorage.setItem('docid',docid);
-		}
+		works = await load_sample_index();
 	}
 	return works;
+}
+async function change_sample() {
+	localStorage.setItem('docid',null);
+	all_works = await load_sample_index();
+	await set_sample_css();
+	await change_work();	// computes diffs
 }
 /**
  * Load the entire page
