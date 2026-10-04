@@ -1,0 +1,10 @@
+p.cast {margin:0.3em 0.5em 0.3em 0.5em}
+p.head {font-weight: normal;font-size: 1.125em;text-align:center;white-space:pre;} 
+p.speech {text-indent:2em;}
+p.stage {font-style:italic;}
+p.stanza {margin-top: 10px; margin-bottom:10px;white-space:pre;margin-left:auto;margin-right:auto;word-wrap:normal}
+p {margin:0 auto 0.5em auto;white-space:normal;}
+span.italics { font-style: italic }
+span.line {margin:0;padding-left:2em;text-indent:-2em;display:inline-block;}
+span.role {font-style:italic;}
+span.speaker {font-weight:bold;}
