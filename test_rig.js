@@ -54,6 +54,7 @@ async function load_user_html(file) {
 }
 /** 
  * User selected a new method
+ * *** NB: invoked by GUI only ***
  */
 function change_method() {
 	let select_method = document.getElementById("method");
@@ -77,6 +78,13 @@ function value_of(dimen) {
 			break;
 	}
 	return value;
+}
+function get_local_storage(key) {
+	let value = localStorage.getItem(key);
+	if ( value == "null" || value == "" )
+		return null;
+	else
+		return value;
 }
 /**
  * Scale a div to its parent's size
@@ -155,8 +163,10 @@ function switch_layer(layer_id,layer_value) {
 				layer_value = this_layer_select.options[this_select_index].value;
 				this_layer_select.value = layer_value;
 			}
+			// else nothing to change it to
 		}
 	}
+	// else don't change the layer value
 	return layer_value;	
 }
 /**
@@ -174,15 +184,18 @@ async function load_layer(side,data_path) {
 }
 /**
  * The user changed the layer
+ *  *** NB: invoked by GUI only ***
  */
 async function change_layer(side) {
 	let other_side = (side=='lhs')?'rhs':'lhs';
 	let layer_select = document.getElementById(side+"_layers");
-	let other_layer_select = document.getElementById(other_side+"_layers");
 	let layer_opt = layer_select.options[layer_select.selectedIndex];
+	// must also reload other side, as it contains dels or adds
+	let other_layer_select = document.getElementById(other_side+"_layers");
 	let other_layer_opt = layer_select.options[other_layer_select.selectedIndex];
-	let layer_storage_key = side+'_layer';
-	localStorage.setItem(layer_storage_key,layer_select.value);
+	// save this layer menu selection
+	localStorage.setItem(side+'_layer',layer_select.value);
+	// load the two sides
 	let data_path = layer_opt.getAttribute("data-path");
 	let other_data_path = other_layer_opt.getAttribute("data-path");
 	await load_layer(side,data_path);
@@ -193,47 +206,69 @@ async function change_layer(side) {
 	synchro_scroller.build_scroll_tables("lhs_body","rhs_body");
 }
 /**
- * Set the text of a side to its chosen version
- * @param select_id the id of the version dropdown
- * @param versions the object from all_works holding the versions
- * @param version_key the selected version name
+ * Fill the layers dropdown for the relevant side
+ * @param side lhs or rhs
  */
-async function set_version(select_id,versions,version_key) {
-	// set version dropdown if not already set
-	let version_select = document.getElementById(select_id);
-	version_select.value = version_key;
-	// set layer
-	let layers = versions[version_key];
+function populate_layers_dropdown(side) {
+	let work_select = document.getElementById('works');
+	let versions = all_works[work_select.value];
+	let version_select = document.getElementById(side+'_versions');
+	let layers = versions[version_select.value];
 	let layer_keys = Object.keys(layers);
-	layer_keys.sort();
 	if ( layer_keys.length > 0 ) {
-		let layer_id = select_id.replace("versions","layers");
-		let layer_select = document.getElementById(layer_id);
+		layer_keys.sort();
+		let layer_select = document.getElementById(side+'_layers');
 		// clear menu out
 		while (layer_select.firstChild)
 			layer_select.removeChild(layer_select.lastChild);
 		// get previously set value
-		let layer_storage_key = layer_id.slice(0,3)+'_layer';
-		let selected = localStorage.getItem(layer_storage_key);
-		if ( layer_select ) {
-			// rebuild layer menu
-			for ( let layer_key of layer_keys ) {
-				let opt = document.createElement('option');
-				opt.setAttribute("data-path",layers[layer_key]);
-				opt.textContent = layer_key;
-				if ( selected != null && selected == layer_key )
-					opt.selected = "selected";
-				layer_select.appendChild(opt);
-			}
-			// switch to layer not the same as the other side
-			let layer_value = switch_layer(layer_id,layer_select.value);
-			// load the layer!
-			let selected_option = layer_select.options[layer_select.selectedIndex];
-			// save layer value
-			localStorage.setItem(layer_storage_key,layer_value);
-			await load_layer(layer_id.slice(0,3),selected_option.getAttribute("data-path"));
+		let layer_storage_key = side+'_layer';
+		let selected = get_local_storage(layer_storage_key);
+		// rebuild layer menu
+		for ( let layer_key of layer_keys ) {
+			let opt = document.createElement('option');
+			opt.setAttribute("data-path",layers[layer_key]);
+			opt.textContent = layer_key;
+			if ( selected != null && selected == layer_key )
+				opt.selected = "selected";
+			layer_select.appendChild(opt);
 		}
 	}
+	else
+		throw new Error('empty layers for version '+version_select.value);
+}
+/**
+ * Set and load a layer
+ * @param side the side of the layer to load
+ */
+async function set_layer(side) {
+	let layer_id = side+'_layers';
+	let layer_value = get_local_storage(side+'_layer');
+	layer_select = document.getElementById(layer_id);
+	if ( layer_value == null )
+		layer_value = layer_select.value;
+	else
+		layer_select.value = layer_value;
+	// switch to layer not the same as the other side
+	layer_value = switch_layer(layer_id,layer_value);
+	// save layer value
+	localStorage.setItem(side+'_layer',layer_value);
+	// load the layer!
+	let selected_option = layer_select.options[layer_select.selectedIndex];
+	await load_layer(side,selected_option.getAttribute("data-path"));
+}
+/**
+ * Set the text of a side to its chosen version
+ * @param side the side: lhs or rhs
+ * @param version_key the selected version name
+ */
+async function set_version(side,version_key) {
+	let select_id = side+"_versions";
+	let version_select = document.getElementById(select_id);
+	version_select.value = version_key;
+	localStorage.setItem(side+'_version',version_key);
+	populate_layers_dropdown(side);
+	await set_layer(side);
 }
 /**
  * Populate a version dropdown
@@ -247,7 +282,7 @@ function populate_version_dropdown(select_id,keys) {
 		version_select.removeChild(version_select.lastChild);
 	// get previously set value
 	let version_storage_key = select_id.slice(0,select_id.length-1);
-	let selected = localStorage.getItem(version_storage_key);
+	let selected = get_local_storage(version_storage_key);
 	// add new keys
 	for ( let key of keys ) {
 		let opt = document.createElement('option');
@@ -259,58 +294,92 @@ function populate_version_dropdown(select_id,keys) {
 }
 /**
  * User changed the version menu.
+ * *** NB: invoked by GUI only ***
  * @param side lhs or rhs
  */
 async function change_version(side) {
-	let side_versions_key = side+'_versions';
-	let side_version_key = side+'_version';
-	let side_layer_key = side+'_layer';
-	let other_side = (side == 'lhs')?'rhs':'lhs';
-	let other_side_versions_key = other_side+'_versions';
-	let version_select = document.getElementById(side_versions_key);
-	let other_version_select = document.getElementById(other_side_versions_key);
-	// remember chosen version on refresh
-	localStorage.setItem(side_version_key,version_select.value);
-	// invalidate stored layer value because version changed
-	localStorage.setItem(side_layer_key,null);
-	let work_select = document.getElementById("works");
-	let work = work_select.value;
-	let versions = all_works[work];
-	// remember chosen versions on refresh
-	let version_storage_key = side_versions_key.slice(0,side_versions_key.length-1);
-	localStorage.setItem(version_storage_key, version_select.value);
-	await set_version(side_versions_key,versions,version_select.value);
-	await set_version(other_side_versions_key,versions,other_version_select.value);
+	let version_select = document.getElementById(side+'_versions');
+	localStorage.setItem(side+'_version',version_select.value);
+	localStorage.setItem(side+'_layer',null);
+	await set_version(side,version_select.value);
+	// need to clear out diffs from other side before recomputing
+	let other_side = (side=='lhs')?'rhs':'lhs';
+	let other_version_select = document.getElementById(other_side+'_versions');
+	await set_version(other_side,other_version_select.value);
 	// compute diffs here because BOTH sides need recomputing
 	compute_diffs();
 	// also need to rebuild scroll tables
 	synchro_scroller.build_scroll_tables("lhs_body","rhs_body");
 }
 /** 
+ * Load a given work and its versions from stored values
+ */
+async function reload_work() {
+	let work = get_local_storage('docid');
+	if ( work == null ) {
+		let work_keys = Object.keys(all_works);
+		if ( work_keys.length > 0 ) {
+			work = work_keys[0];
+			invalidate_stored_data(false,true,true);
+			localStorage.setItem('docid',work);
+		}
+		else
+			throw new Error("no works found in sample index!");
+	}
+	// make sure work is set correctly
+	let work_select = document.getElementById("works");
+	if ( work_select.value != work )
+		work_select.value = work;
+	// set up version menu
+	let versions = all_works[work];
+	let version_keys = Object.keys(versions);
+	version_keys.sort();
+	populate_version_dropdown("lhs_versions",version_keys);
+	populate_version_dropdown("rhs_versions",version_keys);
+	// fetch stored, or set default version
+	let lhs_version = get_local_storage('lhs_version');
+	let rhs_version = get_local_storage('rhs_version');
+	// if stored versions are empty use defaults
+	if ( lhs_version == null )
+		lhs_version = version_keys[0];
+	if ( rhs_version == null ) {
+		if ( version_keys.length > 1 )
+			rhs_version = version_keys[1];
+		else
+			rhs_version = version_keys[0];
+	}
+	await set_version("lhs",lhs_version);
+	await set_version("rhs",rhs_version);
+	compute_diffs();
+	synchro_scroller.build_scroll_tables("lhs_body","rhs_body");
+}
+/** 
  * User selected a new work from the dropdown
+ * *** NB: invoked by GUI only ***
  */
 async function change_work() {
 	let work_select = document.getElementById("works");
 	let work = work_select.value;
 	// remember chosen work on refresh
 	localStorage.setItem('docid', work);
-	// invalidate saved versions and layers now invalid
-	localStorage.setItem('lhs_version', null);
-	localStorage.setItem('rhs_version', null);
-	localStorage.setItem('lhs_layer', null);
-	localStorage.setItem('rhs_layer', null);
-	let versions = all_works[work];
-	let keys = Object.keys(versions);
-	keys.sort();
-	populate_version_dropdown("lhs_versions",keys);
-	populate_version_dropdown("rhs_versions",keys);
-	await set_version("lhs_versions",versions,keys[0]);
-	if ( keys.length > 1 )
-		await set_version("rhs_versions",versions,keys[1]);
-	else
-		await set_version("rhs_versions",versions,keys[0]);
-	compute_diffs();
-	synchro_scroller.build_scroll_tables("lhs_body","rhs_body");
+	// clear version and layer data
+	invalidate_stored_data(false,true,true);
+	await reload_work();
+}
+/**
+ * Invalidate 
+ */
+function invalidate_stored_data(clear_work,clear_version,clear_layer) {
+	if ( clear_work )
+		localStorage.setItem('docid',null);
+	if ( clear_version ) {
+		localStorage.setItem('lhs_version', null);
+		localStorage.setItem('rhs_version', null);
+	}
+	if ( clear_layer ) {
+		localStorage.setItem('lhs_layer', null);
+		localStorage.setItem('rhs_layer', null);
+	}
 }
 /**
  * Load the default style sheet inline
@@ -376,7 +445,7 @@ async function load_sample_index(){
 		// sort works index
 		let works_keys = Object.keys(works);
 		// fetch selected document id
-		let docid = localStorage.getItem('docid');
+		let docid = get_local_storage('docid');
 		works_keys.sort();
 		let present = false;
 		for ( let key of works_keys ) {
@@ -406,7 +475,7 @@ async function populate_sample_index(){
 		// clear it out
 		while (select.firstChild)
     		select.removeChild(select.lastChild);
-		let sample_set = localStorage.getItem('sample_set');
+		let sample_set = get_local_storage('sample_set');
 		// append all the defined top-level samples
 		for ( let name of top_level ) {
 			let opt = document.createElement('option');
@@ -422,17 +491,23 @@ async function populate_sample_index(){
 	}
 	return works;
 }
+/**
+ * The user changed the sample index menu
+ * *** NB: invoked by GUI only ***
+ */
 async function change_sample() {
-	localStorage.setItem('docid',null);
+	// reset stored data, now invalid
+	invalidate_stored_data(true,true,true);
 	all_works = await load_sample_index();
 	await set_sample_css();
-	await change_work();	// computes diffs
+	await reload_work();	// computes diffs
 }
 /**
  * Load the entire page
  */
 async function reload_page() {
+	// use stored data for work, versions + layers
 	all_works = await populate_sample_index();
 	await set_sample_css();
-	await change_work();	// computes diffs
+	await reload_work();	// computes diffs
 }
