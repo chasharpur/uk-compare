@@ -5,6 +5,7 @@ p.stage {font-style:italic;}
 p.stanza {margin-top: 10px; margin-bottom:10px;white-space:pre;margin-left:auto;margin-right:auto;word-wrap:normal}
 p {margin:0 auto 0.5em auto;white-space:normal;}
 span.italics { font-style: italic }
+span.pencil { color:gray;}
 span.line {margin:0;padding-left:2em;text-indent:-2em;display:inline-block;}
 span.role {font-style:italic;}
 span.speaker {font-weight:bold;}

@@ -205,6 +205,7 @@ async function set_version(select_id,versions,version_key) {
 	// set layer
 	let layers = versions[version_key];
 	let layer_keys = Object.keys(layers);
+	layer_keys.sort();
 	if ( layer_keys.length > 0 ) {
 		let layer_id = select_id.replace("versions","layers");
 		let layer_select = document.getElementById(layer_id);
