@@ -1,12 +1,12 @@
 p.cast {margin:0.3em 1em 0.3em 1em;text-align:center}
 p.head {font-weight: normal;font-size: 1.125em;text-align:center;white-space:pre;} 
 p.speech {text-indent:2em;}
-p.stage {font-style:italic;}
+p.stage {font-style:italic;white-space:pre-line}
 p.stanza {margin-top: 10px; margin-bottom:10px;white-space:pre;margin-left:auto;margin-right:auto;word-wrap:normal}
 p.scena {font-size:1.2rem;text-align:center;font-variant: small-caps;margin-bottom:1em;}
 p {margin:0 auto 0.5em auto;white-space:normal;}
 span.italics { font-style: italic }
 span.pencil { color:gray;}
-span.line {margin:0;padding-left:2em;text-indent:-2em;display:inline-block;}
+span.line {margin:0;padding-left:2em;text-indent:-2em;display:inline-block;white-space: pre-line}
 span.role {font-style:italic;}
 span.speaker {font-weight:bold;}
