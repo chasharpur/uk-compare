@@ -14,7 +14,7 @@ it is, except that each folder hierarchy must end with a folder whose name
 represents the version and within that there must be a number of folders called 
 layer-1, layer-2 etc up to layer-final
 
-4. In each layer folder place one layer file called index.html contianing the HTML 
+4. In each layer folder place one layer file called index.html containing the HTML 
 text of the layer of the version within which is is situated. A layer file can only 
 contain the elements &lt;p&gt; and &lt;span&gt;. A description of what a layer is 
 is provided below.
@@ -48,6 +48,12 @@ a combined format then define that, say underlined and wavy underlining. Give it
 class name and create that format in default.css for the sample. e.g.
 
     <span class="wavy+double">Really important stuff!</span>
+
+No &lt;del&gt; or &lt;add&gt; tags are allowed, and all crossed-out text is to be 
+un-crossed out in the layer file to which it belongs. Any text present in a lower 
+level layer file is assumed by the software to be deleted in a later layer if it is 
+not present there. Likewise any text appearing in a layer but not present in the 
+previous layer is considered inserted.
 
 ## Revision campaigns
 If ink colour indicates layers of revision, assign these to separate versions and 
