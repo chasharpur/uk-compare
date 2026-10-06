@@ -181,6 +181,7 @@ async function load_layer(side,data_path) {
 	while (target.firstChild)
 		target.removeChild(target.lastChild);
 	target.innerHTML = html;
+	
 }
 /**
  * The user changed the layer
@@ -348,8 +349,13 @@ async function reload_work() {
 		else
 			rhs_version = version_keys[0];
 	}
+	let start = performance.now();
 	await set_version("lhs",lhs_version);
+	let end = performance.now();
+	console.log("loaded first version in "+(end-start)+" milliseconds");
 	await set_version("rhs",rhs_version);
+	end = performance.now();
+	console.log("loaded second version in "+(end-start)+" milliseconds");
 	compute_diffs();
 	synchro_scroller.build_scroll_tables("lhs_body","rhs_body");
 }
