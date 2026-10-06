@@ -2,13 +2,13 @@ body {margin: 0px 0px 0px 0px;}
 blockquote.quote {margin-top:0.5em;margin-bottom:.5em}
 p.p {margin:0 auto 0.5em auto;white-space:normal;}
 pre { font-family: initial; background-color: white; padding: 0px !important }
-span.line {margin:0;padding-left:2em;text-indent:-2em;display:inline-block;}
-span.line-indent1 {margin:0;padding-left:3em;text-indent:-2em;display:inline-block;}
-span.line-indent2 {margin:0;padding-left:4em;text-indent:-2em;display:inline-block;}
-span.line-indent3 {margin:0;padding-left:5em;text-indent:-2em;display:inline-block;}
-span.line-indent4 {margin:0;padding-left:6em;text-indent:-2em;display:inline-block;}
-span.line-indent5 {margin:0;padding-left:7em;text-indent:-2em;display:inline-block;}
-span.line-final {margin: 0px 10px 0px 120px; }
+span.line {margin:0;padding-left:2em;text-indent:-2em;display:inline-block;white-space: pre-line;}
+span.line-indent1 {margin:0;padding-left:3em;text-indent:-2em;display:inline-block;white-space: pre-line;}
+span.line-indent2 {margin:0;padding-left:4em;text-indent:-2em;display:inline-block;white-space: pre-line;}
+span.line-indent3 {margin:0;padding-left:5em;text-indent:-2em;display:inline-block;white-space: pre-line;}
+span.line-indent4 {margin:0;padding-left:6em;text-indent:-2em;display:inline-block;white-space: pre-line;}
+span.line-indent5 {margin:0;padding-left:7em;text-indent:-2em;display:inline-block;white-space: pre-line;}
+span.line-final {margin: 0px 10px 0px 120px;white-space: pre-line; }
 p.stage {margin: 0.5em auto 0.5em auto;text-align:right;white-space:pre}
 p.stanza {margin-top: 10px; margin-bottom:10px;white-space:pre;margin-left:auto;margin-right:auto;word-wrap:normal}
 .title, .subtitle, .parthead {text-align: center;margin: 0.75em auto 0.75em auto; }
