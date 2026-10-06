@@ -53,7 +53,7 @@ No &lt;del&gt; or &lt;add&gt; tags are allowed, and all crossed-out text is to b
 un-crossed out in the layer file to which it belongs. Any text present in a lower 
 level layer file is assumed by the software to be deleted in a later layer if it is 
 not present there. Likewise any text appearing in a layer but not present in the 
-previous layer is considered inserted.
+previous layer is considered inserted. Any text present in a lower layer but left out of subsequent later and not crossed out is an open variant. In such cases format the open variant is some special way in default.css such as underlining it in some way.
 
 ## Revision campaigns
 If ink colour indicates layers of revision, assign these to separate versions and 
@@ -95,11 +95,11 @@ this is the deduced name used in the works menu.
 
 4. "path": the relative path to the layer's index.html file including all folder 
 names from the first folder within the sample directory. You can obtain these paths 
-by running the Linux find command, serching for index.html
+by running the Linux find command, searching for index.html
 
 5. Check the JSON file for syntax errors in a JSON lint checker.
 
 ## Converting XML files to layers
 You can use the Ecdosis splitter tool to generate separate layer files from a
-TEI-XML file containing version markup such as subst, add, del, app rdg etc. 
+TEI-XML file containing version markup such as subst, add, del, app, rdg etc. 
 This tool will be made available soon on chasharpur.

@@ -135,7 +135,9 @@ is about 100 times faster. The time taken to do the comparison is
 printed in the Javascript console, if you turn it on. When comparing 
 versions h080f to h080h Myers' algorithm took 4636 milliseconds – 4.6 
 seconds to complete the comparison – and Ukkonen's algorithm took only 
-34 milliseconds – less than the blink of an eye.
+34 milliseconds – less than the blink of an eye. 
+
+You can see the time taken in the Javascript console of any browser. 
 
 ## The future
 I hope to extend this to N versions. If we have N versions then the 
