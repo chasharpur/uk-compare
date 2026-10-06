@@ -5,9 +5,9 @@ To create a new sample folder do the following:
 The name should not contain spaces. You can use _ for a space.
 
 2. create a file default.css in the topmost level of that folder, and add to it 
-classes intended to format <p> or <span> elements. You can copy formats from the 
-default.css files in the harpur or digital_variants folders, for example for poetry 
-there are classes for p.stanza and span.line.
+classes intended to format &lt;p&gt; or &lt;span&gt; elements. You can copy formats 
+from the default.css files in the harpur or digital_variants folders, for example 
+for poetry there are classes for p.stanza and span.line.
 
 3. create some folder hierarchy within the sample folder - it doesn't matter what 
 it is, except that each folder hierarchy must end with a folder whose name 
@@ -16,7 +16,7 @@ layer-1, layer-2 etc up to layer-final
 
 4. In each layer folder place one layer file called index.html being the layer of 
 the version within which is is situated. A layer file can only contain the elements 
-<p> and <span>. A description of what a layer is is provided below. N
+&lt;p&gt; and &lt;span&gt;. A description of what a layer is is provided below. 
 
 5. Create an index index.json also at the top level of your sample directory. The 
 format is described below, but you can copy it from the examples in harpur or 
@@ -41,11 +41,11 @@ layer-final. Any unaltered text in the document is assigned to all layers. Any t
 in layer 2, if there are no further alterations to that revision site, is inherited 
 by later layers, 
 
-Only the tags <p> and <span> are allowed. Neither may nest. If you need a combined 
-format then define that, say underlined and wavy underlining. Give it a class name and 
-create that format in default.css for the sample. e.g.
+Only the tags &lt;p&gt; and &lt;span&gt; are allowed. Neither may nest. If you need 
+a combined format then define that, say underlined and wavy underlining. Give it a 
+class name and create that format in default.css for the sample. e.g.
 
-    <span class="wavy+double">Really important stuff!</span>
+    &lt;span class="wavy+double"&gt;Really important stuff!&lt;/span&gt;
 
 ## Revision campaigns
 If ink colour indicates layers of revision, assin these to separate versions and 
@@ -60,10 +60,10 @@ sense but that does not matter.
 
 ## default.css
 The stylesheet for the sample set follows the rules for CSS, except that you should 
-specify which class names belong to p-elements and which to span-elements. Only 
-class names are permitted. There are no IDs or other css instructions needed. 
-Formatting of the web page when contains the text of the edition needs to be stored 
-somewhere else.
+specify which class names belong to &lt;p&gt;-elements and which to 
+&lt;span&gt;-elements. Only class names are permitted. There are no IDs or other 
+css instructions needed. Formatting of the web page when contains the text of the 
+edition needs to be stored somewhere else.
 
 ## deletions, additions and transpositions
 The formats for these are contained in the file diffs.css at the top level of uk-compare.
