@@ -47,7 +47,7 @@ Only the tags &lt;p&gt; and &lt;span&gt; are allowed. Neither may nest. If you n
 a combined format then define that, say underlined and wavy underlining. Give it a 
 class name and create that format in default.css for the sample. e.g.
 
-    &lt;span class="wavy+double"&gt;Really important stuff!&lt;/span&gt;
+    <span class="wavy+double">Really important stuff!</span>
 
 ## Revision campaigns
 If ink colour indicates layers of revision, assign these to separate versions and 
