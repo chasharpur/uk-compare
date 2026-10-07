@@ -6,3 +6,4 @@ sync-samples.sh
 convert_json.sh
 refresh-harpur.sh
 sync.sh
+samples/remove_divs.sh

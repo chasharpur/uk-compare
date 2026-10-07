@@ -30,6 +30,7 @@ function myers_compare(lhs,rhs) {
     for (let d = 0; d <= max; d++) {
         // save snapshot of current frontier for later backtracking 
         v_history.push(new Map(v));
+        // print out progress
         let str = "";
         for ( let i of v.keys() ){
             if ( str.length>0 )
@@ -37,6 +38,7 @@ function myers_compare(lhs,rhs) {
             str += i+":"+v.get(i);
         }
         console.log(str);
+        // end of printing
         for (let k = -d; k <= d; k += 2) {
             // Decide whether to move down (insertion) or right (deletion)
             let x;
