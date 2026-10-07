@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "myers",
-            "program": "${workspaceFolder}/myers.js",
+            "program": "${workspaceFolder}/bin/myers.js",
             "request": "launch",
             "skipFiles": [
                 "<node_internals>/**"

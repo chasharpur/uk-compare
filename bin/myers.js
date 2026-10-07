@@ -116,6 +116,6 @@ function myers_compare(lhs,rhs) {
         alignments.push(obj);
     return alignments;
 }
-/*var left_text= "The quick brown fox jumps over the lazy fox";//43 chars
-var right_text="The slow old fox jumps over the energetic dog";//45 chars
+/*var left_text= "Through Memory’s echoes Passion’s wrong";//39 chars
+var right_text="Through Passion’s wrong Memory’s echoes";//39 chars
 console.log(myers_compare(left_text,right_text));*/
