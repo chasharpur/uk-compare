@@ -30,6 +30,13 @@ function myers_compare(lhs,rhs) {
     for (let d = 0; d <= max; d++) {
         // save snapshot of current frontier for later backtracking 
         v_history.push(new Map(v));
+        let str = "";
+        for ( let i of v.keys() ){
+            if ( str.length>0 )
+                str += ",";
+            str += i+":"+v.get(i);
+        }
+        console.log(str);
         for (let k = -d; k <= d; k += 2) {
             // Decide whether to move down (insertion) or right (deletion)
             let x;
@@ -116,6 +123,6 @@ function myers_compare(lhs,rhs) {
         alignments.push(obj);
     return alignments;
 }
-/*var left_text= "Through Memory’s echoes Passion’s wrong";//39 chars
+var left_text= "Through Memory’s echoes Passion’s wrong";//39 chars
 var right_text="Through Passion’s wrong Memory’s echoes";//39 chars
-console.log(myers_compare(left_text,right_text));*/
+console.log(myers_compare(left_text,right_text));

@@ -1,5 +1,8 @@
-compare-rig.txt
-convert_json.sh
 william-morris-test.b64
 william-morris-test.html
-test.js
+transpositions.ods
+transpositions.txt
+sync-samples.sh
+convert_json.sh
+refresh-harpur.sh
+sync.sh
