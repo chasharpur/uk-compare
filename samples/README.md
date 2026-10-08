@@ -2,7 +2,7 @@
 To create a new sample folder do the following:
 
 1. create the folder in the topmost samples directory of the uk-compare repository. 
-The name should not contain spaces. You can use _ for a space.
+The name should not contain spaces and should be lowercase. You can use _ for a space.
 
 2. create a file default.css in the topmost level of that folder, and add to it 
 classes intended to format &lt;p&gt; or &lt;span&gt; elements. You can copy formats 
@@ -15,7 +15,7 @@ represents the version and within that there must be a number of folders called
 layer-1, layer-2 etc up to layer-final
 
 4. In each layer folder place one layer file called index.html containing the HTML 
-text of the layer of the version within which is is situated. A layer file can only 
+text of the layer of the version within which it is situated. A layer file can only 
 contain the elements &lt;p&gt; and &lt;span&gt;. A description of what a layer is 
 is provided below.
 
