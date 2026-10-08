@@ -46,14 +46,14 @@ by later layers.
 Note that if there is only one state of the text, put index.html into a folder 
 called layer-final.
 
-No &lt;del&gt; or &lt;add&gt; tags are allowed, and all crossed-out text is to be 
-un-crossed out in the layer file to which it belongs. Any text present in a lower 
-level layer file is assumed by the software to be deleted in a later layer if it is 
-not present there. Likewise any text appearing in a layer but not present in the 
-previous layer is considered inserted. Any text present in a lower layer but left 
-out of subsequent later and not crossed out is an open variant. In such cases 
-format the open variant is some special way in default.css such as wavy underlining 
-it.
+No &lt;del&gt; or &lt;add&gt; tags are allowed, and all crossed-out text is to 
+be un-crossed out in the layer file to which it belongs. Any text present in a 
+lower level layer file is assumed by the software to be deleted in a later 
+layer if it is not present there. Likewise any text appearing in a layer but 
+not present in the previous layer is considered inserted. Any text present in a 
+lower layer but left out of subsequent later and not crossed out is an open 
+variant. In such cases format the open variant is some special way in 
+default.css, for example, by wavy underlining it.
 
 ## Revision campaigns
 If ink colour indicates layers of revision, assign these to separate versions and 
