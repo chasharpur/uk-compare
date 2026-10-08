@@ -43,6 +43,9 @@ layer-final. Any unaltered text in the document is assigned to all layers. Any t
 in layer 2, if there are no further alterations to that revision site, is inherited 
 by later layers.
 
+Note that if there is only one state of the text, put index.html into a folder 
+called layer-final.
+
 No &lt;del&gt; or &lt;add&gt; tags are allowed, and all crossed-out text is to be 
 un-crossed out in the layer file to which it belongs. Any text present in a lower 
 level layer file is assumed by the software to be deleted in a later layer if it is 
