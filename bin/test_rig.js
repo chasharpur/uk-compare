@@ -133,6 +133,8 @@ function compute_diffs() {
 	document.getElementById("rhs_body").innerHTML = rhs_html;
 	fit_within_parent("lhs_body");
 	fit_within_parent("rhs_body");
+	const end2 = performance.now();
+	console.log("Total time including layout: "+(end2-start)+" ms");
 }
 /**
  * Ensure that the layers chosen on the lhs and rhs are different 

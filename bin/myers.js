@@ -30,31 +30,31 @@ function myers_compare(lhs,rhs) {
     for (let d = 0; d <= max; d++) {
         // save snapshot of current frontier for later backtracking 
         v_history.push(new Map(v));
-        // print out progress
-        let str = "";
-        for ( let i of v.keys() ){
-            if ( str.length>0 )
-                str += ",";
-            str += i+":"+v.get(i);
-        }
-        console.log(str);
-        // end of printing
-        for (let k = -d; k <= d; k += 2) {
+        for (let k =  -d; k <= d; k += 2) {
             // Decide whether to move down (insertion) or right (deletion)
             let x;
             const left = v.get(k - 1);
             const right = v.get(k + 1);
 
             if (k === -d || (k !== d && left < right)) {
-                x = right; // from k + 1
+                x = right; // down from k + 1
+                path="from:"+right+','+(right-(k+1));
             } else {
-                x = left + 1; // from k - 1
+                x = left + 1; // across from k - 1
+                path="from:"+left+','+(left-(k-1));
             }
             let y = x - k;
+            console.log(path+" to:"+x+','+y);
+            let old_x = x;
+            let old_y = y;
             // Follow diagonal "snakes" where elements match
             while (x < n && y < m && lhs[x] == rhs[y]) {
                 x++;
                 y++;
+            }
+            if ( old_x != x ) {
+                path="from:"+old_x+','+old_y;
+                console.log(path+" to:"+x+','+y);
             }
             v.set(k, x);
             // Check if we have reached the end of both sequences
@@ -64,6 +64,7 @@ function myers_compare(lhs,rhs) {
                 break;
             }
         }
+        console.log("d="+d);
         if (found) break;
     }
     // build alignments from history
@@ -125,6 +126,6 @@ function myers_compare(lhs,rhs) {
         alignments.push(obj);
     return alignments;
 }
-var left_text= "Through Memory’s echoes Passion’s wrong";//39 chars
-var right_text="Through Passion’s wrong Memory’s echoes";//39 chars
-console.log(myers_compare(left_text,right_text));
+/*var left_text = "is strung too high";// 18 chars
+var right_text = "too high is strung";// 18 chars
+myers_compare(left_text,right_text);*/

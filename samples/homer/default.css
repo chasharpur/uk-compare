@@ -1,0 +1,4 @@
+p.stanza {position:relative;margin-top: 10px; margin-bottom:10px;white-space:pre;margin-left:auto;margin-right:auto;word-wrap:normal}
+p.head {font-weight: normal;font-size: 1.125em;text-align:center;white-space:pre;} 
+span.line {margin:0;padding-left:2.5em;display:inline-block;white-space: pre-line}
+span.lineno {position:absolute;left:0;}
