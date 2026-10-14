@@ -7,3 +7,5 @@ convert_json.sh
 refresh-harpur.sh
 sync.sh
 samples/remove_divs.sh
+bin/test.js
+test.js

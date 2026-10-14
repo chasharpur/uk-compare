@@ -34,36 +34,38 @@ class synchro_scroller {
 	 * Get the element's offset from the top relative to the document
 	 */
 	static get_top_offset(elem) {
-		const rect = elem.getBoundingClientRect();
-		return rect.top + window.scrollY;
+		if ( elem.offsetTop != 0 )
+			return elem.offsetTop;
+		else {
+			const rect = elem.getBoundingClientRect();
+			//console.log("rect.top="+rect.top+" elem.offsetTop="+elem.offsetTop);
+			return rect.top + window.scrollY;
+		}
 	}
 	/**
      * Look for spans with an id attribute set that are NOT transposed
      * @param elem the element to search from
      * @param hash the hashtable to store the id->offset key-value
-     * @param index the sorted offset array giving us the id
+     * @param index the sorted offset array giving us the id_key
      */
     static find_ids( elem, hash, index ) {
         if ( elem.nodeName == "SPAN"
 			&& elem.getAttribute('id') != null ) {
 			let id_attr = elem.getAttribute('id');
-			const elem_styles = window.getComputedStyle(elem);
-			let elem_display = elem_styles.getPropertyValue("display");
-			let elem_class = elem.getAttribute("class");
-			const parent_styles = window.getComputedStyle(elem.parentElement);
-			let parent_display = parent_styles.getPropertyValue("display")
-			if ( elem_display =="none" || parent_display =="none" || elem_class == "transposed" ) {
-				let top_off = synchro_scroller.get_top_offset(elem);
-				synchro_scroller.banned[id_attr] = top_off;
-				if ( id_attr.charAt(0)=='a' )
-					synchro_scroller.banned['d'+id_attr.substr(1)] = top_off;
-				else
-					synchro_scroller.banned['a'+id_attr.substr(1)] = top_off;
-			}
-			else if ( !Object.hasOwn(synchro_scroller.banned,id_attr) ) {
-				let span_offset = synchro_scroller.get_top_offset(elem);
-				hash[id_attr] = span_offset;
-				index.push( {offset: span_offset, id: id_attr} );
+			const regex = /([ad][0-9]+)[a-z]+/;
+			const match = id_attr.match(regex);
+			let id_key = (match.length > 1)?match[1]:"";
+			if ( id_key.length > 0 && !Object.hasOwn(hash,id_key) ) {
+				const elem_styles = window.getComputedStyle(elem);
+				let elem_display = elem_styles.getPropertyValue("display");
+				let elem_class = elem.getAttribute("class");
+				const parent_styles = window.getComputedStyle(elem.parentElement);
+				let parent_display = parent_styles.getPropertyValue("display");
+				if ( elem_display !="none" && parent_display !="none" && elem_class != "transposed" ) {
+					let span_offset = synchro_scroller.get_top_offset(elem);
+					hash[id_key] = span_offset;
+					index.push( {offset: span_offset, id: id_key} );
+				}
 			}
 		}
 		else {
@@ -238,6 +240,7 @@ class synchro_scroller {
 	 */
 	static build_scroll_tables(left_id,right_id) {
 		try {
+			const start = performance.now();
 			// perform sanity checks before proceeding
 			let lhs = document.getElementById(left_id);
 			synchro_scroller.left_div = lhs;
@@ -253,10 +256,11 @@ class synchro_scroller {
 				|| right_styles.getPropertyValue("overflow-y") != "auto" ) {
 					throw new Error("overflow-y property not set for scrolling div");
 			}
-			synchro_scroller.timeout_id = 0
-			synchro_scroller.banned = {};
+			synchro_scroller.timeout_id = 0;
 			synchro_scroller.build_left_scroll_tables();
 			synchro_scroller.build_right_scroll_tables();
+			const end = performance.now();
+			console.log("build_scroll_tables: "+(end-start)+"ms");
 		}
 		catch ( e ) {
 			console.log(e);

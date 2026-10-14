@@ -90,6 +90,7 @@ function get_local_storage(key) {
  * Scale a div to its parent's size
  */
 function fit_within_parent( id ) {
+	// check performance
 	let elem = document.getElementById(id);
 	let top_offset = synchro_scroller.get_top_offset(elem);
 	let window_height = window.innerHeight;
@@ -133,8 +134,6 @@ function compute_diffs() {
 	document.getElementById("rhs_body").innerHTML = rhs_html;
 	fit_within_parent("lhs_body");
 	fit_within_parent("rhs_body");
-	const end2 = performance.now();
-	console.log("Total time including layout: "+(end2-start)+" ms");
 }
 /**
  * Ensure that the layers chosen on the lhs and rhs are different 
@@ -182,8 +181,7 @@ async function load_layer(side,data_path) {
 	let target = document.getElementById(side+"_body");
 	while (target.firstChild)
 		target.removeChild(target.lastChild);
-	target.innerHTML = html;
-	
+	target.innerHTML = html;	
 }
 /**
  * The user changed the layer

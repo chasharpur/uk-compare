@@ -14,6 +14,49 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://gnu.org>.
 */
+/**
+ * Using the history array generate an edit script
+ * @param history an array of successive d positions, each 
+ * containing a map of diagonal indices to x values reached on 
+ * that diagonal
+ * @param d_final the final d value equal to history.length
+ */
+function backtrack(history, d_final, n, m) {
+    const edits = [];
+    let x = n, y = m;
+
+    for (let d = d_final; d > 0; d--) {
+        const v_prev = history[d-1];
+        const k = x - y;
+
+        // Determine if we got here by insertion or deletion
+        let prev_k;
+        if (k === -d || (k !== d && (v_prev.get(k-1) ?? 0) < (v_prev.get(k+1) ?? 0))) {
+            prev_k = k + 1; // was an insertion (move down)
+        } else {
+            prev_k = k - 1; // was a deletion (move right)
+        }
+
+        let prev_x = v_prev.get(prev_k) ?? 0;
+        let prev_y = prev_x - prev_k;
+
+        // Diagonal moves (matches) between prev position and current
+        while (x > prev_x && y > prev_y) {
+            edits.unshift({ type: "equal", l_index: --x, r_index: --y });
+        }
+
+        // The actual edit
+        if (d > 0) {
+            if (x === prev_x) {
+                edits.unshift({ type: "insert", r_index: --y });
+            } else {
+                edits.unshift({ type: "delete", l_index: --x });
+            }
+        }
+        x = prev_x;
+        y = prev_y;
+    }
+}
 function myers_compare(lhs,rhs) {
     const n = lhs.length;
     const m = rhs.length;
@@ -78,30 +121,24 @@ function myers_compare(lhs,rhs) {
         const prev_k = (k === -d || (k !== d && v_prev.has(k-1) && v_prev.get(k-1) < v_prev.get(k+1))) 
             ? k + 1 
             : k - 1;
-        const prev_x = v_prev.get(prev_k);
+        const prev_x = (v_prev.has(prev_k))?v_prev.get(prev_k):0;
         const prev_y = prev_x - prev_k;
         // trace diagonal snake backwards (equal elements)
         while (x > prev_x && y > prev_y) {
-            changes.unshift({ type: 0, val: lhs[x - 1], l_index: x-1, r_index:y-1 });
-            x--;
-            y--;
+            changes.unshift({ type: 0, val: lhs[x-1], l_index: --x, r_index:--y});
         }
         // add the single edit step that changed k
         if (x === prev_x) {
             // vertical move -> Insertion from dest
-            changes.unshift({ type: 1, val: rhs[prev_y] });
-            y--;
+            changes.unshift({ type: 1, val: rhs[prev_y], r_index: --y });
         } else if (y === prev_y) {
             // horizontal move -> Deletion from orig
-            changes.unshift({ type: -1, val: lhs[prev_x] });
-            x--;
+            changes.unshift({ type: -1, val: lhs[prev_x], l_index: --x });
         }
     }
     // coda
     while (x > 0 && y > 0) {
-        changes.unshift({ type: 0, val: lhs[x - 1], l_index: x-1, r_index:y-1 });
-        x--;
-        y--;
+        changes.unshift({ type: 0, val: lhs[x - 1], l_index: --x, r_index:--y });
     }
     // extract alignments
     let alignments = [];
@@ -126,6 +163,6 @@ function myers_compare(lhs,rhs) {
         alignments.push(obj);
     return alignments;
 }
-/*var left_text = "is strung too high";// 18 chars
+var left_text = "is strung too high";// 18 chars
 var right_text = "too high is strung";// 18 chars
-myers_compare(left_text,right_text);*/
+myers_compare(left_text,right_text);
