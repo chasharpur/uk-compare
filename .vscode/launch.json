@@ -15,8 +15,8 @@
             "type": "node"
         },
         {
-            "name": "test",
-            "program": "${workspaceFolder}/test.js",
+            "name": "myers",
+            "program": "${workspaceFolder}/bin/myers.js",
             "request": "launch",
             "skipFiles": [
                 "<node_internals>/**"

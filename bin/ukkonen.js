@@ -911,7 +911,6 @@ function path_extract_align( u ) {
         else if ( start > lhs_len )
             a.start2 = (start-text.length) - (lhs_len+1);
     }
-    //a.mum = !Object.hasOwn(u,"visited");
     alignments.push(a);
 }
 function find_alignments( u ) {
