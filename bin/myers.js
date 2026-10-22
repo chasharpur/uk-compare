@@ -14,7 +14,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://gnu.org>.
 */
-var DEMO = true;
+var DEMO = false;
 var pos = {type:null,x1:0,y1:0,x2:0,y2:0};
 /**
  * save up track changes and report to the console
