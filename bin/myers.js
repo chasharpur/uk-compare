@@ -15,51 +15,82 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://gnu.org>.
 */
 var DEMO = true;
+var pos = {type:null,x1:0,y1:0,x2:0,y2:0};
 /**
- * Using the history array generate an edit script
- * @param history an array of successive d positions, each 
- * containing a map of diagonal indices to x values reached on 
- * that diagonal
+ * save up track changes and report to the console
+ * @param t the type: 0(align), 1(iinsert), -1(delete)
+ * @param x1 old x coordinate
+ * @param y1 old y coordinate
+ * @param x2 new x coordinate
+ * @param y2 new y coordinate
  */
-function backtrack(history, n, m) {
+function report_backtrack(t,x1,y1,x2,y2) {
+    if ( pos.type == null ) {
+        pos.x1 = x1;
+        pos.y1 = y1;
+        pos.x2 = x2;
+        pos.y2 = y2;
+        pos.type = t;
+    }
+    else if ( t != pos.type ) {
+        console.log("backtrack:"+pos.x1+","+pos.y1+" to:"+pos.x2+","+pos.y2);
+        pos.type = t;
+        pos.x1 = x1;
+        pos.y1 = y1;
+        pos.x2 = x2;
+        pos.y2 = y2;
+    }
+    else {
+        pos.x2 = x2;
+        pos.y2 = y2;
+    }
+}
+function backtrack(trace,n,m) {
     const edits = [];
-    let x = n, y = m;
-
-    for (let d = history.length-1; d > 0; d--) {
-        const v_prev = history[d-1];
+    let x = n;
+    let y = m;
+    let type = null;
+    for (let d = trace.length - 1; d >= 0; d--) {
+        const v_current = trace[d];
         const k = x - y;
 
-        // Determine if we got here by insertion or deletion
+        // Determine which previous diagonal we came from
         let prev_k;
-        if (k === -d || (k !== d && (v_prev.get(k-1) ?? 0) < (v_prev.get(k+1) ?? 0))) {
-            prev_k = k + 1; // was an insertion (move down)
+        if (k === -d || (k !== d && (v_current[k - 1] ?? 0) < (v_current[k + 1] ?? 0))) {
+            prev_k = k + 1;
         } else {
-            prev_k = k - 1; // was a deletion (move right)
+            prev_k = k - 1;
         }
 
-        let prev_x = v_prev.get(prev_k) ?? 0;
-        let prev_y = prev_x - prev_k;
+        const prev_x = v_current[prev_k] ?? 0;
+        const prev_y = prev_x - prev_k;
 
-        // Diagonal moves (matches) between prev position and current
+        // Process matched "snakes" backwards
         while (x > prev_x && y > prev_y) {
-            edits.unshift({ type: 0, l_index: --x, r_index: --y });
+            edits.unshift({ type: 0, l_index:(x-1), r_index:(y-1) });
+            if ( DEMO )
+                report_backtrack(0,x,y,x-1,y-1);
+            x--;
+            y--;
         }
 
-        // The actual edit
+        // Record the specific insertion/deletion edit step
         if (d > 0) {
             if (x === prev_x) {
-                edits.unshift({ type: 1, r_index: --y });
+                if ( DEMO )
+                    report_backtrack(1,x,y,x,y-1);
+                edits.unshift({ type: 1, r_index: (y-1) });
+                y--;
             } else {
-                edits.unshift({ type: -1, l_index: --x });
+                if ( DEMO )
+                    report_backtrack(-1,x,y,x-1,y);
+                edits.unshift({ type: -1, l_index: (x-1) });
+                x--;
             }
         }
-        x = prev_x;
-        y = prev_y;
     }
-    // Remaining diagonal moves at d=0
-    while (x > 0 && y > 0) {
-        edits.unshift({ type: 0, l_index: --x, r_index: --y });
-    }
+    if ( DEMO )
+        report_backtrack(null,0,0,0,0);
     return edits;
 }
 function myers_compare(lhs,rhs) {
@@ -68,31 +99,25 @@ function myers_compare(lhs,rhs) {
     const max = n + m;
     
     // vHistory stores the V array snapshot at each edit distance d
-    const v_history = [];
-    const v = new Map();
-    v.set(1, 0);
-
-    let found = false;
-    let final_d = 0;
-    let x = 0,y = 0;
+    const history = [];
+    const v = {1:0};
+    let trace = null;
     for (let d = 0; d <= max; d++) {
         // save snapshot of current frontier for later backtracking 
-        v_history.push(new Map(v));
+        history.push({...v});
         for (let k = -d; k <= d; k += 2) {
+            let x;
             // Choose the source diagonal down=more negative, up = more positive
-            const down = v.get(k - 1);
-            const up = v.get(k + 1);
-
-            if (k === -d || (k !== d && down < up)) {
-                x = up; // down from k + 1
+            if ( k === -d || (k !== d && (v[k-1] ?? 0) < (v[k+1] ?? 0)) ) {
+                x = v[k+1] ?? 0; // down from k + 1
                 if ( DEMO )
-                    path="from:"+up+','+(up-(k+1));
+                    path="from:"+x+','+(x-(k+1));
             } else {
-                x = down + 1; // across from k - 1
+                x = (v[k-1] ?? 0) + 1; // across from k - 1
                 if ( DEMO )
-                    path="from:"+down+','+(down-(k-1));
+                    path="from:"+(x-1)+','+((x-1)-(k-1));
             }
-            y = x - k;
+            let y = x - k;
             if ( DEMO )
                 console.log(path+" to:"+x+','+y);
             let old_x = x;
@@ -103,24 +128,23 @@ function myers_compare(lhs,rhs) {
                 y++;
             }
             if ( old_x != x ) {
-                if ( DEMO )
+                if ( DEMO ) {
                     path="from:"+old_x+','+old_y;
-                console.log(path+" to:"+x+','+y);
+                    console.log(path+" to:"+x+','+y);
+                }
             }
-            v.set(k, x);
+            v[k] = x;
             // Check if we have reached the end of both sequences
             if (x >= n && y >= m) {
-                final_d = d;
-                v_history.push(new Map(v));
-                found = true;
+                trace = history;
                 break;
             }
         }
         if ( DEMO )
             console.log("d="+d);
-        if (found) break;
+        if (trace) break;
     }
-    let changes = backtrack(v_history,n,m);
+    let changes = backtrack(trace,n,m);
     // extract alignments
     let alignments = [];
     let obj = {};

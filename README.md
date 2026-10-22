@@ -102,18 +102,22 @@ suffix tree, and discarding most of them, results in a much more
 accurate alignment.
 
 ## Synchro-scroll
-The test rig contains a synchro-scroller module, which vertically aligns 
-the left and right versions as the user scrolls in either version. The 
-module is separate from the main code and can be re-used elsewhere. 
-However, it does require that all aligned segments on the left and right 
-are labelled with corresponding IDs: e.g. d123a on the left and a123a on 
-the right. The number indicates which run of aligned plain text 
-corresponds on each side. d123 would contain exactly the same text as 
-a123. Since formatting on each side may differ, each aligned section is 
-broken up into sub-sections, hence d123a is followed by d123b etc. The 
-segmentation on left and right may not precisely correspond, and so the 
-synchro-scrolling may not be smooth or precise. Some improvement here 
-may yet be made.
+The test rig contains a synchro-scroller module, which vertically 
+aligns the left and right versions as the user scrolls in either 
+version. The module is separate from the main code and can be 
+re-used elsewhere. However, it does require that all aligned 
+segments on the left and right are labelled with corresponding IDs: 
+e.g. d123a on the left and a123a on the right. The number indicates 
+which run of aligned plain text corresponds on each side. d123 
+would contain exactly the same text as a123. Since formatting on 
+each side may differ, synchro scroll only aligns with the first 
+sub-instance of a run, e.g. a123/d123. This also saves time when 
+building the tables needed to scroll in sync, which is a problem 
+for longer texts such as the Homer examples. Now these examples 
+load in around 2-4 seconds, which is tolerable but not ideal. 
+Further improvements may be made here, although the main limitation 
+is how fast the browser can compute the position of span elements 
+on the screen.
 
 ## Recursion
 When the same text is repeated multiple times in a document, for 
