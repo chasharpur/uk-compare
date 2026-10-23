@@ -9,3 +9,5 @@ sync.sh
 samples/remove_divs.sh
 bin/test.js
 test.js
+samples/harpur-old
+samples/harpur/page-files.sh
