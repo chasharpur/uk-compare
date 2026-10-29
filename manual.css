@@ -1,0 +1,41 @@
+#lhs_file, #lhs_file {max-width:12em;}
+#container {
+	width:100%;
+}
+#lhs {
+	float:left;
+	width:50%;
+	box-sizing: border-box;
+}
+#lhs + #rhs {
+	float:right;
+	width:50%;
+	box-sizing: border-box;
+}
+#left_toolbar, #right_toolbar {
+    float:right;
+    width:50%;
+}
+#lhs,#rhs {
+    padding-left:1em;
+}
+#container label {
+	padding:0.5em;
+}
+#lhs_body,#rhs_body {
+	overflow-y: auto;
+  	overflow-x: hidden;
+    margin-right:1em;
+    margin-left:1em;
+}
+#sample_toolbar {
+    margin-left:1em;
+    margin-bottom: 1em;
+    background-color:beige;
+}
+#right_toolbar,#left_toolbar {
+    background-color:azure;
+}
+#toolbar { margin-left:1em;}
+i {font-style:normal;}
+i.aligned {background-color:lightgrey;}

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+ <title>Manual two-way align</title>
+<link rel="stylesheet" href="manual.css">
+<link rel="stylesheet" href="diffs.css">
+<script src="bin/manual.js"></script>
+<script src="bin/events.js"></script>
+</head>
+<body onload="reload_page()">
+<div id="sample_toolbar"><label>Sample:</label> <select id="sample" onchange="change_sample()"></select> <input type="button" value="undo" id="undo"></input></div>
+<div id="toolbar">
+	<div id="right_toolbar"><label>Right:</label> <input id="change_rhs" type="file"></input><input type="button" value="align" id="align_right"></input> <input type="button" value="transpose" id="transpose_right"></input></div>
+	<div id="left_toolbar"><label>Left:</label> <input id="change_lhs" type="file"></input><input type="button" value="align" id="align_left"></input> <input type="button" value="transpose" id="transpose_left"></input></div>
+</div>
+<div id="container"><div id="lhs"><div id="lhs_body"></div></div><div id="rhs"><div id="rhs_body"></div></div></div></body>
+</body></html>
