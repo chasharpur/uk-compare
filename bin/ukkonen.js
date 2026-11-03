@@ -22,8 +22,6 @@ var node_id=0;
 var alignments = [];
 // the last created internal node
 var current = null;
-// the initial start position of phase 1
-var start_pos = 0;
 // the last position of str[j..i-1] used in the extension algorithm
 var last;
 // the last value of j in the previous extension
@@ -542,20 +540,20 @@ function verify_beta(j,i){
  */ 
 function find_beta( j, i ) {
     let p;
-    if ( old_j > start_pos && old_j == j ) {
+    if ( old_j > 0 && old_j == j ) {
         p = pos_create();
         p.loc = old_beta.loc;
         p.v = old_beta.v;
     }
     else if ( j>i ) { // empty string
         p = pos_create();
-        p.loc = start_pos;
+        p.loc = 0;
         p.v = root;
     }
-    else if ( j==start_pos ) {  // entire string
+    else if ( j==0 ) {  // entire string
         p = pos_create();
         p.loc = i;
-        p.v = (start_pos<lhs_len)?f:g;
+        p.v = f;
     }
     else { // walk across tree
         let v = last.v;
@@ -971,7 +969,6 @@ function ukkonen_compare(lhs,rhs) {
     node_id=0;
     alignments = [];
     current = null;
-    start_pos = 0;
     debug_code = false;
     old_j = 0;
     old_beta = {};

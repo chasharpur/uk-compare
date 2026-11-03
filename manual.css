@@ -1,23 +1,22 @@
 #lhs_file, #lhs_file {max-width:12em;}
 #container {
 	width:100%;
+	display:flex;
 }
-#lhs {
-	float:left;
-	width:50%;
+#lhs, #rhs {
 	box-sizing: border-box;
+	flex-grow: 4;
 }
-#lhs + #rhs {
-	float:right;
-	width:50%;
+#centre {
 	box-sizing: border-box;
+	flex-grow:1;
+	position:relative;
+	text-align:center;
 }
-#left_toolbar, #right_toolbar {
-    float:right;
-    width:50%;
-}
-#lhs,#rhs {
-    padding-left:1em;
+#centre p {margin:0.5em;}
+#centre_buttons {
+	position:fixed;
+	top:40%;
 }
 #container label {
 	padding:0.5em;
@@ -27,6 +26,7 @@
   	overflow-x: hidden;
     margin-right:1em;
     margin-left:1em;
+	width:46%;
 }
 #sample_toolbar {
     margin-left:1em;
@@ -36,6 +36,6 @@
 #right_toolbar,#left_toolbar {
     background-color:azure;
 }
-#toolbar { margin-left:1em;}
 i {font-style:normal;}
 i.aligned {background-color:lightgrey;}
+i.marked {background-color: lightgrey;}

@@ -8,10 +8,11 @@
 <script src="bin/events.js"></script>
 </head>
 <body onload="reload_page()">
-<div id="sample_toolbar"><label>Sample:</label> <select id="sample" onchange="change_sample()"></select> <input type="button" value="undo" id="undo"></input></div>
-<div id="toolbar">
-	<div id="right_toolbar"><label>Right:</label> <input id="change_rhs" type="file"></input><input type="button" value="align" id="align_right"></input> <input type="button" value="transpose" id="transpose_right"></input></div>
-	<div id="left_toolbar"><label>Left:</label> <input id="change_lhs" type="file"></input><input type="button" value="align" id="align_left"></input> <input type="button" value="transpose" id="transpose_left"></input></div>
-</div>
-<div id="container"><div id="lhs"><div id="lhs_body"></div></div><div id="rhs"><div id="rhs_body"></div></div></div></body>
+<div id="sample_toolbar"><label>Load: </label><input type="file" id="load" value="load"></input><input type="button" id="save" value="save"></input> </div>
+<div id="container"><div id="lhs"><div id="lhs_body"></div></div>
+<div id="centre"><div id="centre_buttons"><p><input type="button" title="mark" id="mark" value="mark"></input></p>
+<p><input type="button" title="remove" id="remove" value="remove"></input></p>
+<p><input type="button" value="align" id="align"></input></p>
+<p><input type="button" id="transpose" value="transpose"></input></p></div></div>
+<div id="rhs"><div id="rhs_body"></div></div></div></body>
 </body></html>

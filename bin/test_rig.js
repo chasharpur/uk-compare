@@ -52,6 +52,35 @@ async function load_user_html(file) {
     return null;
   }
 }
+function cancel_export() {
+	let dialog = document.getElementById("save_dialog");
+	dialog.style.display = "none";
+}
+function ok_export() {
+	navigator.clipboard.writeText(document.getElementById("save_text_area").value);
+	let dialog = document.getElementById("save_dialog");
+	dialog.style.display = "none";
+}
+/**
+ * Show a dialog with a JSON file containing the two versions 
+ * being compared and the alignments between them
+ */
+function save_to_dialog() {
+	let dialog = document.getElementById("save_dialog");
+	dialog.style.display = "block";
+	let json = localStorage.getItem('similarities');
+	let similarities = JSON.parse(json);
+	let lhs_layers = document.getElementById("lhs_layers");
+	let rhs_layers = document.getElementById("rhs_layers");
+	let lhs_path = lhs_layers.options[lhs_layers.selectedIndex].getAttribute("data-path");
+	let rhs_path = rhs_layers.options[rhs_layers.selectedIndex].getAttribute("data-path");
+	let obj = {
+		lhs: lhs_path,
+		rhs: rhs_path,
+		similarities: similarities
+	};
+	document.getElementById("save_text_area").value = JSON.stringify(obj);
+}
 /** 
  * User selected a new method
  * *** NB: invoked by GUI only ***
@@ -125,6 +154,7 @@ function compute_diffs() {
 		console.log("unimplemented method" + method );
 		return;
 	}
+	localStorage.setItem('similarities',JSON.stringify(similarities));
 	// calc run time
 	const end = performance.now();
 	console.log("Method: "+method+": execution time: "+(end-start)+" ms");

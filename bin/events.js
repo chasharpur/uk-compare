@@ -44,18 +44,11 @@ function unwrap_i( i_elem ) {
 }
 /**
  * Remove all i elements with a given base id (number)
- * @param base_id the id number to remove
+ * @param base_id the prefix+id number to remove
  */
 function undo_wrap( base_id ) {
-    let curr_id = 'd'+base_id+'a';
+    let curr_id = base_id+'a';
     let curr_i = document.getElementById(curr_id);
-    while ( curr_i != null ) {
-        unwrap_i( curr_i );
-        curr_id = increment_id( curr_id );
-        curr_i = document.getElementById(curr_id);
-    }
-    curr_id = 'a'+base_id+'a';
-    curr_i = document.getElementById(curr_id);
     while ( curr_i != null ) {
         unwrap_i( curr_i );
         curr_id = increment_id( curr_id );
@@ -68,14 +61,14 @@ function undo_wrap( base_id ) {
  * @param start the start offset within node
  * @param end the end offset within node
  * @param cls the classname to add to the i-element
- * @param id the id for the i-element
+ * @param id the id for the i-element or nnull
  * @return the new wrapped text range
  */
 function wrap_text_range( node, start, end, cls, id ) {
     let text = node.textContent;
     let span = node;
     const regex = /([ad][0-9]+)[a-z]+/;
-    const match = id.match(regex);
+    const match = (id==null)?null:id.match(regex);
     let short_id = (match)?match[1]:id;
     if ( !is_whitespace(text) ) {
         var parent = node.parentNode;
@@ -91,8 +84,10 @@ function wrap_text_range( node, start, end, cls, id ) {
             mid = text.substring(start,end);
             var m_node = document.createElement("I");
             m_node.setAttribute("class",cls);
-            m_node.setAttribute("id",id);
-            m_node.setAttribute("title",short_id);
+            if ( id != null ) {
+                m_node.setAttribute("id",id);
+                m_node.setAttribute("title",short_id);
+            }
             m_node.appendChild(document.createTextNode(mid));
             node.parentNode.replaceChild(m_node,node);
             span = m_node;
@@ -267,7 +262,7 @@ function trim_range(r) {
     }
     else if ( two.length == 0 ) {
         r2.startContainer = start;
-        r2.startOffset = startOffset;
+        r2.startOffset = start_offset;
         r2.endContainer = end;
         r2.endOffset = one.length;
     }
@@ -276,19 +271,52 @@ function trim_range(r) {
     return r2;
 }
 /**
+ * If a range refers to a node the endOffset will be in node units
+ * @param r the current selection range
+ * @return the character endOffset into the endContainer's text node
+ */
+function real_end_offset(r) {
+    if ( r.endContainer.nodeType == 1 ) {
+        var child = r.endContainer.firstChild;
+        var count = 1;
+        while ( child != null ) {
+            if ( count == r.endOffset ) {
+                return child.textContent.length;
+                break;
+            }
+            else {
+                count++;
+                child = child.nextSibling;
+            }
+        }
+    }
+    return r.endOffset;
+}
+function get_ancestor(from,tag_name) {
+    while ( from != null ) {
+        if ( from.nodeType == 1 ) {
+            if ( from.tagName == tag_name )
+                return from;
+        }
+        from = from.parentNode;
+    }
+    return null;
+}
+/**
  * Wrap the selection in the given format
  * @param sel the current Selection object
  * @param cls the name of the class for i-element
  * @param id base id for the whole selection - no suffix
  */
 function wrap_selection(sel,cls,id) {
-    let full_id = id+'a';
+    let full_id = (id==null)?null:id+'a';
     let last_tn,first_tn;
     let r = sel.getRangeAt(0);
     if ( r.startContainer == r.endContainer ) {
         first_tn = last_tn = wrap_text_range(r.startContainer, 
-            r.startOffset,realEndOffset(r),cls,full_id);
-        full_id = increment_id(full_id);
+            r.startOffset,real_end_offset(r),cls,full_id);
+        if ( full_id != null )
+            full_id = increment_id(full_id);
         set_selection(first_tn,last_tn);
     }
     else {
@@ -306,15 +334,18 @@ function wrap_selection(sel,cls,id) {
                 if ( tn == tn_start ) {
                     tn = first_tn = wrap_text_range( tn, r.startOffset, 
                     tn.textContent.length,cls,full_id);
-                    full_id = increment_id(full_id);
+                    if ( full_id != null )
+                        full_id = increment_id(full_id);
                 }
                 else if ( tn == tn_end ) {
                     tn = wrap_text_range(tn,0,r.endOffset,cls,full_id);
-                    full_id = increment_id(full_id);
+                    if ( full_id != null )
+                        full_id = increment_id(full_id);
                 }
                 else {
                     tn = wrap_text_range(tn,0,tn.textContent.length,cls,full_id);
-                    full_id = increment_id(full_id);
+                    if ( full_id != null )
+                        full_id = increment_id(full_id);
                 }
             }
             if ( old_tn == tn_end ) {
