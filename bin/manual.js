@@ -99,22 +99,7 @@ function align_marked( set, cls, base_id ) {
         document.parentNode.replaceChild(span,set[i]);
     }
 }
-/**
- * Remove all amrked i-elements back to raw text
- */
-function unmark() {
-    let i_elems = document.getElementsByClassName("marked");
-    // copy to arr to make loop work
-    let arr = [];
-    for ( let i=0;i<i_elems.length;i++ )
-        arr.push(i_elems.item(i));
-    for ( let i=0;i<arr.length;i++ ) {
-        let i_elem = arr[i];
-        let tn = document.createTextNode(i_elem.textContent);
-        i_elem.parentNode.replaceChild(tn,i_elem);
-    }
-}
-function align(){
+function do_align() {
     // 1. find all marked segments in document
     let marked = document.getElementsByClassName("marked");
     // partition into lhs and rhs
@@ -151,6 +136,21 @@ function align(){
     }
     else
         alert("mark text on both sides first");
+}
+/**
+ * Remove all amrked i-elements back to raw text
+ */
+function unmark() {
+    let i_elems = document.getElementsByClassName("marked");
+    // copy to arr to make loop work
+    let arr = [];
+    for ( let i=0;i<i_elems.length;i++ )
+        arr.push(i_elems.item(i));
+    for ( let i=0;i<arr.length;i++ ) {
+        let i_elem = arr[i];
+        let tn = document.createTextNode(i_elem.textContent);
+        i_elem.parentNode.replaceChild(tn,i_elem);
+    }
 }
 function save(){
 }
