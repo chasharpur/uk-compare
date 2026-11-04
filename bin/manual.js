@@ -1,70 +1,162 @@
 var left_id = "d1";
-var right_id = "a1";
-function reload_page() {
-    document.getElementById("change_lhs").addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (!file) 
-            return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const contents = e.target.result;
-            document.getElementById("lhs_body").innerHTML = contents; 
-            set_local_storage("lhs_html",contents);
-        };
-        reader.readAsText(file);
-    });
-    document.getElementById("change_rhs").addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (!file) 
-            return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const contents = e.target.result;
-            document.getElementById("rhs_body").innerHTML = contents; 
-            set_local_storage("rhs_html",contents);
-        };
-        reader.readAsText(file);
-    });
-    document.getElementById("mark").addEventListener('click', function(event) {
-        let sel = document.getSelection();
-        if (sel.rangeCount > 0) {
-            let r = sel.getRangeAt(0);
-            let div_ancestor = get_ancestor(r.startContainer,"DIV");
-            let i_elems = document.getElementsByTagName("I");
-            let ok = true;
-            for ( let i=0;i<i_elems.length;i++ ) {
-                let i_elem = i_elems.item(i);
-                let i_ancestor = i_ancestor = get_ancestor(i_elem);
-                if ( i_ancestor == div_ancestor ) {
-                    alert("clear marked text or select match");
-                    ok = false;
-                    break;
-                }
+var right_id  = "a1";
+/**
+ * Load the default style sheet inline
+ */
+async function set_sample_css(sample) {
+	let sample_css = document.getElementById("sample_css");
+	// clear out the existing sample css, if any
+	if ( sample_css != null )
+		sample_css.remove();
+	let css_url = "./samples/"+sample+"/default.css";
+	let css = await load_user_html(css_url);
+	let style = document.createElement("style");
+	style.setAttribute("id","sample_css");
+	style.innerHTML = css;
+	document.head.appendChild(style);
+}
+async function load(){
+    let file = document.getElementById("load").files[0];
+    try {
+        const text = await file.text(); 
+        let spec = JSON.parse(text);
+        await set_sample_css(spec.sample);
+        set_local_storage('left_url',"./samples/"+spec.sample+"/"+spec.lhs);
+        set_local_storage('right_url',"./samples/"+spec.sample+"/"+spec.rhs);
+        let lhs_html = await load_user_html(get_local_storage('left_url'));
+        let rhs_html = await load_user_html(get_local_storage('right_url'));
+        lhs_html = html_add_diffs(spec.similarities,lhs_html,1);
+        rhs_html = html_add_diffs(spec.similarities,rhs_html,2);
+        document.getElementById("lhs_body").innerHTML = lhs_html;
+        document.getElementById("rhs_body").innerHTML = rhs_html;
+    } catch (error) {
+        console.error("Error reading file:", error);
+    }
+}
+/**
+ * Mark the current selection with i-elements
+ */
+function mark() {
+    let sel = document.getSelection();
+    if (sel.rangeCount > 0) {
+        let r = sel.getRangeAt(0);
+        let div_ancestor = get_ancestor(r.startContainer,"DIV");
+        // selection must not be on same side as already marked text
+        let i_elems = document.getElementsByTagName("I");
+        let ok = true;
+        for ( let i=0;i<i_elems.length;i++ ) {
+            let i_elem = i_elems.item(i);
+            let i_ancestor = get_ancestor(i_elem,"DIV");
+            if ( i_ancestor == div_ancestor ) {
+                alert("remove previous marking on this side");
+                ok = false;
+                break;
             }
-            if ( ok )
-                wrap_selection(sel,"marked",null);
-        }        
-    }); 
-    document.getElementById("align").addEventListener('click', function(event) {
-        let sel = document.getSelection();
-    });
-    document.getElementById("transpose").addEventListener('click', function(event) {
-        let sel = document.getSelection();
-        if (sel.rangeCount > 0) {
-            wrap_selection(sel,"mark",null);
-        }        
-    });
-    document.getElementById("save").addEventListener('click', function(event) {
-        alert("unimplemented as yet");      
-    });
-    change_sample();
-    // reload from local storage or load afresh
-    let lhs_html = get_local_storage("lhs_html");
-    let rhs_html = get_local_storage("rhs_html");
-    if ( lhs_html != null ) 
-        document.getElementById("lhs_body").innerHTML = lhs_html; 
-    if ( rhs_html != null )
-        document.getElementById("rhs_body").innerHTML = rhs_html; 
+        }
+        if ( ok )
+            wrap_selection(sel,"marked",null);
+    }        
+}
+/**
+ * Test a set of marked i-elems to see if already aligned
+ * @param set the set of i-elements
+ * @return true if at least one is aligned/transposed
+ */
+function already_aligned( set ) {
+    for ( let i=0;i<set.length;i++ ) {
+        let parent = set[i].parentNode;
+        let cls = parent.getAttribute("class");
+        if ( parent.tagName == 'SPAN' && (cls == 'aligned' || cls == 'transposed') ) {
+            return true;
+        }
+    }
+    return false;
+}
+/**
+ * Extract the text content of a set of i-elements
+ * @param set the set to extract from
+ * @return the extracted text
+ */
+function extract_text(set) {
+    let text = "";
+    for ( let i=0;i<set.length;i++ )
+        text += set[i].textContent;
+    return text;
+}
+/**
+ * Convert a marked set to an aligned set
+ * @param set an ordered array of i-elements of class marked
+ * @param cls the alignment class: aligned or transposed
+ * @param base_id the base id to use (minus suffix)
+ */
+function align_marked( set, cls, base_id ) {
+    let id = base_id+'a';
+    for ( let i=0;i<set.length;i++ ) {
+        let span = document.createElement('SPAN');
+        span.setAttribute('class',cls);
+        span.setAttribute('id',id);
+        id = increment_id( id );
+        document.parentNode.replaceChild(span,set[i]);
+    }
+}
+/**
+ * Remove all amrked i-elements back to raw text
+ */
+function unmark() {
+    let i_elems = document.getElementsByClassName("marked");
+    // copy to arr to make loop work
+    let arr = [];
+    for ( let i=0;i<i_elems.length;i++ )
+        arr.push(i_elems.item(i));
+    for ( let i=0;i<arr.length;i++ ) {
+        let i_elem = arr[i];
+        let tn = document.createTextNode(i_elem.textContent);
+        i_elem.parentNode.replaceChild(tn,i_elem);
+    }
+}
+function align(){
+    // 1. find all marked segments in document
+    let marked = document.getElementsByClassName("marked");
+    // partition into lhs and rhs
+    let lhs = [];
+    let rhs = [];
+    for ( let i=0;i<marked.length;i++ ) {
+        let item = marked.item(i);
+        let div_ancestor = get_ancestor(item,"DIV");
+        if ( div_ancestor != null ) {
+            let div_id = div_ancestor.getAttribute("id");
+            if ( div_id == "lhs_body" )
+                lhs.push(item);
+            else if ( div_id == "rhs_body" )
+                rhs.push(item);
+        }
+    }
+    if ( lhs.length > 0 && rhs.length > 0 ) {
+        // check not already aligned
+        if ( already_aligned(lhs) || already_aligned(rhs) ) {
+            alert( "marked text is already aligned or transposed" );
+            return;
+        }
+        // check that the two sides are equal
+        let lhs_marked_text = extract_text(lhs);
+        let rhs_marked_text = extract_text(rhs);
+        if ( lhs_marked_text != rhs_marked_text ) {
+            alert("sides not equal");
+            return;
+        }
+        align_marked(lhs,lhs_id);
+        align_marked(rhs,rhs_id);
+        lhs_id = next_alignment_id(lhs_id);
+        rhs_id = next_alignment_id(rhs_id);
+    }
+    else
+        alert("mark text on both sides first");
+}
+function save(){
+}
+function remove(){
+}
+function transpose(){
 }
 /**
  * Get the side of the current selection
@@ -127,23 +219,6 @@ async function load_user_html(file) {
 function next_alignment_id(id) {
     let num = Number.parseInt(id.slice(1))+1;
     return id.slice(0,1)+num;
-}
-/**
- * Load the default style sheet inline
- */
-async function set_sample_css() {
-	// sample menu already set to saved value
-	let sample = document.getElementById("sample").value;
-	let sample_css = document.getElementById("sample_css");
-	// clear out the existing sample css, if any
-	if ( sample_css != null )
-		sample_css.remove();
-	let css_url = "./samples/"+sample+"/default.css";
-	let css = await load_user_html(css_url);
-	let style = document.createElement("style");
-	style.setAttribute("id","sample_css");
-	style.innerHTML = css;
-	document.head.appendChild(style);
 }
 function get_local_storage(key) {
 	let value = localStorage.getItem(key);

@@ -39,3 +39,4 @@
 i {font-style:normal;}
 i.aligned {background-color:lightgrey;}
 i.marked {background-color: lightgrey;}
+input.tool {min-width:7em;}

@@ -75,6 +75,7 @@ function save_to_dialog() {
 	let lhs_path = lhs_layers.options[lhs_layers.selectedIndex].getAttribute("data-path");
 	let rhs_path = rhs_layers.options[rhs_layers.selectedIndex].getAttribute("data-path");
 	let obj = {
+		sample: document.getElementById("sample").value,
 		lhs: lhs_path,
 		rhs: rhs_path,
 		similarities: similarities

@@ -6,13 +6,17 @@
 <link rel="stylesheet" href="diffs.css">
 <script src="bin/manual.js"></script>
 <script src="bin/events.js"></script>
+<script src="bin/html_strip.js"></script>
 </head>
-<body onload="reload_page()">
-<div id="sample_toolbar"><label>Load: </label><input type="file" id="load" value="load"></input><input type="button" id="save" value="save"></input> </div>
+<body>
+<div id="sample_toolbar"><label>Load: </label><input type="file" id="load" value="load..." onchange="load()"></input>
+<input type="button" id="save" value="save" onclick="save()"></input> </div>
 <div id="container"><div id="lhs"><div id="lhs_body"></div></div>
-<div id="centre"><div id="centre_buttons"><p><input type="button" title="mark" id="mark" value="mark"></input></p>
-<p><input type="button" title="remove" id="remove" value="remove"></input></p>
-<p><input type="button" value="align" id="align"></input></p>
-<p><input type="button" id="transpose" value="transpose"></input></p></div></div>
+<div id="centre"><div id="centre_buttons">
+<p><input class="tool" type="button" title="mark" id="mark" value="mark" onclick="mark()"></input></p>
+<p><input class="tool" type="button" title="unmark" id="unmark" value="unmark" onclick="unmark()"></input></p>
+<p><input class="tool" type="button" title="remove" id="remove" value="remove" onclick="remove()"></input></p>
+<p><input class="tool" type="button" value="align" id="align" onclick="align()"></input></p>
+<p><input class="tool" type="button" id="transpose" value="transpose" onclick="transpose()"></input></p></div></div>
 <div id="rhs"><div id="rhs_body"></div></div></div></body>
 </body></html>

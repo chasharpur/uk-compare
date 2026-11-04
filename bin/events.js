@@ -317,7 +317,7 @@ function wrap_selection(sel,cls,id) {
             r.startOffset,real_end_offset(r),cls,full_id);
         if ( full_id != null )
             full_id = increment_id(full_id);
-        set_selection(first_tn,last_tn);
+        //set_selection(first_tn,last_tn);
     }
     else {
         r = trim_range(r);
