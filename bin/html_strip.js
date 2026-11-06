@@ -481,6 +481,191 @@ function html_add_diffs(similarities,html,side) {
     }
     return new_html;
 }
+/**
+ * Scan for alignments in html with adds, dels and alignments
+ * @param html the already diffed HTML on the left or right hand side
+ * @param side 1 == left 2 == right
+ * @return an alignment object suitable for saving
+ */
+function html_scan_alignments(html,side){
+    let state = 0;
+    let alignments = {};
+    let text_offset = 0;
+    let tag = "";
+    let name = "";
+    let value = "";
+    let class_name = "";
+    let current_id = "";
+    current_key = "";
+    let skip_tags = ["head","script"];
+    for ( let i=0;i<html.length;i++ ) {
+        let token = html[i];
+        switch ( state ) {
+            case 0: // looking for tag start
+                if ( token == '<' )
+                    state = 1;
+                else if ( /[^ \n\t]/.test(token) 
+                    || (text_offset>0 
+                        && /[^ \n\t]/.test(last_text_token)) ) {
+                    if ( class_name == "aligned" ) {
+                        if ( Object.hasOwn(alignments,current_key) ) {
+                            let obj = alignments[current_key];
+                            if ( Object.hasOwn(obj,"text") )
+                                obj.text += token;
+                            else
+                                obj.text = token;
+                        }
+                        else
+                            console.log(current_key+ 'not found');
+                    }
+                    // only here do we see text
+                    text_offset++;
+                    last_text_token = token;
+                }
+                break;
+            case 1: // seen opening <
+                if ( /[a-zA-Z]/.test(token) ){
+                    tag = token;
+                    state = 2;
+                }
+                else if ( token == '>' )
+                    state = 0;
+                else
+                    state = 3;
+                break;
+            case 2: // building tag name
+                if ( /[a-zA-Z]/.test(token) )
+                    tag += token;
+                else if ( /[ \n\t]/.test(token) ) {
+                    if ( skip_tags.includes(tag.toLowerCase()) ) {
+                        stack = tag;
+                        state = 9;
+                    }
+                    else
+                        state = 4;
+                }
+                else if ( token == '>' )
+                    state = 0;
+                break;
+            case 3: // error, looking for '>'
+                if ( token == '>' )
+                    state = 0;
+                break;
+            case 4: // looking for attribute-start
+                if ( /[a-zA-Z]/.test(token) ) {
+                    name = token;
+                    state = 5;
+                }
+                else if ( token == '>' )
+                    state = 0;
+                else if ( /[^ \n\t]/.test(token) )
+                    state = 3;
+                break;
+            case 5: // reading attribute name
+                if ( /[a-zA-Z]/.test(token) )
+                    name += token;
+                else if ( token == '=' )
+                    state = 6;
+                break;
+            case 6: // looking for "
+                if ( token == '"' )
+                    state = 7;
+                break;
+            case 7: // reading attribute value
+                if ( token == '"' )
+                    state = 4;
+                else {
+                    value = token;
+                    state = 8;
+                }
+                break;
+            case 8: // reading value
+                if ( token == '"' ){
+                    state = 4;
+                    if ( name.toLowerCase() == "class" ) {
+                        class_name = value;
+                    }
+                    // id follows class
+                    else if ( name.toLowerCase() == "id" ) {
+                        current_id = value;
+                        if ( class_name == "aligned" ) {
+                            const regex = /[ad]([0-9]+)[a-z]+/;
+                            const m = current_id.match(regex);
+                            current_key = m[1];
+                            if ( !Object.hasOwn(alignments,current_key) ) {
+                                let obj = {};
+                                if ( side == 1 )
+                                    obj.start1 = text_offset;
+                                else
+                                    obj.start2 = text_offset;
+                                alignments[current_key] = obj;
+                            }
+                        }
+                    }
+		        }
+                else
+                    value += token;
+                break;
+            case 9: // looking for closing tag to end skipping
+                if ( token == '<' )
+                    state = 10;
+                break;
+            case 10:    // seen < in ignore state
+                if ( token == '/' )
+                    state = 11;
+                break;
+            case 11:    // seen </ in ignore state
+                if ( /[a-zA-Z]/.test(token) ) {
+                    tag = token;
+                    state = 12;
+                }
+                break;
+            case 12:    // building end-tag in ignore state
+                if ( /[a-zA-Z]/.test(token) ) 
+                    tag += token;
+                else if ( token == '>' ) {
+                    if ( tag.toLowerCase() == stack ) {
+                        console.log("ended skipping at end "+tag);
+                        state = 0;
+                        stack = null;
+                    }
+                    else    // stay in ignore state
+                        state = 9;
+                }
+                break;
+        }
+    }
+    return alignments;
+}
+/**
+ * Export alignments from already aligned html
+ * @param lhs the html of the left side (deleted, aligned, transposed)
+ * @param rhs the html of the right side (aligned, transposed, added)
+ * @param l_url the relative url of lhs from the sample directory
+ * @param r_url the relative url of rhs from the sample directory
+ * @param sample the name of the sample
+ * @return the alignments for reloading as a string
+ */
+function html_export(lhs,rhs,l_url,r_url,sample){
+    let res1 = html_scan_alignments(lhs,1);
+    let res2 = html_scan_alignments(rhs,2);
+    let similarities = {sample:sample,lhs:l_url,rhs:r_url,alignments:[]};
+    let keys = Object.keys(res1);
+    keys.sort();
+    for ( let key of keys ) {
+        if ( Object.hasOwn(res2,key) ) {
+            let obj1 = res1[key];
+            let obj2 = res2[key];
+            if ( obj1.text == obj2.text )
+                similarities.alignments.push({start1:obj1.start1,start2:obj2.start2,text:obj1.text});
+            else
+                console.log("obj1.text="+obj1.text+" obj2.text="+obj2.text);
+        }
+        else
+            console.log("rhs key "+key+" missing");
+    }
+    return JSON.stringify(similarities);
+}
 // William Morris example base64 encoded
 /*test_html_b64=`PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImVuIj4KICA8aGVhZD4KICAgIDxtZXRhIGNoYXJz
 ZXQ9InV0Zi04Ij4KICAgIDxtZXRhIG5hbWU9InZpZXdwb3J0IiBjb250ZW50PSJ3aWR0aD1kZXZp
