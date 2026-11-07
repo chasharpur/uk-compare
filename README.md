@@ -157,7 +157,7 @@ This achieves two things:
 
 2. it provides a way to test alignments produced by various algorithms 
 against the ground-truth of a manually edited (and perfect) alignment, 
-to test accuracy.
+to test its accuracy.
 
 ## The future
 I hope to extend this to N versions. If we have N versions then the 
@@ -174,7 +174,13 @@ moves. By default such transpositions will be detected but filtered out
 because they are not local. However, an alternative filtering could be 
 developed that would recognise areas between which there were many 
 transpositions, identify these as transposed blocks and 
-treat the distant moves in the one location as if they were local.
+treat the distant moves in the same location as if they were local.
+
+A third enhancement would be to add the progressive alignment method of 
+nmerge to test against uk-compare, in much the same way that CollateX 
+has several alignment alternatives, including progressive alignment (the 
+Dekker method). However, nmerge was written in Java and so would need to be 
+first translated into Javascript and tested.
 
 ## Installation
 Download the release or clone the repository, then move it inside a web 
