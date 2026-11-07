@@ -649,22 +649,21 @@ function html_scan_alignments(html,side){
 function html_export(lhs,rhs,l_url,r_url,sample){
     let res1 = html_scan_alignments(lhs,1);
     let res2 = html_scan_alignments(rhs,2);
-    let similarities = {sample:sample,lhs:l_url,rhs:r_url,alignments:[]};
+    let alignments = {sample:sample,lhs:l_url,rhs:r_url,similarities:[]};
     let keys = Object.keys(res1);
-    keys.sort();
     for ( let key of keys ) {
         if ( Object.hasOwn(res2,key) ) {
             let obj1 = res1[key];
             let obj2 = res2[key];
             if ( obj1.text == obj2.text )
-                similarities.alignments.push({start1:obj1.start1,start2:obj2.start2,text:obj1.text});
+                alignments.similarities.push({start1:obj1.start1,start2:obj2.start2,text:obj1.text});
             else
                 console.log("obj1.text="+obj1.text+" obj2.text="+obj2.text);
         }
         else
             console.log("rhs key "+key+" missing");
     }
-    return JSON.stringify(similarities);
+    return alignments;
 }
 // William Morris example base64 encoded
 /*test_html_b64=`PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImVuIj4KICA8aGVhZD4KICAgIDxtZXRhIGNoYXJz

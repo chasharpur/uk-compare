@@ -36,6 +36,20 @@
 #right_toolbar,#left_toolbar {
     background-color:azure;
 }
+#save_dialog {
+	display:none;
+	background-color:white;
+    position: fixed;
+  	top: 50%;
+  	left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    z-index:50;
+	padding:1em;
+	border:solid black thin;
+}
+#save_dialog p {
+	text-align:right;
+}
 i {font-style:normal;}
 i.aligned {background-color:lightgrey;}
 i.marked {background-color: lightgrey;}

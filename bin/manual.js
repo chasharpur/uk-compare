@@ -15,20 +15,43 @@ async function set_sample_css(sample) {
 	style.innerHTML = css;
 	document.head.appendChild(style);
 }
+/**
+ * Load a predefined alignment object
+ */
 async function load(){
     let file = document.getElementById("load").files[0];
     try {
         const text = await file.text(); 
         let spec = JSON.parse(text);
         await set_sample_css(spec.sample);
-        set_local_storage('left_url',"./samples/"+spec.sample+"/"+spec.lhs);
-        set_local_storage('right_url',"./samples/"+spec.sample+"/"+spec.rhs);
-        let lhs_html = await load_user_html(get_local_storage('left_url'));
-        let rhs_html = await load_user_html(get_local_storage('right_url'));
+        set_local_storage('left_url',spec.lhs);
+        set_local_storage('right_url',spec.rhs);
+        set_local_storage('sample',spec.sample);
+        let lhs_html = await load_user_html("./samples/"+spec.sample+"/"+get_local_storage('left_url'));
+        let rhs_html = await load_user_html("./samples/"+spec.sample+"/"+get_local_storage('right_url'));
         lhs_html = html_add_diffs(spec.similarities,lhs_html,1);
         rhs_html = html_add_diffs(spec.similarities,rhs_html,2);
         document.getElementById("lhs_body").innerHTML = lhs_html;
         document.getElementById("rhs_body").innerHTML = rhs_html;
+        // set left_id and right_id to the largest value found on the page
+        let all_ids = Array.from(document.querySelectorAll('[id]')).map(el => el.id);
+        let left_base_id = 1;
+        let right_base_id = 1;
+        const regex = /([ad][0-9]+)[a-z]+/;
+        for ( let id of all_ids ) {
+            let m = id.match(regex);
+            if ( m ) {
+                let base_id = m[1]; 
+                let num_value = parseInt(base_id.slice(1));
+                if ( base_id[0] == 'd' && num_value > left_base_id )
+                    left_base_id = num_value;
+                else if ( base_id[0] == 'a' && num_value > right_base_id )
+                    right_base_id = num_value;
+            }
+        }
+        left_id = 'd'+left_base_id;
+        right_id = 'a'+right_base_id;
+        console.log("max left id="+left_id+" max right id="+right_id);
     } catch (error) {
         console.error("Error reading file:", error);
     }
@@ -152,7 +175,40 @@ function unmark() {
         i_elem.parentNode.replaceChild(tn,i_elem);
     }
 }
-function save(){
+/**
+ * User clicked on cancel export
+ */
+function cancel_export() {
+	let dialog = document.getElementById("save_dialog");
+	dialog.style.display = "none";
+}
+/**
+ * User clicked OK export ->copy to clipboard
+ */
+function ok_export() {
+	navigator.clipboard.writeText(document.getElementById("save_text_area").value);
+	let dialog = document.getElementById("save_dialog");
+	dialog.style.display = "none";
+}
+/**
+ * Show a dialog with a JSON file containing the two versions 
+ * being compared and the alignments between them
+ */
+function save() {
+	let dialog = document.getElementById("save_dialog");
+	dialog.style.display = "block";
+    let lhs = document.getElementById("lhs_body");
+	let rhs = document.getElementById("rhs_body");
+    let l_url = localStorage.getItem('left_url');
+    let r_url = localStorage.getItem('right_url');
+    let sample = localStorage.getItem('sample');
+    if ( sample != null && l_url != null && r_url != null ) {
+        let obj = html_export(lhs.innerHTML,rhs.innerHTML,l_url,r_url,sample);
+        document.getElementById("save_text_area").value = JSON.stringify(obj);
+    }
+    else {
+        alert("failed to find right or left url or sample");
+    }
 }
 function remove(){
 }
@@ -229,40 +285,6 @@ function get_local_storage(key) {
 }
 function set_local_storage(key,value) {
 	localStorage.setItem(key,value);
-}
-/**
- * Populate the top level sample index
- */
-async function populate_sample_index(){
-	// top_level is a JSON array of strings
-	let top_level = await load_user_json('./samples/index.json');
-	if ( top_level.length > 0 ) {
-		// get sample menu
-		let select = document.getElementById("sample");
-		// clear it out
-		while (select.firstChild)
-    		select.removeChild(select.lastChild);
-		let sample_set = get_local_storage('sample_set');
-		// append all the defined top-level samples
-		for ( let name of top_level ) {
-			let opt = document.createElement('option');
-			opt.textContent = name;
-			if ( sample_set != null && sample_set == name )
-				opt.selected = "selected";
-			select.appendChild(opt);
-		}
-		// set default
-		if ( sample_set == null )
-			localStorage.setItem('sample_set',top_level[0]);
-	}
-}
-/**
- * The user changed the sample index menu
- * *** NB: invoked by GUI only ***
- */
-async function change_sample() {
-	await populate_sample_index();
-	await set_sample_css();
 }
 /**
  * Get the text of all elements in an array
