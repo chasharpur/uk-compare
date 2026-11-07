@@ -144,11 +144,12 @@ seconds to complete the comparison – and Ukkonen's algorithm took only
 You can see the time taken in the Javascript console of any browser. 
 
 ## Alignment editor
-The page manual.html and its twin manual.js provides a way to manually 
-edit an alignment. In test_rig.js and index.html (the default view) 
-click on "save" to obtain an exported alignment in JSON format. This has 
-to be saved into a file. In manual.html clicking on the load button 
-loads that alignment. After editing it you can likeswise save it.
+The page manual.html and its twin manual.js provide a way to manually 
+edit an alignment. In test_rig.js and index.html (the default view) you 
+can click on "save" to obtain an exported alignment in JSON format. This 
+has to be manually saved into a file because Javascript has no access to 
+write a file. In manual.html clicking on the load button loads that 
+alignment. After editing it you can likewise save it.
 
 This achieves two things: 
 
