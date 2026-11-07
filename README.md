@@ -143,6 +143,21 @@ seconds to complete the comparison – and Ukkonen's algorithm took only
 
 You can see the time taken in the Javascript console of any browser. 
 
+## Alignment editor
+The page manual.html and its twin manual.js provides a way to manually 
+edit an alignment. In test_rig.js and index.html (the default view) 
+click on "save" to obtain an exported alignment in JSON format. This has 
+to be saved into a file. In manual.html clicking on the load button 
+loads that alignment. After editing it you can likeswise save it.
+
+This achieves two things: 
+
+1. it allows the manual refinement of an imperfect alignment
+
+2. it provides a way to test alignments produced by various algorithms 
+against the ground-truth of a manually edited (and perfect) alignment, 
+to test accuracy.
+
 ## The future
 I hope to extend this to N versions. If we have N versions then the 
 number of two-way comparisons that can be done is N(N-1)/2. So for 30 
@@ -152,6 +167,13 @@ MVD, or multi-version document, which is just a partial order of text
 fragments belonging to subsets of the total number of versions. Once in 
 the MVD format it will be possible to instantly display a table of all 
 differences between all versions or between a selection of them.
+
+Another possible refinement would be the proper detection of block 
+moves. By default such transpositions will be detected but filtered out 
+because they are not local. However, an alternative filtering could be 
+developed that would recognise areas between which there were many 
+transpositions, identify these as transposed blocks and 
+treat the distant moves in the one location as if they were local.
 
 ## Installation
 Download the release or clone the repository, then move it inside a web 
