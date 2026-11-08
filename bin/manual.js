@@ -275,8 +275,8 @@ function do_align() {
         let align_cls = get_alignment_class(lhs,rhs);
         align_marked(lhs,align_cls,left_id);
         align_marked(rhs,align_cls,right_id);
-        left_id = next_alignment_id(left_id);
-        right_id = next_alignment_id(right_id);
+        left_id = inc_alignment_id(left_id);
+        right_id = inc_alignment_id(right_id);
     }
     else
         alert("mark text on both sides first");
@@ -404,7 +404,7 @@ async function load_user_html(file) {
  * @param id a123 or d123
  * @return a string being e.g. a124 or d124 
  */
-function next_alignment_id(id) {
+function inc_alignment_id(id) {
     let num = Number.parseInt(id.slice(1))+1;
     return id.slice(0,1)+num;
 }
