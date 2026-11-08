@@ -159,6 +159,21 @@ This achieves two things:
 against the ground-truth of a manually edited (and perfect) alignment, 
 to test its accuracy.
 
+To edit an alignment load one from the test-data folder or make your own 
+by clicking "save" in the main side-side viewer.
+
+Now load it into manual.html by clicking on "Browse..." This loads the 
+alignment and the two versions being compared. Selecting some black text 
+and clicking "remove" reverts that aligned section to red/blue 
+(deleted/added). Selecting matching red or blue text and clicking "mark" 
+marks them for alignment which can be achieved by clicking "align". If 
+you change your mind or make a mistake click "unmark" which removes all 
+marking.
+
+To save click "svae" and then OK to copy it to the clipboard. Because of 
+security restrictions in Javascript you then have to paste it into a 
+text editor and save it yourself.
+
 ## The future
 I hope to extend this to N versions. If we have N versions then the 
 number of two-way comparisons that can be done is N(N-1)/2. So for 30 
