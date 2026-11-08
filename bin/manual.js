@@ -49,9 +49,9 @@ async function load(){
                     right_base_id = num_value;
             }
         }
-        left_id = 'd'+left_base_id;
-        right_id = 'a'+right_base_id;
-        console.log("max left id="+left_id+" max right id="+right_id);
+        // point to NEXT left and right ids
+        left_id = 'd'+(left_base_id+1);
+        right_id = 'a'+(right_base_id+1);
     } catch (error) {
         console.error("Error reading file:", error);
     }
@@ -126,13 +126,122 @@ function extract_text(set) {
 function align_marked( set, cls, base_id ) {
     let id = base_id+'a';
     for ( let i=0;i<set.length;i++ ) {
-        let span = document.createElement('SPAN');
-        span.setAttribute('class',cls);
-        span.setAttribute('id',id);
+        let parent = set[i].parentNode;
+        let grandparent = parent.parentNode;
+        let state =0;
+        let child1 = document.createElement("SPAN");
+        child1.setAttribute("class",parent.getAttribute("class"));
+        let child2 = document.createElement("SPAN");
+        child2.setAttribute("class",cls);
+        child2.setAttribute("id",id);
+        let child3 = document.createElement("SPAN");
+        child3.setAttribute("class",parent.getAttribute("class"));
+        for (const child of parent.childNodes) {
+            switch ( state ) {
+                case 0: // looking for children preceding set[i]
+                    if ( child.nodeType == 3 )  // text node
+                        child1.appendChild(document.createTextNode(child.textContent));
+                    else if ( child.nodeType == 1 ) {
+                        child2.appendChild(document.createTextNode(child.textContent));
+                        state = 1;
+                    }
+                    break;
+                case 1: // found i-node - convert to text
+                    if ( child.nodeType == 1 )
+                        child2.appendChild(document.createTextNode(child.textContent));
+                    else {
+                        child3.appendChild(document.createTextNode(child.textContent));
+                        state = 2;
+                    }
+                    break;
+                case 2: // following text nodes
+                    child3.appendChild(document.createTextNode(child.textContent));
+                    break;
+            }
+        }       
+        //grandparent.removeChild(parent);
+        if ( child1.childNodes.length > 0 )
+            grandparent.insertBefore(child1,parent);
+        if ( child2.childNodes.length > 0 )
+            grandparent.insertBefore(child2,parent);
+        if ( child3.childNodes.length > 0 )
+            grandparent.insertBefore(child3,parent);
+        grandparent.removeChild(parent);
         id = increment_id( id );
-        document.parentNode.replaceChild(span,set[i]);
     }
 }
+/**
+ * Get the previous alignment id
+ * @param from the element node to move backwards from
+ */
+function get_prev_align_id(from) {
+    let prev_id = null;
+    let tn = first_text_node(from);
+    while ( tn != null ) {
+        let tn_class = tn.parentNode.getAttribute("class");
+        if ( tn_class == "aligned" || tn_class == "transposed" ){
+            prev_id = tn.parentNode.getAttribute("id");
+            break;
+        }
+        tn = prev_text_node(tn);
+    }
+    if ( prev_id == null )
+        return null;
+    else {
+        const regex = /[ad]([0-9]+)[a-z]/;
+        let m = prev_id.match(regex);
+        if ( m )
+            return m[1];
+        else
+            return null;
+    }
+}
+/**
+ * Get the previous alignment id
+ * @param from the element node to move backwards from
+ */
+function get_next_align_id(from) {
+    let next_id = null;
+    let tn = last_text_node(from);
+    while ( tn != null ) {
+        let tn_class = tn.parentNode.getAttribute("class");
+        if ( tn_class == "aligned" || tn_class == "transposed" ){
+            next_id = tn.parentNode.getAttribute("id");
+            break;
+        }
+        tn = next_text_node(tn);
+    }
+     if ( next_id == null )
+        return null;
+    else {
+        const regex = /[ad]([0-9]+)[a-z]/;
+        let m = next_id.match(regex);
+        if ( m )
+            return m[1];
+        else
+            return null;
+    }
+}
+/**
+ * For a set of left and right marked elements decide if 
+ * their forced alignment would be direct or transposed
+ * @param lhs an array of i-nodes on the left hand side
+ * @param rhs an array of i-nodes on the right hand side
+ */
+function get_alignment_class(lhs,rhs) {
+    // get previous lhs aligned
+    let lhs_prev_id = get_prev_align_id(lhs[0]);
+    let rhs_prev_id = get_prev_align_id(rhs[0]);
+    let lhs_next_id = get_next_align_id(lhs[lhs.length-1]);
+    let rhs_next_id = get_next_align_id(rhs[rhs.length-1]);
+    if ( lhs_prev_id == rhs_prev_id && lhs_next_id == rhs_next_id )
+        return "aligned";
+    else
+        return "transposed";
+}
+/**
+ * align two sets of marked elements on left and right
+ */
 function do_align() {
     // 1. find all marked segments in document
     let marked = document.getElementsByClassName("marked");
@@ -163,8 +272,9 @@ function do_align() {
             alert("marked sides not equal");
             return;
         }
-        align_marked(lhs,left_id);
-        align_marked(rhs,right_id);
+        let align_cls = get_alignment_class(lhs,rhs);
+        align_marked(lhs,align_cls,left_id);
+        align_marked(rhs,align_cls,right_id);
         left_id = next_alignment_id(left_id);
         right_id = next_alignment_id(right_id);
     }
@@ -235,7 +345,7 @@ function remove(){
         for ( i=0;i<sel.rangeCount;i++ ) {
             let r = sel.getRangeAt(i);
             id = r.startContainer.parentNode.getAttribute("id");
-            const regex = /[ad]([0-9])+[a-z]+/;
+            const regex = /[ad]([0-9]+)[a-z]+/;
             let m = id.match(regex);
             if ( m ) {
                 // replace alignment with deleted/added spans
@@ -337,4 +447,54 @@ function last_text_node(node) {
         return last_text_node(node.previousSibling);
     else
         return null;
+}
+/**
+ * Get the previous text node in reverse sequence
+ * @param t_node the current text node
+ * @return the previous text node or null if no more
+ */
+function prev_text_node(t_node) {
+    let sibling = t_node.previousSibling;
+    while ( sibling != null ) {
+        if ( sibling.nodeType == 3 )
+            return sibling;
+        else if ( sibling.nodeType == 1 )
+            return last_text_node(sibling);
+        else
+            sibling = sibling.previousSibling;
+    }
+    if ( sibling == null ) {
+        let parent = t_node.parent_node;
+        while ( parent != null && parent.tagName != 'DIV' && parent.previousSibling == null )
+            parent = parent.parent_node;
+        if ( parent != null && parent.previousSibling != null && parent.tagName != 'DIV' )
+            return last_text_node(parent.previousSibling);
+        else
+            return null;
+    }
+}
+/**
+ * Get the next text node in sequence
+ * @param t_node the current text node
+ * @return the next text node or null if no more
+ */
+function next_text_node(t_node) {
+    let sibling = t_node.nextSibling;
+    while ( sibling != null ) {
+        if ( sibling.nodeType == 3 )
+            return sibling;
+        else if ( sibling.nodeType == 1 )
+            return first_text_node(sibling);
+        else
+            sibling = sibling.nextSibling;
+    }
+    if ( sibling == null ) {
+        let parent = t_node.parent_node;
+        while ( parent != null && parent.tagName != 'DIV' && parent.nextSibling == null )
+            parent = parent.parent_node;
+        if ( parent == null||parent.tagName == 'DIV' )
+            return null;
+        else
+            return first_text_node(parent.nextSibling);
+    }
 }
