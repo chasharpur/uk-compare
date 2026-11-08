@@ -145,11 +145,7 @@ You can see the time taken in the Javascript console of any browser.
 
 ## Alignment editor
 The page manual.html and its twin manual.js provide a way to manually 
-edit an alignment. In test_rig.js and index.html (the default view) you 
-can click on "save" to obtain an exported alignment in JSON format. This 
-has to be manually saved into a file because Javascript has no access to 
-write a file. In manual.html clicking on the load button loads that 
-alignment. After editing it you can likewise save it.
+edit an alignment.
 
 This achieves two things: 
 
@@ -159,20 +155,18 @@ This achieves two things:
 against the ground-truth of a manually edited (and perfect) alignment, 
 to test its accuracy.
 
-To edit an alignment load one from the test-data folder or make your own 
-by clicking "save" in the main side-side viewer.
+To edit an alignment load one from the test-data folder by clicking on 
+"Browse..." This loads the alignment and the two versions being 
+compared. Selecting some black text and clicking "remove" reverts that 
+aligned section to red/blue (deleted/added). Selecting matching red or 
+blue text and clicking "mark" marks them for alignment which can be 
+achieved by clicking "align". If you change your mind or make a mistake 
+click "unmark" which removes all marking.
 
-Now load it into manual.html by clicking on "Browse..." This loads the 
-alignment and the two versions being compared. Selecting some black text 
-and clicking "remove" reverts that aligned section to red/blue 
-(deleted/added). Selecting matching red or blue text and clicking "mark" 
-marks them for alignment which can be achieved by clicking "align". If 
-you change your mind or make a mistake click "unmark" which removes all 
-marking.
-
-To save click "svae" and then OK to copy it to the clipboard. Because of 
+To save click "save" and then OK to copy it to the clipboard. Because of 
 security restrictions in Javascript you then have to paste it into a 
-text editor and save it yourself.
+text editor and save it yourself. You can similarly export an 
+automatically generated alignment in the main test rig page.
 
 ## The future
 I hope to extend this to N versions. If we have N versions then the 
