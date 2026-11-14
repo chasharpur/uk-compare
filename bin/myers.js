@@ -14,6 +14,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://gnu.org>.
 */
+
+import { check_memory_usage } from './monitor_usage.js';
 var DEMO = false;
 var pos = {type:null,x1:0,y1:0,x2:0,y2:0};
 /**
@@ -139,6 +141,7 @@ function myers_compare(lhs,rhs) {
                 trace = history;
                 break;
             }
+            check_memory_usage();
         }
         if ( DEMO )
             console.log("d="+d);
@@ -166,6 +169,7 @@ function myers_compare(lhs,rhs) {
     }
     if ( Object.hasOwn(obj,"text") )
         alignments.push(obj);
+    check_memory_usage();
     return alignments;
 }
 if ( DEMO ) {

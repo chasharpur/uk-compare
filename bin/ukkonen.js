@@ -14,6 +14,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://gnu.org>.
 */
+import { check_memory_usage } from './monitor_usage.js';
 var lhs_len;
 var str;
 // switch to turn on debug logs
@@ -42,8 +43,6 @@ const LEN_MASK = 0x3FFFFFFF;
 const MAX_LIST_CHILDREN = 6;
 // this is 2^30-1, the maximum 30 bit unsigned
 const INFINITY = 1073741823;
-const MAX_TRANSPOSE = 8.0;
-const MIN_REALIGN = 5;
 // end of current leaves
 var e = 0;
 var root;
@@ -965,7 +964,7 @@ function prune_tree( v ) {
     }
 }
 /** Compare two versions */
-function ukkonen_compare(lhs,rhs) {
+export function ukkonen_compare(lhs,rhs) {
     node_id=0;
     alignments = [];
     current = null;
@@ -980,12 +979,15 @@ function ukkonen_compare(lhs,rhs) {
     root = node_create( 0, 0 );
     f = node_create_leaf( 0 );
     node_add_child( root, f );
-    for ( let i=1; i<str.length; i++ )
+    for ( let i=1; i<str.length; i++ ) {
         phase(i);
+        check_memory_usage();
+    }
     set_e( root );
     prune_tree( root );
     //print_tree(root);
     find_alignments(root);
+    check_memory_usage();
     return alignments;
 }
 /*ukkonen_compare(left_html,right_html);

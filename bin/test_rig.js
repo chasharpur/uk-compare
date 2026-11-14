@@ -14,6 +14,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://gnu.org>.
 */
+import { monitor_reset, check_memory_usage, report_memory_usage, report_cpu } from './monitor_usage.js';
+import { calc_alignments } from './refine_tree.js';
 var method="Ukkonen";
 // global hash of all works indexed by docid
 var all_works;
@@ -89,6 +91,7 @@ function save_to_dialog() {
 function change_method() {
 	let select_method = document.getElementById("method");
 	method = select_method.value;
+	localStorage.setItem("method",method);
 	console.log("method is now "+method);
 }
 /**
@@ -137,7 +140,7 @@ function fit_within_parent( id ) {
 /**
  * Compute the diffs between the lhs and rhs and set them
  */
-function compute_diffs() {
+async function compute_diffs() {
 	// compute differences and alignments
 	let lhs_html = document.getElementById("lhs_body").innerHTML;
 	let rhs_html = document.getElementById("rhs_body").innerHTML;
@@ -146,7 +149,8 @@ function compute_diffs() {
 	let method = document.getElementById("method").value;
 	let similarities;
 	// check performance
-	const start = performance.now();
+	monitor_reset();
+	check_memory_usage();
 	if ( method.toLowerCase() == "ukkonen" )
 		similarities = calc_alignments(lhs_text,rhs_text);
 	else if ( method.toLowerCase() == "myers" )
@@ -157,8 +161,8 @@ function compute_diffs() {
 	}
 	localStorage.setItem('similarities',JSON.stringify(similarities));
 	// calc run time
-	const end = performance.now();
-	console.log("Method: "+method+": execution time: "+(end-start)+" ms");
+	report_cpu(method);
+	report_memory_usage();
 	lhs_html = html_add_diffs(similarities,lhs_html,1);
 	rhs_html = html_add_diffs(similarities,rhs_html,2);
 	document.getElementById("lhs_body").innerHTML = lhs_html;
@@ -216,9 +220,10 @@ async function load_layer(side,data_path) {
 }
 /**
  * The user changed the layer
- *  *** NB: invoked by GUI only ***
+ * @param e the event
+ * @param side lhs or rhs
  */
-async function change_layer(side) {
+async function change_layer(e,side) {
 	let other_side = (side=='lhs')?'rhs':'lhs';
 	let layer_select = document.getElementById(side+"_layers");
 	let layer_opt = layer_select.options[layer_select.selectedIndex];
@@ -233,7 +238,7 @@ async function change_layer(side) {
 	await load_layer(side,data_path);
 	await load_layer(other_side,other_data_path);
 	// recompute diffs
-	compute_diffs();
+	await compute_diffs();
 	// and scroll tables
 	synchro_scroller.build_scroll_tables("lhs_body","rhs_body");
 }
@@ -276,7 +281,7 @@ function populate_layers_dropdown(side) {
 async function set_layer(side) {
 	let layer_id = side+'_layers';
 	let layer_value = get_local_storage(side+'_layer');
-	layer_select = document.getElementById(layer_id);
+	let layer_select = document.getElementById(layer_id);
 	if ( layer_value == null )
 		layer_value = layer_select.value;
 	else
@@ -326,10 +331,10 @@ function populate_version_dropdown(select_id,keys) {
 }
 /**
  * User changed the version menu.
- * *** NB: invoked by GUI only ***
+ * @param e the event
  * @param side lhs or rhs
  */
-async function change_version(side) {
+async function change_version(e,side) {
 	let version_select = document.getElementById(side+'_versions');
 	localStorage.setItem(side+'_version',version_select.value);
 	localStorage.setItem(side+'_layer',null);
@@ -401,7 +406,7 @@ async function change_work() {
 /**
  * Invalidate 
  */
-function invalidate_stored_data(clear_work,clear_version,clear_layer) {
+function invalidate_stored_data(clear_work,clear_version,clear_layer,clear_method) {
 	if ( clear_work )
 		localStorage.setItem('docid',null);
 	if ( clear_version ) {
@@ -411,6 +416,9 @@ function invalidate_stored_data(clear_work,clear_version,clear_layer) {
 	if ( clear_layer ) {
 		localStorage.setItem('lhs_layer', null);
 		localStorage.setItem('rhs_layer', null);
+	}
+	if ( clear_method ) {
+		localStorage.setItem('method', null);
 	}
 }
 /**
@@ -542,4 +550,25 @@ async function reload_page() {
 	all_works = await populate_sample_index();
 	await set_sample_css();
 	await reload_work();	// computes diffs
+	let select_method = document.getElementById("method");
+	let method = get_local_storage("method");
+	if ( method != null )
+		select_method.value = method;
+	document.getElementById("method").addEventListener("change",change_method );
+	document.getElementById("save").addEventListener("click",save_to_dialog );
+	document.getElementById("sample").addEventListener("change",change_sample );
+	document.getElementById("works").addEventListener("change", change_work );
+	document.getElementById("lhs_versions").addEventListener("change", (event) => {
+  		change_version(event, 'lhs');});
+	document.getElementById("rhs_versions").addEventListener("change", (event) => {
+  		change_version(event, 'rhs');});
+	document.getElementById("lhs_layers").addEventListener("change", (event)=> {
+		change_layer(event,'lhs');});
+	document.getElementById("rhs_layers").addEventListener("change", (event) =>{
+		change_layer(event,'rhs');});
+	document.getElementById("cancel").addEventListener("click", cancel_export);
+	document.getElementById("ok_button").addEventListener("click",ok_export);
 }
+// add event listeners for page - necessary here since this is now a module
+window.addEventListener("load", reload_page);
+

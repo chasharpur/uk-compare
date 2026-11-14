@@ -14,6 +14,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://gnu.org>.
 */
+import { ukkonen_compare } from './ukkonen.js';
+
+const MAX_TRANSPOSE = 8.0;
+const MIN_REALIGN = 5;
 /**
  * Return the end of the alignment (one char AFTER the end)
  * @param a the alignment
@@ -286,7 +290,7 @@ function add_transpositions(selected_1,transposed) {
     }
     return selected_1;
 }
-function calc_alignments(lhs,rhs) {
+export function calc_alignments(lhs,rhs) {
     let selected = [];
     let transposed = [];
     let alignments = ukkonen_compare(lhs,rhs);
