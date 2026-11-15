@@ -1,0 +1,19 @@
+#container {
+  display: flex;
+  gap: 20px; 
+}
+#container div {
+  flex: 1; 
+  padding: 20px;
+  background-color: #f0f0f0;
+}
+#toolbar {
+    background-color: #f0f0f0;
+    margin-top: 20px;
+    text-align:center;
+    padding:10px 0px 10px 0px;
+}
+#score_value { min-width: 0; width:0;}
+.json_input {
+    margin-top:10px;
+}

@@ -16,6 +16,7 @@ along with this program.  If not, see <http://gnu.org>.
 */
 import { monitor_reset, check_memory_usage, report_memory_usage, report_cpu } from './monitor_usage.js';
 import { calc_alignments } from './refine_tree.js';
+import { myers_compare } from './myers.js';
 var method="Ukkonen";
 // global hash of all works indexed by docid
 var all_works;
@@ -549,11 +550,11 @@ async function reload_page() {
 	// use stored data for work, versions + layers
 	all_works = await populate_sample_index();
 	await set_sample_css();
-	await reload_work();	// computes diffs
 	let select_method = document.getElementById("method");
 	let method = get_local_storage("method");
 	if ( method != null )
 		select_method.value = method;
+	await reload_work();	// computes diffs
 	document.getElementById("method").addEventListener("change",change_method );
 	document.getElementById("save").addEventListener("click",save_to_dialog );
 	document.getElementById("sample").addEventListener("change",change_sample );

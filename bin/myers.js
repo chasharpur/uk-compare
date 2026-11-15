@@ -95,7 +95,7 @@ function backtrack(trace,n,m) {
         report_backtrack(null,0,0,0,0);
     return edits;
 }
-function myers_compare(lhs,rhs) {
+export function myers_compare(lhs,rhs) {
     const n = lhs.length;
     const m = rhs.length;
     const max = n + m;

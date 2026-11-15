@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+ <title>Alignment scorer</title>
+ <link rel="stylesheet" href="score.css">
+ <script src="bin/score.js"></script>
+</head>
+<body>
+<div id="container">
+	<div><label>Computed:</label> <input type="file" id="computed_file"></input>
+	<textarea class="json_input" id="computed_json" rows="30" cols="80"></textarea></div>
+	<div><label>Reference:</label> <input type="file" id="reference_file"></input>
+	<textarea  class="json_input" id="reference_json" rows="30" cols="80"></textarea></div>
+</div>
+<div id="toolbar"><input type="button" value="score" id="score_button"></input> <input type="text" id="score_value" minlength="6" maxlength="6"></input></div>
+</body></html>
