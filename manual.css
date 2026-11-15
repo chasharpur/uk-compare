@@ -6,6 +6,7 @@
 #lhs, #rhs {
 	box-sizing: border-box;
 	flex-grow: 4;
+	overflow-y: auto;
 }
 #centre {
 	box-sizing: border-box;

@@ -33,6 +33,9 @@ async function load(){
         rhs_html = html_add_diffs(spec.similarities,rhs_html,2);
         document.getElementById("lhs_body").innerHTML = lhs_html;
         document.getElementById("rhs_body").innerHTML = rhs_html;
+        let remaining_height = window.innerHeight - document.getElementById("sample_toolbar").offsetHeight;
+        document.getElementById("lhs").style.maxHeight = remaining_height+"px";
+        document.getElementById("rhs").style.maxHeight = remaining_height+"px";
         // set left_id and right_id to the largest value found on the page
         let all_ids = Array.from(document.querySelectorAll('[id]')).map(el => el.id);
         let left_base_id = 1;
