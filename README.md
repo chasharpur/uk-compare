@@ -143,6 +143,13 @@ seconds to complete the comparison – and Ukkonen's algorithm took only
 
 You can see the time taken in the Javascript console of any browser. 
 
+**WARNING**: on complex or long examples the Myers algorithm is *very* 
+slow and consumes a large amount of memory. It can take up to 20 
+minutes to finish. Reloading doesn't help since it merely restarts that 
+particular alignment. I will add an abort button in due course to fix 
+this. Chrome is worst at this and the much faster SpiderMonkey JS 
+engine on Firefox is very much recommended.
+
 ## Alignment editor
 The page manual.html and its twin manual.js provide a way to manually 
 edit an alignment.
