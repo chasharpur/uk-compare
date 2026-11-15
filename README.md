@@ -168,6 +168,15 @@ security restrictions in Javascript you then have to paste it into a
 text editor and save it yourself. You can similarly export an 
 automatically generated alignment in the main test rig page.
 
+## Scorer
+A scorer has been added at score.html, which allows you to load two 
+alignments: a computed alignment on the left and a reference alignment 
+on the right. Pasting is possible but messes up the newlines, so save 
+first then load. Then hit the score button to see the percentage 
+success of the computed alignment. The reference alignment sets are 
+stored in test-data. They have been created in the alignment editor, 
+and more can be added as needed.
+
 ## The future
 I hope to extend this to N versions. If we have N versions then the 
 number of two-way comparisons that can be done is N(N-1)/2. So for 30 
