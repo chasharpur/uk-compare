@@ -256,7 +256,7 @@ function trim_range(r) {
     r2.commonAncestorContainer = r.commonAncestorContainer;
     if ( one.length == 0 ) {
         r2.endContainer = end;
-        r2.endOffset = endOffset;
+        r2.endOffset = end_offset;
         r2.startContainer = end;
         r2.startOffset = 0;
     }

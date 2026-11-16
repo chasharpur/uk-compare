@@ -132,6 +132,7 @@ function align_marked( set, cls, base_id ) {
         let parent = set[i].parentNode;
         let grandparent = parent.parentNode;
         let state =0;
+        // remove the marks, replace with parent class (deleted or added)
         let child1 = document.createElement("SPAN");
         child1.setAttribute("class",parent.getAttribute("class"));
         let child2 = document.createElement("SPAN");
@@ -348,35 +349,37 @@ function remove(){
         for ( i=0;i<sel.rangeCount;i++ ) {
             let r = sel.getRangeAt(i);
             id = r.startContainer.parentNode.getAttribute("id");
-            const regex = /[ad]([0-9]+)[a-z]+/;
-            let m = id.match(regex);
-            if ( m ) {
-                // replace alignment with deleted/added spans
-                // do these separately as they may not match
-                let d_id = 'd'+m[1]+'a';
-                let d_elem = document.getElementById(d_id);
-                while ( d_elem != null ) {
-                    d_txt = document.createTextNode(d_elem.textContent);
-                    let deleted = document.createElement('SPAN');
-                    deleted.setAttribute('class','deleted');
-                    deleted.appendChild(d_txt);
-                    d_elem.parentNode.replaceChild(deleted,d_elem);
-                    d_id = increment_id(d_id);
-                    d_elem = document.getElementById(d_id);
+            if ( id != null ) {
+                const regex = /[ad]([0-9]+)[a-z]+/;
+                let m = id.match(regex);
+                if ( m ) {
+                    // replace alignment with deleted/added spans
+                    // do these separately as they may not match
+                    let d_id = 'd'+m[1]+'a';
+                    let d_elem = document.getElementById(d_id);
+                    while ( d_elem != null ) {
+                        d_txt = document.createTextNode(d_elem.textContent);
+                        let deleted = document.createElement('SPAN');
+                        deleted.setAttribute('class','deleted');
+                        deleted.appendChild(d_txt);
+                        d_elem.parentNode.replaceChild(deleted,d_elem);
+                        d_id = increment_id(d_id);
+                        d_elem = document.getElementById(d_id);
+                    }
+                    let a_id = 'a'+m[1]+'a';
+                    let a_elem = document.getElementById(a_id);
+                    while ( a_elem != null ) {
+                        a_txt = document.createTextNode(a_elem.textContent);
+                        let added = document.createElement('SPAN');
+                        added.setAttribute('class','added');
+                        added.appendChild(a_txt);
+                        a_elem.parentNode.replaceChild(added,a_elem);
+                        a_id = increment_id(a_id);
+                        a_elem = document.getElementById(a_id);
+                    }
+                    matched = true;
+                    break;
                 }
-                let a_id = 'a'+m[1]+'a';
-                let a_elem = document.getElementById(a_id);
-                while ( a_elem != null ) {
-                    a_txt = document.createTextNode(a_elem.textContent);
-                    let added = document.createElement('SPAN');
-                    added.setAttribute('class','added');
-                    added.appendChild(a_txt);
-                    a_elem.parentNode.replaceChild(added,a_elem);
-                    a_id = increment_id(a_id);
-                    a_elem = document.getElementById(a_id);
-                }
-                matched = true;
-                break;
             }
         }
         if ( !matched )

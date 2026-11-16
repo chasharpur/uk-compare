@@ -1,0 +1,32 @@
+#head { 
+    text-align: center;
+    margin: 0;
+    padding: 2em;
+    color: #666666;
+ }
+#container {
+  display: flex;
+  gap: 20px; 
+  display: flex;
+  align-items: center;
+  height: 900px; 
+}
+#container div {
+  flex: 1; 
+  padding: 20px;
+  text-align:center;
+  display: flex;
+  justify-content:center;
+}
+.button {
+  width: 33%;
+  background-color: #f0f0f0;
+  justify-content: center;
+}
+.button:hover {
+  background-color: #66FFFF;
+  cursor: pointer;
+}
+.pad {
+  width:33%;
+}

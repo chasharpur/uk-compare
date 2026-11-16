@@ -1,25 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="utf-8">
- <title>Two-way compare</title>
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="diffs.css">
-<script type="module" src="bin/test_rig.js"></script>
-<script src="bin/html_strip.js"></script>
-<script type="module" src="bin/myers.js"></script>
-<script type="module" src="bin/ukkonen.js"></script>
-<script type="module" src="bin/refine_tree.js"></script>
-<script src="bin/synchro_scroll.js"></script>
-<script type="module" src="bin/monitor_usage.js"></script>
+ <title>uk-compare test rig</title>
+<link rel="stylesheet" href="./css/home.css">
+<script src="./bin/home.js"></script>
 </head>
 <body>
-<div id="toolbar">
-	<label>Sample:</label> <select id="sample"></select>
-	<label>Work:</label> <select id="works"></select>
-	<label>Method:</label> <select id="method"><option>Ukkonen</option><option>Myers</option></select>
-	<input type="button" id="save" value="export..."></input>
+<h1 id="head">Uk-compare Test Rig</h1>
+<div id="container">
+    <div id="align"><div class="pad"></div><div class="button" title="Align texts in the sample collection"><p>Align texts</p></div><div class="pad"></div></div>
+    <div id="edit"><div class="pad"></div><div class="button" title="Edit a saved computed alignment"><p>Edit alignments</p></div><div class="pad"></div></div>
+    <div id="score"><div class="pad"></div><div class="button" title="Socre the accuracy of a computed alignment against a reference alignment"><p>Score alignments</p></div><div class="pad"></div></div>
 </div>
-<div id="container"><div id="lhs"><div class="header"><label>Version:</label><select id="lhs_versions"></select><label>Layer:</label><select id="lhs_layers"></select></div><div id="lhs_body"></div></div>
-<div id="rhs"><div class="header"><label>Version:</label><select id="rhs_versions"></select><label>Layer:</label><select id="rhs_layers"></select></div><div id="rhs_body"></div></div></div>
-<div id="save_dialog"><textarea id="save_text_area" rows="30" cols="80"></textarea><p><input type="button" id="cancel" value="cancel"></input> <input type="button" id="ok_button" value="OK"></input></p></div>
 </body></html>
