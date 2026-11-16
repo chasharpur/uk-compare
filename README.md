@@ -1,4 +1,18 @@
 
+## Home page
+A home page with three buttons has been added, which lead to three 
+sub-pages.
+
+1. Align texts - this leads to the alignment page where the user can 
+choose two versions and layers to align and view the results.
+
+2. Edit alignments - If the user has exported and saved an alignment 
+from the align page it can be edited here. Once perfected it can be 
+saved.
+
+3. Score alignments - Here a computed alignment can be scored for 
+accuracy against a reference alignment, already edited to be perfect. 
+
 ## Rationale
 Why write a comparison tool for HTML? Although there is little agreement 
 on how texts may be represented on a server, whether in databases, as XML, 
@@ -151,7 +165,7 @@ this. Chrome is worst at this and the much faster SpiderMonkey JS
 engine on Firefox is very much recommended.
 
 ## Alignment editor
-The page manual.html and its twin manual.js provide a way to manually 
+The page html/manual.html and its twin manual.js provide a way to manually 
 edit an alignment.
 
 This achieves two things: 
@@ -176,7 +190,7 @@ text editor and save it yourself. You can similarly export an
 automatically generated alignment in the main test rig page.
 
 ## Scorer
-A scorer has been added at score.html, which allows you to load two 
+A scorer has been added at html/score.html, which allows you to load two 
 alignments: a computed alignment on the left and a reference alignment 
 on the right. Pasting is possible but messes up the newlines, so save 
 first then load. Then hit the score button to see the percentage 
