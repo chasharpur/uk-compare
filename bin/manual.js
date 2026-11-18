@@ -320,20 +320,24 @@ function ok_export() {
  * being compared and the alignments between them
  */
 function save() {
-	let dialog = document.getElementById("save_dialog");
-	dialog.style.display = "block";
-    let lhs = document.getElementById("lhs_body");
+	let lhs = document.getElementById("lhs_body");
 	let rhs = document.getElementById("rhs_body");
-    let l_url = localStorage.getItem('left_url');
-    let r_url = localStorage.getItem('right_url');
-    let sample = localStorage.getItem('sample');
-    if ( sample != null && l_url != null && r_url != null ) {
-        let obj = html_export(lhs.innerHTML,rhs.innerHTML,l_url,r_url,sample);
-        document.getElementById("save_text_area").value = JSON.stringify(obj);
+    if ( lhs.innerHTML.length > 0 && rhs.innerHTML.length > 0 ) {
+        let dialog = document.getElementById("save_dialog");
+	    dialog.style.display = "block";
+        let l_url = localStorage.getItem('left_url');
+        let r_url = localStorage.getItem('right_url');
+        let sample = localStorage.getItem('sample');
+        if ( sample != null && l_url != null && r_url != null ) {
+            let obj = html_export(lhs.innerHTML,rhs.innerHTML,l_url,r_url,sample);
+            document.getElementById("save_text_area").value = JSON.stringify(obj);
+        }
+        else {
+            alert("failed to find right or left url or sample");
+        }
     }
-    else {
-        alert("failed to find right or left url or sample");
-    }
+    else
+        alert("load an alignment first!");
 }
 /**
  * Remove all aligned text left and right that start 
@@ -504,3 +508,16 @@ function next_text_node(t_node) {
             return first_text_node(parent.nextSibling);
     }
 }
+function do_help() {
+    document.getElementById("help_dialog").style.display="block";
+}
+function got_it() {
+    document.getElementById("help_dialog").style.display="none";
+}
+function load_page() {
+    let ht = window.innerHeight;
+    ht -= (document.getElementById("head").offsetHeight+16);
+    document.getElementById("container").style.height=ht+"px";
+}
+// add event listeners for page - necessary here since this is now a module
+window.addEventListener("load", load_page);

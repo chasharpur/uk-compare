@@ -1,3 +1,9 @@
+#head { 
+    text-align: center;
+    margin: 0;
+    padding: 1em;
+    color: #666666;
+}
 #lhs_file, #lhs_file {max-width:12em;}
 #container {
 	width:100%;
@@ -32,6 +38,9 @@
     margin-left:1em;
     margin-bottom: 1em;
     background-color:beige;
+	text-align:center;
+	padding-top:0.5em;
+	padding-bottom: 0.5em;
 }
 #right_toolbar,#left_toolbar {
     background-color:azure;
@@ -49,6 +58,21 @@
 }
 #save_dialog p {
 	text-align:right;
+}
+#help_dialog {
+	display:none;
+	max-width: 30%;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color:white;
+	border:solid black thin;
+	padding:1em;
+	border-radius:1em;
+}
+#got_it_button {
+	float:right;
 }
 i {font-style:normal;}
 i.aligned {background-color:lightgrey;}

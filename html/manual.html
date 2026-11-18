@@ -9,15 +9,32 @@
 <script src="../bin/html_strip.js"></script>
 </head>
 <body>
-<div id="sample_toolbar"><label>Load: </label><input type="file" id="load" value="load..." onchange="load()"></input>
-<input type="button" id="save" value="save" onclick="save()"></input></div>
+<h1 id="head">Alignment Editor</h1>
+<div id="sample_toolbar"><label>Load: </label><input type="file" title="load a computed alignment" id="load" value="load..." onchange="load()"></input>
+<input type="button" id="save" value="Save" title="save alignment to a textarea, copy and save manually" onclick="save()"></input>
+<input type="button" value="Help" id="help" title="Help with this program" onclick="do_help()"></input></div>
 <div id="container"><div id="lhs"><div id="lhs_body"></div></div>
 <div id="centre"><div id="centre_buttons">
-<p><input class="tool" type="button" title="mark" id="mark" value="mark" onclick="mark()"></input></p>
-<p><input class="tool" type="button" title="unmark" id="unmark" value="unmark" onclick="unmark()"></input></p>
-<p><input class="tool" type="button" title="remove" id="remove" value="remove" onclick="remove()"></input></p>
-<p><input class="tool" type="button" title="align" id="align" value="align" onclick="do_align()"></input></p></div></div>
+<p><input class="tool" type="button" title="mark equal unaligned strings on left and right for alignment" id="mark" value="Mark" onclick="mark()"></input></p>
+<p><input class="tool" type="button" title="remove marking" id="unmark" value="Unmark" onclick="unmark()"></input></p>
+<p><input class="tool" type="button" title="remove alignment of selected text" id="remove" value="Remove" onclick="remove()"></input></p>
+<p><input class="tool" type="button" title="align previously marked text" id="align" value="Align" onclick="do_align()"></input></p></div></div>
 <div id="rhs"><div id="rhs_body"></div></div></div>
-<div id="save_dialog"><textarea id="save_text_area" rows="30" cols="80"></textarea><p><input type="button" id="cancel" onclick="cancel_export()" value="cancel"></input> <input type="button" onclick="ok_export()" id="ok_button" value="OK"></input></p></div>
+<div id="save_dialog"><textarea id="save_text_area" rows="30" cols="80"></textarea><p><input type="button" id="cancel" onclick="cancel_export()" value="cancel"></input> <input type="button" onclick="ok_export()" id="ok_button" title="click ok to copy to clipboard" value="OK"></input></p></div>
+<div id="help_dialog"><div id="help_text"><p>Load an already computed aligment that has been exported from the Align Texts page. 
+It has to be saved first. Due to security restrictions in your browser you cannot save directly, but must first copy the text 
+by clicking on the OK button, then you must create a text file in a text editor (NOT a word processor!), paste in the text and save it. 
+Then you can reload it here for editing. When saving your work in the alignment editor the same process must be followed.</p>
+<p>To edit an alignment there are four buttons:</p>
+<ul><li><b>Mark:</b> Select some text on one side and click mark. The text must all be either deleted or added. It then gets a 
+grey background. Now select the exact same text on the other side, and click Mark again. It will also go grey. This tells 
+the editor which text you wish to align.</li>
+<li><b>Unmark:</b> this button removes any marking in the editor and lets you start from scratch.</li>
+<li><b>Remove:</b> This removes the alignment from the selected text. If the alignment runs beyond the selection it is also 
+removed there.</li>
+<li><b>Align:</b> This tries to align the marked text. If the two sides are not equal you will get an alert. In this case you must 
+Unmark and start again.</li></ul>
+<p>When you are satisfied, click Save to export the alignment. Click OK to copy to the clipboard and save it in a TEXT file.</p></div>
+<input type="button" value="got it!" onclick="got_it()" id="got_it_button"></input></div>
 </body>
 </body></html>

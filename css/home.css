@@ -1,7 +1,7 @@
 #head { 
     text-align: center;
     margin: 0;
-    padding: 2em;
+    padding: 1em;
     color: #666666;
  }
 #container {
@@ -22,10 +22,12 @@
   width: 33%;
   background-color: #f0f0f0;
   justify-content: center;
+  border-radius: 12px;
 }
 .button:hover {
   background-color: #66FFFF;
   cursor: pointer;
+  border: thin solid blue;
 }
 .pad {
   width:33%;
