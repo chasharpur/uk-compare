@@ -143,8 +143,8 @@ function fit_within_parent( id ) {
  */
 async function compute_diffs() {
 	// compute differences and alignments
-	let lhs_html = document.getElementById("lhs_body").innerHTML;
-	let rhs_html = document.getElementById("rhs_body").innerHTML;
+	let lhs_html = de_entify(document.getElementById("lhs_body").innerHTML);
+	let rhs_html = de_entify(document.getElementById("rhs_body").innerHTML);
 	let lhs_text = html_strip(lhs_html);
 	let rhs_text = html_strip(rhs_html);
 	let method = document.getElementById("method").value;

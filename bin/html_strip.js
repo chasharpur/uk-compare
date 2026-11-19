@@ -244,6 +244,118 @@ function start_alignment_tag(joined,id) {
         return '<span class="aligned" id="'+id+'">';
 }
 /**
+ * Remove all entitiies from a HTML string, replacing them 
+ * with their character code equivalents
+ * @param html the html to de-entify
+ * @return the de-entified html
+ */
+function de_entify( html ) {
+    let state = 0;
+    let new_html = '';
+    let current_entity = '';
+    let m;
+    let dp = new DOMParser();
+    const letter = /[a-zA-Z]/;
+    const digit = /[0-9]/;
+    const hex = /[a-fA-F0-9]/;
+    for ( let i=0;i<html.length;i++ ) {
+        let token = html[i];
+        switch ( state ) {
+            case 0: // looking for '&'
+                if ( token == '&' ) 
+                    state = 1;
+                else
+                    new_html += token;
+                break;
+            case 1: // seen '&'
+                m = token.match(letter);
+                if ( m ) {
+                    state = 2;
+                    current_entity = token;
+                }
+                else if ( token == '#' ) 
+                    state = 3;
+                else {  // backtrack
+                    new_html += '&';
+                    new_html += token;
+                    state = 0;
+                }
+                break
+            case 2: // seen &[letter]
+                m = token.match(letter);
+                if ( m ) {
+                    current_entity += token;
+                }
+                else if ( token.match(digit) ) {
+                    current_entity += token;
+                }
+                else if ( token == ';' ) {
+                    let doc = dp.parseFromString('&'+current_entity+';', "text/html");
+                    new_html += doc.documentElement.textContent;
+                    state = 0;
+                }
+                else {
+                    new_html += '&'+current_entity+token;
+                    state = 0;
+                }
+                break;
+            case 3: // seen &#
+                m = token.match(digit);
+                if ( m ) {
+                    current_entity = token;
+                    state = 4;
+                }
+                else if ( token == 'x' )
+                    state = 5;
+                else {
+                    new_html += '&#'+token;
+                    state = 0;
+                }
+                break;
+            case 4: // seen &#[digit]
+                m = token.match(digit);
+                if ( m ) 
+                    current_entity += token;
+                else if ( token == ';' ) {
+                    let doc = dp.parseFromString('&#'+current_entity+';', "text/html");
+                    new_html += doc.documentElement.textContent;
+                    state = 0;
+                }
+                else {
+                    new_html += '&'+current_entity+token;
+                    state = 0;
+                }
+                break;
+            case 5: // seen &#x
+                m = token.match(hex);
+                if ( m ) {
+                    current_entity = token;
+                    state = 6;
+                }
+                else {
+                    new_html += '&#x'+token;
+                    state = 0;
+                }
+                break;
+            case 6: // seen &#x[hex-digit]
+                m = token.match(hex);
+                if ( m )
+                    current_entity += token;
+                else if ( token == ';' ) {
+                    let doc = dp.parseFromString('&#x'+current_entity+';', "text/html");
+                    new_html += doc.documentElement.textContent;
+                    state = 0;
+                }
+                else {
+                    new_html += '&#x'+current_entity+token;
+                    state = 0;
+                }
+                break;
+        }
+    }
+    return new_html;
+}
+/**
  * Replace deleted, added or aligned text with spans. For alignments 
  * add an alignment id: <span class="aligned" id="a123a">...</span>. 
  * For deleted add <span class="deleted">...</span>. And for added 

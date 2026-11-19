@@ -31,8 +31,8 @@ async function load(){
         let rhs_html = await load_user_html("./samples/"+spec.sample+"/"+get_local_storage('right_url'));
         lhs_html = html_add_diffs(spec.similarities,lhs_html,1);
         rhs_html = html_add_diffs(spec.similarities,rhs_html,2);
-        document.getElementById("lhs_body").innerHTML = lhs_html;
-        document.getElementById("rhs_body").innerHTML = rhs_html;
+        document.getElementById("lhs_body").innerHTML = de_entify(lhs_html);
+        document.getElementById("rhs_body").innerHTML = de_entify(rhs_html);
         let remaining_height = window.innerHeight - document.getElementById("sample_toolbar").offsetHeight;
         document.getElementById("lhs").style.maxHeight = remaining_height+"px";
         document.getElementById("rhs").style.maxHeight = remaining_height+"px";
@@ -329,7 +329,7 @@ function save() {
         let r_url = localStorage.getItem('right_url');
         let sample = localStorage.getItem('sample');
         if ( sample != null && l_url != null && r_url != null ) {
-            let obj = html_export(lhs.innerHTML,rhs.innerHTML,l_url,r_url,sample);
+            let obj = html_export(de_entify(lhs.innerHTML),de_entify(rhs.innerHTML),l_url,r_url,sample);
             document.getElementById("save_text_area").value = JSON.stringify(obj);
         }
         else {
