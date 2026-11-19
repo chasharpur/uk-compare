@@ -1,18 +1,4 @@
 
-## Home page
-A home page with three buttons has been added, which lead to three 
-sub-pages.
-
-1. Align texts - this leads to the alignment page where the user can 
-choose two versions and layers to align and view the results.
-
-2. Edit alignments - If the user has exported and saved an alignment 
-from the align page it can be edited here. Once perfected it can be 
-saved.
-
-3. Score alignments - Here a computed alignment can be scored for 
-accuracy against a reference alignment, already edited to be perfect. 
-
 ## Rationale
 Why write a comparison tool for HTML? Although there is little agreement 
 on how texts may be represented on a server, whether in databases, as XML, 
@@ -163,6 +149,20 @@ minutes to finish. Reloading doesn't help since it merely restarts that
 particular alignment. I will add an abort button in due course to fix 
 this. Chrome is worst at this and the much faster SpiderMonkey JS 
 engine on Firefox is very much recommended.
+
+## Home page
+A home page with three buttons has been added, which lead to three 
+sub-pages.
+
+1. Align texts - this leads to the alignment page where the user can 
+choose two versions and layers to align and view the results.
+
+2. Edit alignments - If the user has exported and saved an alignment 
+from the align page it can be edited here. Once perfected it can be 
+saved.
+
+3. Score alignments - Here a computed alignment can be scored for 
+accuracy against a reference alignment, already edited to be perfect. 
 
 ## Alignment editor
 The page html/manual.html and its twin manual.js provide a way to manually 
