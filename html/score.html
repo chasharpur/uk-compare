@@ -6,11 +6,22 @@
  <script src="../bin/score.js"></script>
 </head>
 <body>
+<h1 id="head">Alignment Scorer</h1>
 <div id="container">
 	<div><label>Computed:</label> <input type="file" id="computed_file"></input>
 	<textarea class="json_input" id="computed_json" rows="30" cols="80"></textarea></div>
 	<div><label>Reference:</label> <input type="file" id="reference_file"></input>
 	<textarea  class="json_input" id="reference_json" rows="30" cols="80"></textarea></div>
 </div>
-<div id="toolbar"><input type="button" value="score" id="score_button"></input> <input type="text" id="score_value" minlength="6" maxlength="6"></input></div>
+<div id="toolbar">
+<input type="button" value="Score" id="score_button"></input> <input type="text" id="score_value" minlength="6" maxlength="6"></input>
+<input type="button" value="Help" id="help" title="Help with this program" onclick="do_help()"></input></div>
+<div id="help_dialog"><div id="help_text"><p>This page lets you compare a computed alignment against a 
+hand-edited reference alignment. Above the computed alignment panel on the left click Browse... to 
+load a saved alignment from the Align Texts page. Next load another alignment from the test-data 
+folder in the <a href="">uk-compare GitHub repository</a>, which you have downloaded to your computer, or
+any manually edited alignment of your own making. The reference alignment and the computed one 
+must be of exactly the same work and compare <i>exactly</i> the same versions. Now click the Score button, 
+and the percentage of the similarity between the two alignments will be displayed in the box next to the 
+Score button.</p><input type="button" value="Got it!" onclick="got_it()" id="got_it_button"></input></div>
 </body></html>

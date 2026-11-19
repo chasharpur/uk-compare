@@ -14,6 +14,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://gnu.org>.
 */
+function do_help() {
+    document.getElementById("help_dialog").style.display="block";
+}
+function got_it() {
+    document.getElementById("help_dialog").style.display="none";
+}
 async function load_page() {
 	document.getElementById("computed_file").addEventListener("change",async (event) =>{
         const file = event.target.files[0];

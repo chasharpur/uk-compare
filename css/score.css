@@ -13,7 +13,28 @@
     text-align:center;
     padding:10px 0px 10px 0px;
 }
-#score_value { min-width: 0; width:0;}
+#score_value { min-width: 6em; width:0;}
 .json_input {
     margin-top:10px;
+}
+#head { 
+    text-align: center;
+    margin: 0;
+    padding: 1em;
+    color: #666666;
+}
+#help_dialog {
+	display:none;
+	max-width: 30%;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color:white;
+	border:solid black thin;
+	padding:1em;
+	border-radius:1em;
+}
+#got_it_button {
+	float:right;
 }
