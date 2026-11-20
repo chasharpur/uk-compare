@@ -16,7 +16,7 @@
 }
 #centre {
 	box-sizing: border-box;
-	flex-grow:1;
+	flex-grow:4;
 	position:relative;
 	text-align:center;
 }
@@ -37,7 +37,7 @@
 #sample_toolbar {
     margin-left:1em;
     margin-bottom: 1em;
-    background-color:beige;
+    background-color:#DDDDDD;
 	text-align:center;
 	padding-top:0.5em;
 	padding-bottom: 0.5em;
