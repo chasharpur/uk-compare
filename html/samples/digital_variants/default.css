@@ -10,3 +10,4 @@ span.pencil { color:gray;}
 span.line {margin:0;padding-left:2em;text-indent:-2em;display:inline-block;white-space: pre-line}
 span.role {font-style:italic;}
 span.speaker {font-weight:bold;}
+span.ul {text-decoration: underline;}

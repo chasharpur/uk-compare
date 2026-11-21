@@ -19,6 +19,7 @@
 	flex-grow:4;
 	position:relative;
 	text-align:center;
+	min-width:10%;
 }
 #centre p {margin:0.5em;}
 #centre_buttons {

@@ -378,9 +378,9 @@ async function reload_work() {
 	let lhs_version = get_local_storage('lhs_version');
 	let rhs_version = get_local_storage('rhs_version');
 	// if stored versions are empty use defaults
-	if ( lhs_version == null )
+	if ( lhs_version == null || !version_keys.includes(lhs_version) )
 		lhs_version = version_keys[0];
-	if ( rhs_version == null ) {
+	if ( rhs_version == null  || !version_keys.includes(rhs_version) ) {
 		if ( version_keys.length > 1 )
 			rhs_version = version_keys[1];
 		else
